@@ -1,20 +1,16 @@
 /* ============================================================
-   Studio Fritz — base tokens
-   Spacing scale (bare minimums per Eliza's 2026-09-03 spec):
-   4 / 8 / 12 / 16 / 24 / 32 / 40 / 48 / 64 / 80 / 96 / 120
-   Type: headline 20 / body 16 / form input 16 / cta 15 (fixed, no mobile/desktop split)
-   Margins: mobile 16px edges, desktop 40px edges
+   Studio Fritz — base tokens (verified against Figma 175:1004)
+   Colors: brand orange #ffa000, cream #ffe7be, dark ink #1c1123
+   Fonts: EB Garamond (display wordmark) / Estedad ExtraLight (everything else)
+   Spacing scale: 4/8/12/16/24/32/40/48/64/80/96/120 (deliberately
+   normalized — Figma's own gaps are inconsistent, this scale wins)
    ============================================================ */
 :root{
-  --ink: #211d18;
-  --paper: #f6f1e7;
-  --accent: #e2790f;
-  --accent-bright: #f4a53c;
-  --stone: #6f6455;
-  --line: #e2d8c4;
-  --surface: #ffffff;
-  --hero-bg: #201c17;
-  --hero-ink: #f4efe4;
+  --orange: #ffa000;
+  --cream: #ffe7be;
+  --ink: #1c1123;
+  --white: #ffffff;
+  --line: rgba(255,255,255,0.28);
 
   --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-16: 16px;
   --sp-24: 24px; --sp-32: 32px; --sp-40: 40px; --sp-48: 48px;
@@ -27,58 +23,59 @@
   --fs-body: 16px;
   --fs-input: 16px;
   --fs-cta: 15px;
+
+  --font-display: "EB Garamond", Georgia, serif;
+  --font-body: "Estedad", ui-sans-serif, system-ui, sans-serif;
 }
 @media (min-width: 760px){
-  :root{
-    --edge: var(--sp-40);
-    --section-gap: var(--sp-80);
-  }
+  :root{ --edge: var(--sp-40); --section-gap: var(--sp-80); }
 }
 
 *{ box-sizing: border-box; }
 html{ scroll-behavior: smooth; }
 body{
   margin:0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  background: var(--orange);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 200; /* ExtraLight */
   -webkit-font-smoothing: antialiased;
 }
 a{ color:inherit; }
 img, video{ max-width:100%; display:block; }
-:focus-visible{ outline: 2px solid var(--accent); outline-offset: 3px; }
-.display{ font-family:"Newsreader", ui-serif, Georgia, serif; }
+:focus-visible{ outline: 2px solid var(--ink); outline-offset: 3px; }
 
 .eyebrow{
-  font-family:"Archivo",sans-serif; font-size: 13px;
-  letter-spacing:.16em; text-transform:uppercase; color:var(--stone);
+  font-family: var(--font-body); font-weight:200; font-size: 13px;
+  letter-spacing:.05em; text-transform:uppercase;
   margin:0 0 var(--sp-16);
 }
 .btn-cta{
   display:inline-flex; align-items:center; gap:var(--sp-8);
-  font-family:"Archivo",sans-serif; font-size: var(--fs-cta);
-  letter-spacing:.12em; text-transform:uppercase; text-decoration:none;
-  background: var(--accent); color:#201c17;
-  padding: var(--sp-16) var(--sp-24); border-radius:2px;
-  transition: background .18s ease;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-cta);
+  letter-spacing:.04em; text-transform:uppercase; text-decoration:none;
+  background: var(--orange); color: var(--white);
+  border: 1px solid var(--white);
+  padding: var(--sp-12) var(--sp-16);
+  transition: background .18s ease, color .18s ease;
 }
-.btn-cta:hover{ background: var(--accent-bright); }
+.btn-cta:hover{ background: var(--white); color: var(--orange); }
 
-/* ---------- fixed wordmark / collapsing nav header ---------- */
+/* ---------- wordmark (EB Garamond, 100px, per Figma) ---------- */
 .wordmark-header{
   position: fixed; top:0; left:0; right:0; z-index:50;
   display:flex; align-items:flex-start; justify-content:space-between;
   padding: var(--sp-24) var(--edge);
-  background: rgba(32,28,23, var(--hdr-bg-a, 0));
-  transition: background-color .05s linear;
 }
-.wm-col{ display:flex; flex-direction:column; line-height:.98; }
+.wm-col{ display:flex; flex-direction:column; line-height:.9; }
 .wm-col span{
-  font-family:"Newsreader",serif; font-weight:500;
-  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
-  color: var(--hero-ink); white-space:nowrap;
+  font-family: var(--font-display); font-weight:400;
+  font-size: clamp(2rem, 6vw, 6.25rem); /* scales down from Figma's 100px */
+  white-space:nowrap;
 }
+.wm-left span{ color: var(--cream); }
 .wm-right{ align-items:flex-end; text-align:right; }
+.wm-right span{ color: var(--orange); -webkit-text-stroke: 1px var(--cream); }
 .wm-row-2, .wm-row-3{ opacity:0; transform: translateY(-10px); }
 
 .wm-nav{
@@ -88,40 +85,35 @@ img, video{ max-width:100%; display:block; }
   opacity: var(--nav-a, 1);
 }
 .wm-nav a{
-  text-decoration:none; font-family:"Archivo",sans-serif;
-  font-size: var(--fs-cta); letter-spacing:.1em; text-transform:uppercase;
-  color: var(--hero-ink); text-align:center;
-  display:flex; flex-direction:column; gap: var(--sp-4); opacity:.92;
+  text-decoration:none; font-family: var(--font-body); font-weight:200;
+  font-size: var(--fs-body); letter-spacing:.04em; text-transform:uppercase;
+  color: var(--white); text-align:center;
+  display:flex; flex-direction:column; gap: var(--sp-4);
 }
-.wm-nav a span{ opacity:.62; font-size:.94em; }
-.wm-nav a:hover{ opacity:1; }
-.wm-nav a:hover span{ color: var(--accent-bright); opacity:1; }
+.wm-nav a span{ opacity:.7; font-size:.9em; }
+.wm-nav a:hover{ text-decoration: underline; }
 @media (max-width: 759px){ .wm-nav{ display:none; } }
 
-/* ---------- hand-drawn stamp accent (loose/imperfect by design) ---------- */
+/* ---------- hand-drawn stamp accent (loose/imperfect by design; placeholder until Eliza provides the real asset) ---------- */
 .stamp{
   position: fixed; left: var(--edge); top:46%; z-index:55;
-  width:74px; height:74px; opacity: var(--stamp-a, 0);
+  width:64px; height:64px; opacity: var(--stamp-a, 0);
   transform: rotate(-6deg); pointer-events:none;
 }
-.stamp svg{ width:100%; height:100%; }
-.stamp path, .stamp circle{
-  fill:none; stroke: var(--accent-bright); stroke-width:1.1;
-  stroke-linecap:round; stroke-linejoin:round;
-}
+.stamp img{ width:100%; height:100%; object-fit:contain; }
 
 /* ---------- hero ---------- */
-.hero{ position:relative; min-height:100vh; background:var(--hero-bg); overflow:hidden; }
+.hero{ position:relative; min-height:100vh; background: var(--ink); overflow:hidden; }
 .hero video, .hero .poster{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
 }
 .hero::after{
   content:""; position:absolute; inset:0;
-  background: linear-gradient(0deg, rgba(16,13,9,.82) 0%, rgba(16,13,9,.1) 38%, transparent 62%);
+  background: linear-gradient(0deg, rgba(20,10,25,.75) 0%, rgba(20,10,25,.05) 45%, transparent 65%);
 }
 .hero-intro{
   position:relative; z-index:2;
-  padding: calc(var(--sp-80) + 40px) var(--edge) var(--sp-16);
+  padding: calc(var(--sp-80) + 40px) var(--edge) 0;
   display:grid; gap: var(--sp-16);
   max-width: 900px;
 }
@@ -129,81 +121,109 @@ img, video{ max-width:100%; display:block; }
   .hero-intro{ grid-template-columns: 1fr 1fr; max-width:1200px; }
 }
 .hero-intro p{
-  font-family:"Archivo",sans-serif; font-size: var(--fs-body);
-  line-height:1.6; letter-spacing:.01em; text-transform:uppercase;
-  color: var(--hero-ink); opacity:.9; margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.03em; text-transform:uppercase;
+  color: var(--white); margin:0;
 }
+.hero-links{
+  position:relative; z-index:2;
+  display:flex; flex-wrap:wrap; gap: var(--sp-24);
+  padding: var(--sp-16) var(--edge) 0;
+}
+.hero-links a{
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  letter-spacing:.04em; text-transform:uppercase; text-decoration:none; color: var(--white);
+}
+.hero-links a:hover{ text-decoration:underline; }
 .hero-catalogue-link{
-  position:relative; z-index:2; margin: var(--sp-16) var(--edge) 0;
-  display:inline-block;
+  position:relative; z-index:2; margin: var(--sp-16) var(--edge) var(--sp-24);
+  display:inline-flex;
+}
+.hero-divider{ border:0; border-top:1px solid var(--line); margin:0; position:relative; z-index:2; }
+
+/* ---------- carousels ---------- */
+.carousel{ position:relative; overflow:hidden; background: var(--ink); }
+.carousel-track{
+  display:flex; overflow-x:auto; scrollbar-width:none;
+  cursor:grab; -webkit-overflow-scrolling:touch;
+}
+.carousel-track::-webkit-scrollbar{ display:none; }
+.carousel-track.dragging{ cursor:grabbing; scroll-snap-type:none; }
+.carousel .tile{
+  position:relative; flex:0 0 auto; height: 46vw; max-height:420px; min-height:220px;
+  overflow:hidden;
+}
+.carousel .tile img, .carousel .tile video{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  pointer-events:none;
+}
+.carousel .tile figcaption{
+  position:absolute; left: var(--sp-16); right: var(--sp-16); bottom: var(--sp-12);
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  letter-spacing:.03em; text-transform:uppercase; color:#fff;
+  text-shadow:0 1px 6px rgba(0,0,0,.4); pointer-events:none;
 }
 
-/* ---------- product grid rows ---------- */
-.gallery-row{
-  display:grid; grid-template-columns: repeat(2,1fr);
-  gap: var(--sp-8); background: var(--surface);
+/* pre-footer carousel: scroll-hijacked (vertical scroll -> horizontal, 1:1) */
+.scroll-hijack{ position:relative; }
+.scroll-hijack-sticky{
+  position:sticky; top:0; height:100vh; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:center;
 }
-@media (min-width:760px){ .gallery-row{ grid-template-columns: repeat(4,1fr); } }
-.tile{ position:relative; aspect-ratio:1/1; overflow:hidden; background:#111; }
-.tile img, .tile video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.tile figcaption{
-  position:absolute; left: var(--sp-16); right: var(--sp-16); bottom: var(--sp-12);
-  font-family:"Archivo",sans-serif; font-size:13px; letter-spacing:.08em;
-  text-transform:uppercase; color:#f4efe4; text-shadow:0 1px 6px rgba(0,0,0,.4);
-}
+.scroll-hijack .carousel-track{ overflow-x:hidden; } /* position driven by JS, not native scroll */
 
 /* ---------- catalogue CTA band ---------- */
 .catalogue-band{
-  display:flex; align-items:center; justify-content:flex-end;
-  background: var(--accent); color:#201c17; text-decoration:none;
+  display:flex; align-items:center; justify-content:space-between;
+  background: var(--ink); color: var(--white); text-decoration:none;
   padding: var(--sp-16) var(--edge);
-  font-family:"Archivo",sans-serif; font-size: var(--fs-cta);
-  letter-spacing:.12em; text-transform:uppercase; gap: var(--sp-8);
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-cta);
+  letter-spacing:.04em; text-transform:uppercase; gap: var(--sp-8);
 }
-.catalogue-band:hover{ background: var(--accent-bright); }
+.catalogue-band:hover{ text-decoration: underline; }
 
 /* ---------- feature product block ---------- */
-.feature-product{
-  background: var(--paper);
-  padding: var(--section-gap) var(--edge);
-}
-.feature-product img{ width:100%; aspect-ratio:16/10.5; object-fit:cover; border-radius:2px; }
+.feature-product{ background: var(--orange); }
+.feature-product img{ width:100%; display:block; }
 
 /* ---------- footer ---------- */
-.site-footer{ background: var(--accent); color:#221a10; padding: var(--section-gap) var(--edge) var(--sp-32); }
+.site-footer{ background: var(--orange); color: var(--white); padding: var(--section-gap) var(--edge) var(--sp-32); }
 .footer-top{
   display:flex; justify-content:space-between; align-items:flex-start;
   gap: var(--sp-32); flex-wrap:wrap; padding-bottom: var(--section-gap);
 }
 .footer-top .wm span{
-  font-family:"Newsreader",serif; font-weight:500;
-  font-size: clamp(2rem,5vw,3.4rem); display:block; line-height:1;
+  font-family: var(--font-display); font-weight:400;
+  font-size: clamp(2.5rem,7vw,5rem); display:block; line-height:1;
 }
+.footer-top .wm .fw-cream{ color: var(--cream); }
+.footer-top .wm .fw-white{ color: var(--white); }
 .footer-links{ display:flex; flex-wrap:wrap; gap: var(--sp-40); }
 .footer-col{ display:flex; flex-direction:column; gap: var(--sp-12); min-width:9em; }
 .footer-col a{
-  text-decoration:none; font-family:"Archivo",sans-serif; font-size: var(--fs-cta);
-  letter-spacing:.08em; text-transform:uppercase; color:#221a10; opacity:.86;
+  text-decoration:none; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  letter-spacing:.02em; text-transform:uppercase; color: var(--white);
 }
-.footer-col a:hover{ opacity:1; text-decoration:underline; }
+.footer-col a:hover{ text-decoration:underline; }
+.footer-col a.accent{ color: var(--ink); }
 .newsletter{ display:flex; flex-direction:column; gap: var(--sp-12); min-width:14em; }
-.newsletter label{ font-family:"Archivo",sans-serif; font-size:13px; letter-spacing:.1em; text-transform:uppercase; opacity:.75; }
+.newsletter label{ font-family: var(--font-body); font-weight:200; font-size: 14px; letter-spacing:.04em; text-transform:uppercase; }
 .newsletter form{ display:flex; gap: var(--sp-8); }
 .newsletter input{
-  flex:1; border:1px solid rgba(34,26,16,.4); background:transparent;
-  padding: var(--sp-12); font-family:"Archivo",sans-serif; font-size: var(--fs-input);
-  color:#221a10; border-radius:2px;
+  flex:1; border:1px solid var(--ink); background: var(--cream);
+  padding: var(--sp-12); font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
+  color: var(--ink);
 }
-.newsletter input::placeholder{ color:rgba(34,26,16,.55); }
+.newsletter input::placeholder{ color: var(--ink); opacity:.7; }
 .newsletter button{
-  border:1px solid #221a10; background:#221a10; color:#f6ecd8;
-  font-family:"Archivo",sans-serif; font-size: var(--fs-cta); letter-spacing:.08em;
-  text-transform:uppercase; padding: var(--sp-12) var(--sp-16); border-radius:2px; cursor:pointer;
+  border:1px solid var(--ink); background: var(--ink); color: var(--cream);
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-cta); letter-spacing:.04em;
+  text-transform:uppercase; padding: var(--sp-12) var(--sp-16); cursor:pointer;
 }
 .footer-bottom{
-  border-top:1px solid rgba(34,26,16,.28); padding-top: var(--sp-16);
+  border-top:1px solid rgba(28,17,35,.3); padding-top: var(--sp-16);
   display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--sp-16);
-  font-family:"Archivo",sans-serif; font-size:12px; letter-spacing:.06em; text-transform:uppercase; opacity:.72;
+  font-family: var(--font-body); font-weight:200; font-size:13px; letter-spacing:.04em; text-transform:uppercase;
 }
 
 @media (prefers-reduced-motion: reduce){
