@@ -1,0 +1,211 @@
+/* ============================================================
+   Studio Fritz — base tokens
+   Spacing scale (bare minimums per Eliza's 2026-09-03 spec):
+   4 / 8 / 12 / 16 / 24 / 32 / 40 / 48 / 64 / 80 / 96 / 120
+   Type: headline 20 / body 16 / form input 16 / cta 15 (fixed, no mobile/desktop split)
+   Margins: mobile 16px edges, desktop 40px edges
+   ============================================================ */
+:root{
+  --ink: #211d18;
+  --paper: #f6f1e7;
+  --accent: #e2790f;
+  --accent-bright: #f4a53c;
+  --stone: #6f6455;
+  --line: #e2d8c4;
+  --surface: #ffffff;
+  --hero-bg: #201c17;
+  --hero-ink: #f4efe4;
+
+  --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-16: 16px;
+  --sp-24: 24px; --sp-32: 32px; --sp-40: 40px; --sp-48: 48px;
+  --sp-64: 64px; --sp-80: 80px; --sp-96: 96px; --sp-120: 120px;
+
+  --edge: var(--sp-16);
+  --section-gap: var(--sp-24);
+
+  --fs-headline: 20px;
+  --fs-body: 16px;
+  --fs-input: 16px;
+  --fs-cta: 15px;
+}
+@media (min-width: 760px){
+  :root{
+    --edge: var(--sp-40);
+    --section-gap: var(--sp-80);
+  }
+}
+
+*{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+body{
+  margin:0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a{ color:inherit; }
+img, video{ max-width:100%; display:block; }
+:focus-visible{ outline: 2px solid var(--accent); outline-offset: 3px; }
+.display{ font-family:"Newsreader", ui-serif, Georgia, serif; }
+
+.eyebrow{
+  font-family:"Archivo",sans-serif; font-size: 13px;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--stone);
+  margin:0 0 var(--sp-16);
+}
+.btn-cta{
+  display:inline-flex; align-items:center; gap:var(--sp-8);
+  font-family:"Archivo",sans-serif; font-size: var(--fs-cta);
+  letter-spacing:.12em; text-transform:uppercase; text-decoration:none;
+  background: var(--accent); color:#201c17;
+  padding: var(--sp-16) var(--sp-24); border-radius:2px;
+  transition: background .18s ease;
+}
+.btn-cta:hover{ background: var(--accent-bright); }
+
+/* ---------- fixed wordmark / collapsing nav header ---------- */
+.wordmark-header{
+  position: fixed; top:0; left:0; right:0; z-index:50;
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding: var(--sp-24) var(--edge);
+  background: rgba(32,28,23, var(--hdr-bg-a, 0));
+  transition: background-color .05s linear;
+}
+.wm-col{ display:flex; flex-direction:column; line-height:.98; }
+.wm-col span{
+  font-family:"Newsreader",serif; font-weight:500;
+  font-size: clamp(1.5rem, 3.4vw, 2.6rem);
+  color: var(--hero-ink); white-space:nowrap;
+}
+.wm-right{ align-items:flex-end; text-align:right; }
+.wm-row-2, .wm-row-3{ opacity:0; transform: translateY(-10px); }
+
+.wm-nav{
+  position:absolute; left:50%; top: var(--sp-24);
+  transform: translateX(-50%);
+  display:flex; gap: var(--sp-40);
+  opacity: var(--nav-a, 1);
+}
+.wm-nav a{
+  text-decoration:none; font-family:"Archivo",sans-serif;
+  font-size: var(--fs-cta); letter-spacing:.1em; text-transform:uppercase;
+  color: var(--hero-ink); text-align:center;
+  display:flex; flex-direction:column; gap: var(--sp-4); opacity:.92;
+}
+.wm-nav a span{ opacity:.62; font-size:.94em; }
+.wm-nav a:hover{ opacity:1; }
+.wm-nav a:hover span{ color: var(--accent-bright); opacity:1; }
+@media (max-width: 759px){ .wm-nav{ display:none; } }
+
+/* ---------- hand-drawn stamp accent (loose/imperfect by design) ---------- */
+.stamp{
+  position: fixed; left: var(--edge); top:46%; z-index:55;
+  width:74px; height:74px; opacity: var(--stamp-a, 0);
+  transform: rotate(-6deg); pointer-events:none;
+}
+.stamp svg{ width:100%; height:100%; }
+.stamp path, .stamp circle{
+  fill:none; stroke: var(--accent-bright); stroke-width:1.1;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+
+/* ---------- hero ---------- */
+.hero{ position:relative; min-height:100vh; background:var(--hero-bg); overflow:hidden; }
+.hero video, .hero .poster{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+}
+.hero::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(0deg, rgba(16,13,9,.82) 0%, rgba(16,13,9,.1) 38%, transparent 62%);
+}
+.hero-intro{
+  position:relative; z-index:2;
+  padding: calc(var(--sp-80) + 40px) var(--edge) var(--sp-16);
+  display:grid; gap: var(--sp-16);
+  max-width: 900px;
+}
+@media (min-width:760px){
+  .hero-intro{ grid-template-columns: 1fr 1fr; max-width:1200px; }
+}
+.hero-intro p{
+  font-family:"Archivo",sans-serif; font-size: var(--fs-body);
+  line-height:1.6; letter-spacing:.01em; text-transform:uppercase;
+  color: var(--hero-ink); opacity:.9; margin:0;
+}
+.hero-catalogue-link{
+  position:relative; z-index:2; margin: var(--sp-16) var(--edge) 0;
+  display:inline-block;
+}
+
+/* ---------- product grid rows ---------- */
+.gallery-row{
+  display:grid; grid-template-columns: repeat(2,1fr);
+  gap: var(--sp-8); background: var(--surface);
+}
+@media (min-width:760px){ .gallery-row{ grid-template-columns: repeat(4,1fr); } }
+.tile{ position:relative; aspect-ratio:1/1; overflow:hidden; background:#111; }
+.tile img, .tile video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.tile figcaption{
+  position:absolute; left: var(--sp-16); right: var(--sp-16); bottom: var(--sp-12);
+  font-family:"Archivo",sans-serif; font-size:13px; letter-spacing:.08em;
+  text-transform:uppercase; color:#f4efe4; text-shadow:0 1px 6px rgba(0,0,0,.4);
+}
+
+/* ---------- catalogue CTA band ---------- */
+.catalogue-band{
+  display:flex; align-items:center; justify-content:flex-end;
+  background: var(--accent); color:#201c17; text-decoration:none;
+  padding: var(--sp-16) var(--edge);
+  font-family:"Archivo",sans-serif; font-size: var(--fs-cta);
+  letter-spacing:.12em; text-transform:uppercase; gap: var(--sp-8);
+}
+.catalogue-band:hover{ background: var(--accent-bright); }
+
+/* ---------- feature product block ---------- */
+.feature-product{
+  background: var(--paper);
+  padding: var(--section-gap) var(--edge);
+}
+.feature-product img{ width:100%; aspect-ratio:16/10.5; object-fit:cover; border-radius:2px; }
+
+/* ---------- footer ---------- */
+.site-footer{ background: var(--accent); color:#221a10; padding: var(--section-gap) var(--edge) var(--sp-32); }
+.footer-top{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap: var(--sp-32); flex-wrap:wrap; padding-bottom: var(--section-gap);
+}
+.footer-top .wm span{
+  font-family:"Newsreader",serif; font-weight:500;
+  font-size: clamp(2rem,5vw,3.4rem); display:block; line-height:1;
+}
+.footer-links{ display:flex; flex-wrap:wrap; gap: var(--sp-40); }
+.footer-col{ display:flex; flex-direction:column; gap: var(--sp-12); min-width:9em; }
+.footer-col a{
+  text-decoration:none; font-family:"Archivo",sans-serif; font-size: var(--fs-cta);
+  letter-spacing:.08em; text-transform:uppercase; color:#221a10; opacity:.86;
+}
+.footer-col a:hover{ opacity:1; text-decoration:underline; }
+.newsletter{ display:flex; flex-direction:column; gap: var(--sp-12); min-width:14em; }
+.newsletter label{ font-family:"Archivo",sans-serif; font-size:13px; letter-spacing:.1em; text-transform:uppercase; opacity:.75; }
+.newsletter form{ display:flex; gap: var(--sp-8); }
+.newsletter input{
+  flex:1; border:1px solid rgba(34,26,16,.4); background:transparent;
+  padding: var(--sp-12); font-family:"Archivo",sans-serif; font-size: var(--fs-input);
+  color:#221a10; border-radius:2px;
+}
+.newsletter input::placeholder{ color:rgba(34,26,16,.55); }
+.newsletter button{
+  border:1px solid #221a10; background:#221a10; color:#f6ecd8;
+  font-family:"Archivo",sans-serif; font-size: var(--fs-cta); letter-spacing:.08em;
+  text-transform:uppercase; padding: var(--sp-12) var(--sp-16); border-radius:2px; cursor:pointer;
+}
+.footer-bottom{
+  border-top:1px solid rgba(34,26,16,.28); padding-top: var(--sp-16);
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--sp-16);
+  font-family:"Archivo",sans-serif; font-size:12px; letter-spacing:.06em; text-transform:uppercase; opacity:.72;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }
+}
