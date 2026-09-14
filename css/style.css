@@ -118,7 +118,7 @@ img, video{ max-width:100%; display:block; }
 /* multiply rows: revealed by wiping max-height open (in normal flow, so the
    header naturally grows/shrinks), never by fading opacity -- always fully
    solid the instant they're visible, per Eliza's "shouldn't be faded" note. */
-.wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height .35s ease; }
+.wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height .525s ease; } /* 50% slower per Eliza's "multiply... 50% slower" (was .35s) */
 .wm-row-2.is-on, .wm-row-3.is-on{ max-height:140px; }
 
 /* small orange logomark badge -- fixed px, not 50%, so it always sits
@@ -326,7 +326,7 @@ img, video{ max-width:100%; display:block; }
    ~21% (Trade/About/Contact), ~47% (FAQ/Warranty/Press/IG), ~74%
    (newsletter) — reproduced here as absolutely positioned columns rather
    than a generic wrapping flex row, so the alignment matches exactly. */
-.site-footer{ background: var(--orange); color: var(--white); padding: var(--sp-24) var(--edge) var(--sp-32); } /* top padding cut from --section-gap (80px) -- Figma (175:1004) shows the footer wordmark starting essentially flush against the last carousel row, not a big blank orange gap */
+.site-footer{ background: var(--orange); color: var(--white); padding: 0 var(--edge) var(--sp-32); } /* Figma (175:1004): footer wordmark sits flush against the last carousel row -- zero top padding, confirmed 2026-09-14 ("orange padding still between last carousel and footer, there should be no padding besides where it says catalogue") */
 .footer-top{ display:flex; flex-direction:column; gap: var(--sp-64); padding-bottom: var(--section-gap); }
 .footer-wm{ position:relative; display:flex; justify-content:space-between; align-items:flex-start; }
 .footer-wm-mark{
@@ -350,21 +350,34 @@ img, video{ max-width:100%; display:block; }
   text-decoration:none; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.05em; text-transform:uppercase; color: var(--white); white-space:nowrap;
 }
-.footer-col.footer-col-wide a{ font-size:14px; white-space:normal; }
-.footer-col a:hover{ text-decoration:underline; }
+/* was font-size:14px + white-space:normal, which wrapped "Frequently Asked
+   Questions" and "Press / eliza@studiofritz.co" to 2 lines -- Figma shows
+   each of FAQ/Warranty/Press/IG on its own single line (175:1004: e.g.
+   node 404:409 "FREQUENTLY ASKED QUESTIONS" is one 221px-wide line, not
+   two) -- dropped the override so this column inherits the same
+   white-space:nowrap as the other footer columns. */
+.footer-col a:hover{ color: var(--orange-light); } /* was text-decoration:underline -- footer links are "buttons" per Eliza's hover rule too: light orange, never underlined */
 
 /* copyright/location -- Figma node 442:1989 (added by Eliza directly to the
    Homepage frame, 175:1004): "this is footer SOT" going forward, so this
    pulls the exact text/styling from Figma rather than placeholder copy. */
 .footer-copyright{
   font-family: var(--font-body); font-weight:200; font-size:16px;
-  letter-spacing:.05em; color: var(--white); line-height:1.5; margin:0;
-}
+  letter-spacing:.05em; text-transform:uppercase; color: var(--white); line-height:1.5; margin:0;
+} /* Figma's own text content (442:1989) is already ALL CAPS -- mixed-case
+     read as a mismatched typeface next to the rest of the all-caps footer
+     ("copyright in wrong typeface"); text-transform matches how every
+     other footer/nav label on the site is written (source in normal case,
+     CSS uppercases it) rather than typing the source in caps. */
 
 .newsletter{
   position:absolute; top:0; left:74%; width:26%; min-width:14em;
-  display:flex; flex-direction:column; gap: var(--sp-12);
-}
+  display:flex; flex-direction:column; gap: var(--sp-4);
+} /* Figma (404:400-410): label-to-input gap is tight (~4px) but
+     input-to-download-button gap is much bigger (~31px) -- a single
+     uniform gap value doesn't capture that, so the base gap matches the
+     tight spacing and .accent below adds the extra gap before the button
+     ("download summer catalogue layout is wrong") */
 .newsletter label{ font-family: var(--font-body); font-weight:200; font-size: 14px; letter-spacing:.05em; text-transform:uppercase; }
 .newsletter form{ position:relative; }
 .newsletter input{
@@ -390,6 +403,7 @@ img, video{ max-width:100%; display:block; }
   font-family: var(--font-body); font-weight:200; font-size:14px;
   letter-spacing:.05em; text-transform:uppercase;
   padding: var(--sp-12); text-align:center;
+  margin-top: var(--sp-24); /* the bigger of the two footer newsletter gaps -- see .newsletter's own comment */
   transition: background .18s ease, color .18s ease;
 }
 .newsletter .accent:hover{ background: var(--orange-light); color: var(--white); }
