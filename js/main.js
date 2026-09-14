@@ -7,7 +7,6 @@
   (function header() {
     var HERO_END = 300, PEAK = 900, COLLAPSE_END = 1300;
     var header = document.getElementById('wmHeader');
-    var stamp = document.querySelector('.stamp');
     var rows2 = document.querySelectorAll('.wm-row-2');
     var rows3 = document.querySelectorAll('.wm-row-3');
     if (!header) return;
@@ -15,8 +14,9 @@
 
     function render() {
       ticking = false;
+      // stamp is static/always-visible now (see .stamp in style.css) — no
+      // scroll-tied opacity here.
       var y = window.scrollY;
-      if (stamp) stamp.style.setProperty('--stamp-a', clamp(y / 120));
       var tm = clamp((y - HERO_END) / (PEAK - HERO_END));
       var tc = clamp((y - PEAK) / (COLLAPSE_END - PEAK));
       var row2Op = clamp(tm * 2) * (1 - tc);
