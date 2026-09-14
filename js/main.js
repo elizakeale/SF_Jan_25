@@ -4,7 +4,13 @@
   function clamp(v, a, b) { a = a || 0; b = b === undefined ? 1 : b; return Math.max(a, Math.min(b, v)); }
 
   /* ---------------- stamp: pinned, but rests over the last carousel
-     instead of floating down into the footer ---------------- */
+     instead of floating down into the footer ----------------
+     .scroll-hijack's own height is a huge scroll-runway (100vh + 1600px),
+     not the visual carousel size -- resting at *its* bottom edge just
+     landed the stamp at the footer boundary again (same bug as before,
+     under a different name). What actually matters is the scrollY where
+     .scroll-hijack-sticky (position:sticky, 100vh) releases -- that's
+     when the wrapper's bottom edge reaches the viewport's bottom edge. */
   (function stampFooterStop() {
     var stamp = document.querySelector('.stamp');
     var target = document.querySelector('.scroll-hijack');
@@ -17,9 +23,9 @@
       ticking = false;
       var stampH = stamp.getBoundingClientRect().height;
       var pinnedTop = window.innerHeight * 0.607; // matches .stamp's CSS top:60.7%
-      var targetBottom = target.getBoundingClientRect().bottom;
-      var shouldRest = targetBottom <= pinnedTop + stampH + GAP;
-      var restTop = target.offsetTop + target.offsetHeight - stampH - GAP;
+      var releaseY = target.offsetTop + target.offsetHeight - window.innerHeight;
+      var restTop = releaseY + pinnedTop - GAP;
+      var shouldRest = window.scrollY >= releaseY - GAP;
       if (shouldRest && !resting) {
         resting = true;
         stamp.style.position = 'absolute';
@@ -29,8 +35,6 @@
         stamp.style.position = '';
         stamp.style.top = '';
       } else if (shouldRest) {
-        // section height can change (e.g. viewport resize) -- keep it
-        // pinned right at the current bottom edge of the carousel section
         stamp.style.top = restTop + 'px';
       }
     }
@@ -52,11 +56,12 @@
      (whatever's behind the header at that point) -- no fade, no video. */
   (function header() {
     var MULTIPLY_START = 80, MULTIPLY_END = 420;
-    var JOIN_AT = MULTIPLY_END, COLLAPSE_AT = JOIN_AT + 200;
+    var JOIN_AT = MULTIPLY_END;
     var PIN_TOP = 131; // Figma 218:69 -- nav's y once docked under the 1-row header
     var GAP = 12;
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
+    var heroEl = document.getElementById('hero');
     var rows2 = document.querySelectorAll('.wm-row-2');
     var rows3 = document.querySelectorAll('.wm-row-3');
     if (!header || !nav) return;
@@ -67,6 +72,13 @@
       ticking = false;
       var y = window.scrollY;
       var mobile = window.innerWidth <= 900;
+      // collapse only once the hero has actually scrolled out from under the
+      // header -- tying it to a fixed px guess made it hard-cut to solid
+      // while still deep in the (transparent-over-video) hero, which read as
+      // "still translucent." This also matches "grabs the image behind it":
+      // the very next thing behind the header once the hero clears is the
+      // first carousel row (Bluff Stools).
+      var COLLAPSE_AT = heroEl ? Math.max(heroEl.offsetHeight - 40, JOIN_AT + 40) : JOIN_AT + 400;
 
       var mt = clamp((y - MULTIPLY_START) / (MULTIPLY_END - MULTIPLY_START));
       var collapsed = y >= COLLAPSE_AT;

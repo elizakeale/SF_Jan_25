@@ -7,6 +7,7 @@
    ============================================================ */
 :root{
   --orange: #ffa000;
+  --orange-light: #ffc159; /* derived tint of --orange (mix ~35% white) -- no Figma token for this exists, flag if it's not the shade meant */
   --cream: #ffe7be;
   --ink: #1c1123;
   --white: #ffffff;
@@ -274,7 +275,8 @@ img, video{ max-width:100%; display:block; }
   font-family: var(--font-body); font-weight:200; font-size: 25px;
   letter-spacing:.04em; text-transform:uppercase; gap: var(--sp-8);
 }
-.catalogue-band:hover{ text-decoration: underline; }
+.catalogue-band img{ width:16px; height:16px; }
+.catalogue-band:hover{ color: var(--orange-light); } /* text only -- precisely re-tinting the SVG icon itself via CSS filter isn't reliable, not worth the fragility for a minor icon nuance */
 
 /* ---------- feature product block ---------- */
 .feature-product{ position:relative; background: var(--orange); }
@@ -282,8 +284,9 @@ img, video{ max-width:100%; display:block; }
 .feature-arrow{
   position:absolute; left:94.9%; top:92.8%; width:3.6%; aspect-ratio:1;
   display:flex; align-items:center; justify-content:center;
-  color:#fff; font-size:28px; line-height:1; text-decoration:none;
+  text-decoration:none;
 }
+.feature-arrow img{ width:60%; height:60%; }
 
 /* ---------- footer ----------
    Per Figma (get_design_context, node 175:1004, footer region): the
@@ -336,17 +339,23 @@ img, video{ max-width:100%; display:block; }
 .newsletter input::placeholder{ color: var(--ink); opacity:.7; }
 .newsletter button{
   position:absolute; right: var(--sp-8); top:50%; transform:translateY(-50%);
-  border:0; background:none; color: var(--ink);
-  font-family: var(--font-body); font-weight:200; font-size:13px;
-  letter-spacing:.04em; text-transform:uppercase;
-  line-height:1; cursor:pointer; padding: var(--sp-4);
+  border:0; background:none; cursor:pointer; padding: var(--sp-4);
+  display:flex; align-items:center; justify-content:center;
 }
+.newsletter button img{ width:14px; height:14px; transition: opacity .15s ease; }
+.newsletter button:hover img{ opacity:.6; }
+/* Figma (404:401, "Rectangle 9"): a solid white box under the download
+   text (404:410, fill #ffa000) -- a filled button, not an underlined
+   link. Sized to match the email input above it. */
 .newsletter .accent{
-  display:inline-flex; align-items:center; gap:var(--sp-8); text-decoration:none; color: var(--white);
+  display:flex; align-items:center; justify-content:center; gap:var(--sp-8);
+  text-decoration:none; background: var(--white); color: var(--orange);
   font-family: var(--font-body); font-weight:200; font-size:14px;
   letter-spacing:.02em; text-transform:uppercase;
-  border-bottom:1px solid var(--white); padding-bottom: var(--sp-4);
+  padding: var(--sp-12); text-align:center;
+  transition: background .18s ease, color .18s ease;
 }
+.newsletter .accent:hover{ background: var(--orange-light); color: var(--white); }
 .newsletter .accent img{ width:12px; height:12px; }
 
 @media (max-width: 900px){
