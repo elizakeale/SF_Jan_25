@@ -61,33 +61,32 @@ img, video{ max-width:100%; display:block; }
 }
 .btn-cta:hover{ background: var(--white); color: var(--orange); }
 
-/* ---------- wordmark header: hero overlay -> collapsed nav bar ----------
+/* ---------- wordmark header: hero overlay -> multiply -> collapsed nav bar
    Per Figma's 3 reference states (HOMEPAGE / HOMEPAGE - Scroll / HOMEPAGE -
-   Nav Bar Collapse, nodes 175:1004 / 321:517 / 218:69): at rest the header
+   Nav Bar Collapse, nodes 175:1004 / 321:517 / 218:69) plus Eliza's verbal
+   spec (2026-09-14, Figma has no animation of its own): at rest the header
    is just STUDIO/FRITZ + the logomark sitting transparently over the hero
-   photo. Once scrolled past the hero, it becomes a fixed 197px bar (Figma's
-   own height) cropped from the top of the same hero photo, with the
-   darkening gradient carried over, a solid orange bottom edge, and the
-   6-item nav (identical column layout to .hero-links, just moved up to
-   sit right under the wordmark) fading in. Height stays constant the whole
-   time -- only the background/border/nav opacity animate via --hdr-bg-a
-   and --nav-a (set in js/main.js), so there's no layout jump. (2026-09-14:
-   replaces the earlier "multiply into 3 stacked rows" attempt, which
-   Eliza flagged as feeling wrong and asked to be redone against the real
-   Nav Bar Collapse frame instead.) */
+   photo. As the user scrolls: (1) the wordmark multiplies -- rows 2 then 3
+   reveal via a max-height wipe, never an opacity fade, always fully solid;
+   (2) the SAME #heroNav (the one real 6-link nav, normally sitting under
+   the two hero paragraphs) rises to dock just under the wordmark -- there
+   is only ever one nav in the DOM, it transitions INTO the header rather
+   than a second copy fading in beside it; (3) once it's docked, the header
+   hard-cuts to its collapsed state: rows fold back to one line, a solid
+   (non-video) crop of the Bluff Stools carousel photo fills the bar (the
+   header "grabs" the image that happens to be sitting behind it at that
+   scroll point) plus its orange bottom edge. Background and row state
+   switch as a hard cut, never a gradual fade -- see js/main.js. */
 .wordmark-header{
-  position: fixed; top:0; left:0; right:0; z-index:50; height:197px; overflow:hidden;
+  position: fixed; top:0; left:0; right:0; z-index:50;
   display:flex; align-items:flex-start; justify-content:space-between;
   padding: var(--sp-8) var(--edge);
   border-bottom: 2px solid rgba(255,160,0, var(--hdr-bg-a, 0));
 }
 .wordmark-header::before{
   content:''; position:absolute; inset:0; z-index:-1;
-  background:
-    linear-gradient(0deg, rgba(20,10,25,.65) 0%, rgba(20,10,25,.3) 60%, rgba(20,10,25,.55) 100%),
-    url('images/home/hero-poster.webp') top center / cover no-repeat;
-  opacity: var(--hdr-bg-a, 0);
-  transition: opacity .2s linear;
+  background: url('images/home/bluff-table.webp') center 30% / cover no-repeat;
+  opacity: var(--hdr-bg-a, 0); /* hard cut, no transition -- solid, not translucent */
 }
 .wm-col{ display:flex; flex-direction:column; line-height:.9; position:relative; }
 .wm-col span{
@@ -98,35 +97,48 @@ img, video{ max-width:100%; display:block; }
 .wm-left span{ color: var(--cream); }
 .wm-right{ align-items:flex-end; text-align:right; }
 .wm-right span{ color: var(--orange); letter-spacing:.175em; } /* solid fill only — no stroke, per Figma (neither STUDIO nor FRITZ ever has one) */
+/* multiply rows: revealed by wiping max-height open (in normal flow, so the
+   header naturally grows/shrinks), never by fading opacity -- always fully
+   solid the instant they're visible, per Eliza's "shouldn't be faded" note. */
+.wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height .35s ease; }
+.wm-row-2.is-on, .wm-row-3.is-on{ max-height:140px; }
 
-/* small orange logomark badge, centered between STUDIO and FRITZ (per Figma) */
+/* small orange logomark badge -- fixed px, not 50%, so it always sits
+   centered on the single STUDIO/FRITZ line (y=40-123 in Figma, center
+   81.5px) no matter how tall the header currently is during multiply. */
 .wm-mark{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  position:absolute; left:50%; top:81.5px; transform:translate(-50%,-50%);
   width:83px; z-index:1; pointer-events:none;
 }
 .wm-mark img{ width:100%; display:block; }
 
-/* collapsed nav: reuses .hero-links' own column positioning (same x-layout
-   in Figma, just pulled up to y131/157 instead of y652/678) -- only the
-   vertical placement + fade-in are overridden here. */
-.wordmark-header .hdr-nav{
-  position:absolute; left:43.4%; right:var(--edge); top:131px; height:3.2em; margin-top:0;
-  opacity: var(--nav-a, 0); transition: opacity .2s linear;
-  pointer-events:none;
+/* #heroNav docked-under-header state: js/main.js captures the nav's
+   current on-screen `top` right before switching it to fixed (so there's
+   no jump), then sets `top` to its real target -- the CSS transition above
+   animates between the two. Target is the live header's bottom edge while
+   still tripled, then Figma's exact 131px (Nav Bar Collapse, 218:69) once
+   collapsed. left/right match .hero-content's own box so the nav's column
+   x-positions land identically whether pinned or not. */
+#heroNav.is-pinned{
+  position:fixed; left:43.4%; right:var(--edge); margin-top:0; height:3.2em; z-index:55;
+  transition: top .35s ease; /* matches .wm-row-2/3's .35s so the header's
+    row-collapse and the nav's final dock into 131px happen in lockstep */
 }
-.wordmark-header .hdr-nav a{ color: var(--white); }
-@media (max-width: 900px){ .hdr-nav{ display:none; } }
-.wordmark-header.is-collapsed .hdr-nav{ pointer-events:auto; }
+@media (max-width: 900px){ #heroNav.is-pinned{ position:static; left:auto; right:auto; top:auto !important; } }
 
 /* ---------- hand-drawn stamp accent (loose/imperfect by design, intentional) ----------
    Static/pinned by default (stays put while the page scrolls beneath it) — see the
    Stamp behavior rule in the project plan. Only About and Mobile Hamburger deviate. */
 .stamp{
   position: fixed; left: var(--edge); top:60.7%; z-index:55;
-  width:190px; aspect-ratio: 95 / 165; opacity:1;
+  width:142px; /* scaled down 25% from 190px per Eliza's 2026-09-14 note */
+  opacity:1;
   pointer-events:none;
 }
-.stamp img{ width:100%; height:100%; object-fit:contain; }
+.stamp img{ width:100%; height:auto; display:block; } /* height:auto -- the
+  new cropped stamp SVGs (Google Drive Assets/Stamps) aren't the same ratio
+  to each other, so no shared aspect-ratio override; each sizes off its own
+  intrinsic viewBox. */
 
 /* ---------- hero ---------- */
 .hero{ position:relative; min-height:100vh; background: var(--ink); overflow:hidden; }
@@ -138,11 +150,15 @@ img, video{ max-width:100%; display:block; }
   background: linear-gradient(0deg, rgba(20,10,25,.75) 0%, rgba(20,10,25,.05) 45%, transparent 65%);
 }
 .hero-content{
+  /* --para-gap lives here (not on .hero-intro) so its sibling .hero-links
+     can read the same value for its column-2 anchor -- custom properties
+     only cascade to descendants, and hero-intro/hero-links are siblings. */
+  --para-gap: 9.396%; /* Figma: 73px gap / 777px hero-content width, node 175:1004 */
   position:absolute; z-index:2;
   left: 43.4%; right: var(--edge); top: 60.1%;
 }
 .hero-intro{
-  display:grid; gap: var(--sp-24);
+  display:grid; gap: var(--para-gap);
   grid-template-columns: 1fr 1fr;
 }
 .hero-intro p{
@@ -165,10 +181,10 @@ img, video{ max-width:100%; display:block; }
   letter-spacing:.04em; text-transform:uppercase; text-decoration:none; color: var(--white);
 }
 .hero-links a:nth-child(1){ top:0; left:0; text-align:left; }
-.hero-links a:nth-child(2){ top:0; right:54.8%; text-align:right; }
+.hero-links a:nth-child(2){ top:0; right: calc(50% + var(--para-gap) / 2); text-align:right; }
 .hero-links a:nth-child(3){ top:0; right:0; text-align:right; }
 .hero-links a:nth-child(4){ top:1.75em; left:0; text-align:left; }
-.hero-links a:nth-child(5){ top:1.75em; right:54.8%; text-align:right; }
+.hero-links a:nth-child(5){ top:1.75em; right: calc(50% + var(--para-gap) / 2); text-align:right; }
 .hero-links a:nth-child(6){ top:1.75em; right:0; text-align:right; }
 .hero-links a:hover{ color: var(--orange); }
 
@@ -184,6 +200,8 @@ img, video{ max-width:100%; display:block; }
   transition: background .18s ease, color .18s ease;
 }
 .btn-outline:hover{ background: var(--white); color: var(--ink); }
+.btn-outline img{ width:12px; height:12px; }
+.btn-outline:hover img{ filter: invert(1); } /* white arrow -> dark on hover's white fill */
 .hero-catalogue-link{
   position:absolute; z-index:2; left: var(--edge); bottom: var(--sp-40);
 }
@@ -276,7 +294,7 @@ img, video{ max-width:100%; display:block; }
    ~21% (Trade/About/Contact), ~47% (FAQ/Warranty/Press/IG), ~74%
    (newsletter) — reproduced here as absolutely positioned columns rather
    than a generic wrapping flex row, so the alignment matches exactly. */
-.site-footer{ background: var(--orange); color: var(--white); padding: var(--section-gap) var(--edge) var(--sp-32); }
+.site-footer{ background: var(--orange); color: var(--white); padding: var(--sp-24) var(--edge) var(--sp-32); } /* top padding cut from --section-gap (80px) -- Figma (175:1004) shows the footer wordmark starting essentially flush against the last carousel row, not a big blank orange gap */
 .footer-top{ display:flex; flex-direction:column; gap: var(--sp-64); padding-bottom: var(--section-gap); }
 .footer-wm{ position:relative; display:flex; justify-content:space-between; align-items:flex-start; }
 .footer-wm-mark{
@@ -319,14 +337,17 @@ img, video{ max-width:100%; display:block; }
 .newsletter button{
   position:absolute; right: var(--sp-8); top:50%; transform:translateY(-50%);
   border:0; background:none; color: var(--ink);
-  font-size:18px; line-height:1; cursor:pointer; padding: var(--sp-4);
+  font-family: var(--font-body); font-weight:200; font-size:13px;
+  letter-spacing:.04em; text-transform:uppercase;
+  line-height:1; cursor:pointer; padding: var(--sp-4);
 }
 .newsletter .accent{
-  display:inline-block; text-decoration:none; color: var(--white);
+  display:inline-flex; align-items:center; gap:var(--sp-8); text-decoration:none; color: var(--white);
   font-family: var(--font-body); font-weight:200; font-size:14px;
   letter-spacing:.02em; text-transform:uppercase;
   border-bottom:1px solid var(--white); padding-bottom: var(--sp-4);
 }
+.newsletter .accent img{ width:12px; height:12px; }
 
 @media (max-width: 900px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }

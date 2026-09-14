@@ -3,13 +3,13 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function clamp(v, a, b) { a = a || 0; b = b === undefined ? 1 : b; return Math.max(a, Math.min(b, v)); }
 
-  /* ---------------- stamp: pinned, but rests above the footer instead of
-     overflowing onto it ---------------- */
+  /* ---------------- stamp: pinned, but rests over the last carousel
+     instead of floating down into the footer ---------------- */
   (function stampFooterStop() {
     var stamp = document.querySelector('.stamp');
-    var footer = document.querySelector('.site-footer');
-    if (!stamp || !footer) return;
-    var GAP = 40; // matches --sp-40, the section-gap rhythm used elsewhere
+    var target = document.querySelector('.scroll-hijack');
+    if (!stamp || !target) return;
+    var GAP = 24;
     var resting = false;
     var ticking = false;
 
@@ -17,20 +17,21 @@
       ticking = false;
       var stampH = stamp.getBoundingClientRect().height;
       var pinnedTop = window.innerHeight * 0.607; // matches .stamp's CSS top:60.7%
-      var footerTop = footer.getBoundingClientRect().top;
-      var shouldRest = footerTop <= pinnedTop + stampH + GAP;
+      var targetBottom = target.getBoundingClientRect().bottom;
+      var shouldRest = targetBottom <= pinnedTop + stampH + GAP;
+      var restTop = target.offsetTop + target.offsetHeight - stampH - GAP;
       if (shouldRest && !resting) {
         resting = true;
         stamp.style.position = 'absolute';
-        stamp.style.top = (footer.offsetTop - stampH - GAP) + 'px';
+        stamp.style.top = restTop + 'px';
       } else if (!shouldRest && resting) {
         resting = false;
         stamp.style.position = '';
         stamp.style.top = '';
       } else if (shouldRest) {
-        // footer height can change (e.g. viewport resize) -- keep it pinned
-        // right above the footer's current position
-        stamp.style.top = (footer.offsetTop - stampH - GAP) + 'px';
+        // section height can change (e.g. viewport resize) -- keep it
+        // pinned right at the current bottom edge of the carousel section
+        stamp.style.top = restTop + 'px';
       }
     }
     function onScroll() { if (!ticking) { requestAnimationFrame(render); ticking = true; } }
@@ -39,30 +40,71 @@
     render();
   })();
 
-  /* ---------------- header: hero overlay -> collapsed nav bar ----------------
-     Rebuilt 2026-09-14 against the real "Homepage - Nav Bar Collapse" Figma
-     frame (218:69): as the hero scrolls out of view the header settles into
-     a fixed 197px bar cropped from the hero photo with a solid orange
-     bottom edge, and the 6-item nav (same columns as .hero-links, just
-     pulled up under the wordmark) fades in. Replaces the earlier
-     triple-stack "multiply" effect, which Eliza flagged as feeling wrong. */
+  /* ---------------- header: multiply -> nav joins -> collapse ----------------
+     Corrected 2026-09-14 per Eliza's walkthrough of "Homepage - Scroll"
+     (321:517) and "Homepage - Nav Bar Collapse" (218:69): the wordmark
+     multiplies to 3 solid rows, then the SAME #heroNav (normally sitting
+     under the two hero paragraphs -- there is only ever one nav, it is
+     never duplicated) rises to dock just under it, and only once it has
+     docked does the header hard-cut into its final collapsed state: rows
+     fold back to one line, nav settles at Figma's exact y (131px), and the
+     background swaps to a solid crop of the Bluff Stools carousel photo
+     (whatever's behind the header at that point) -- no fade, no video. */
   (function header() {
-    var COLLAPSE_START = 150, COLLAPSE_END = 480;
+    var MULTIPLY_START = 80, MULTIPLY_END = 420;
+    var JOIN_AT = MULTIPLY_END, COLLAPSE_AT = JOIN_AT + 200;
+    var PIN_TOP = 131; // Figma 218:69 -- nav's y once docked under the 1-row header
+    var GAP = 12;
     var header = document.getElementById('wmHeader');
-    if (!header) return;
+    var nav = document.getElementById('heroNav');
+    var rows2 = document.querySelectorAll('.wm-row-2');
+    var rows3 = document.querySelectorAll('.wm-row-3');
+    if (!header || !nav) return;
     var ticking = false;
+    var pinned = false;
 
     function render() {
       ticking = false;
       var y = window.scrollY;
-      var t = clamp((y - COLLAPSE_START) / (COLLAPSE_END - COLLAPSE_START));
-      header.style.setProperty('--hdr-bg-a', t);
-      header.style.setProperty('--nav-a', t);
-      header.classList.toggle('is-collapsed', t > 0.6);
+      var mobile = window.innerWidth <= 900;
+
+      var mt = clamp((y - MULTIPLY_START) / (MULTIPLY_END - MULTIPLY_START));
+      var collapsed = y >= COLLAPSE_AT;
+      var row2On = !collapsed && mt > 0.02;
+      var row3On = !collapsed && mt > 0.52;
+      rows2.forEach(function (el) { el.classList.toggle('is-on', row2On); });
+      rows3.forEach(function (el) { el.classList.toggle('is-on', row3On); });
+
+      header.classList.toggle('is-collapsed', collapsed);
+      header.style.setProperty('--hdr-bg-a', collapsed ? 1 : 0);
+
+      if (mobile) {
+        if (pinned) { nav.classList.remove('is-pinned'); nav.style.top = ''; pinned = false; }
+        return;
+      }
+
+      if (y >= JOIN_AT) {
+        if (!pinned) {
+          // capture the nav's current on-screen position *before* switching
+          // it to fixed, then force a reflow, so the CSS transition below
+          // has a real "from" value instead of jumping straight to target
+          var startTop = nav.getBoundingClientRect().top;
+          nav.style.top = startTop + 'px';
+          nav.classList.add('is-pinned');
+          void nav.offsetHeight;
+          pinned = true;
+        }
+        nav.style.top = (collapsed ? PIN_TOP : (header.getBoundingClientRect().bottom + GAP)) + 'px';
+      } else if (pinned) {
+        nav.classList.remove('is-pinned');
+        nav.style.top = '';
+        pinned = false;
+      }
     }
     function onScroll() { if (!ticking) { requestAnimationFrame(render); ticking = true; } }
-    if (reduce) header.style.transition = 'none';
+    if (reduce) { header.style.transition = 'none'; nav.style.transition = 'none'; }
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
     render();
   })();
 
