@@ -94,7 +94,7 @@ img, video{ max-width:100%; display:block; }
 .wm-nav a:hover{ text-decoration: underline; }
 @media (max-width: 759px){ .wm-nav{ display:none; } }
 
-/* ---------- hand-drawn stamp accent (loose/imperfect by design; placeholder until Eliza provides the real asset) ---------- */
+/* ---------- hand-drawn stamp accent (loose/imperfect by design, intentional) ---------- */
 .stamp{
   position: fixed; left: var(--edge); top:46%; z-index:55;
   width:64px; height:64px; opacity: var(--stamp-a, 0);
