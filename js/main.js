@@ -46,27 +46,64 @@
 
   /* ---------------- header: multiply -> nav joins -> collapse ----------------
      Corrected 2026-09-14 per Eliza's walkthrough of "Homepage - Scroll"
-     (321:517) and "Homepage - Nav Bar Collapse" (218:69): the wordmark
-     multiplies to 3 solid rows, then the SAME #heroNav (normally sitting
-     under the two hero paragraphs -- there is only ever one nav, it is
-     never duplicated) rises to dock just under it, and only once it has
-     docked does the header hard-cut into its final collapsed state: rows
-     fold back to one line, nav settles at Figma's exact y (131px), and the
+     (321:517) and "Homepage - Nav Bar Collapse" (218:69), then corrected
+     again the same day after "it gets too busy when the multiplied STUDIO
+     FRITZ overlays the paragraphs... i dont want overlapping of text ever":
+     the wordmark multiplies to 3 solid rows ONLY as far as a live
+     collision check against the hero paragraphs allows (never a fixed
+     scroll-pixel guess -- see GAP_MIN below), then the SAME #heroNav
+     (normally sitting under the two hero paragraphs -- there is only ever
+     one nav, it is never duplicated) rises to dock just under it, and only
+     once it has docked does the header hard-cut into its final collapsed
+     state: rows fold back to one line, nav tucks up inside the bar's own
+     bottom edge (part of the bar, not floating below it), and the
      background swaps to a solid crop of the Bluff Stools carousel photo
      (whatever's behind the header at that point) -- no fade, no video. */
   (function header() {
-    var MULTIPLY_START = 80, MULTIPLY_END = 420;
-    var JOIN_AT = MULTIPLY_END;
-    var PIN_TOP = 131; // Figma 218:69 -- nav's y once docked under the 1-row header
-    var GAP = 12;
+    // Row toggling is content-aware, not a tuned pixel constant: Eliza
+    // ("it gets too busy when the multiplied STUDIO FRITZ overlays the
+    // paragraphs... tldr i dont want translucency and overlapping of text
+    // ever") needs this to be a structural guarantee, not a value that
+    // happens to work at one viewport width. So instead of fixed
+    // MULTIPLY_START/END scroll thresholds, each frame tentatively turns a
+    // row on, measures the live gap between the header's bottom edge and
+    // the hero paragraphs' top edge, and only keeps it on if a minimum
+    // clearance survives. MULTIPLY_START still guards the very top of the
+    // page (there's always technically "room" to triple at scrollY 0, but
+    // it should still read as a progressive reveal, not instant).
+    var MULTIPLY_START = 80;
+    var GAP_MIN = 24; // required clearance (px) between tripled header and paragraphs
+    var PIN_GAP = 12; // gap under the header while nav is still joining (pre-collapse)
+    var NAV_INSET = 16; // how far the nav tucks up from the collapsed bar's bottom edge
+
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
     var heroEl = document.getElementById('hero');
+    var heroContent = document.querySelector('.hero-content');
     var rows2 = document.querySelectorAll('.wm-row-2');
     var rows3 = document.querySelectorAll('.wm-row-3');
-    if (!header || !nav) return;
+    if (!header || !nav || !heroContent) return;
     var ticking = false;
     var pinned = false;
+    // scrollY at which the wordmark first successfully achieved full-triple
+    // this downward pass -- once set, join is locked on (rows stay tripled)
+    // until scrolling back above it, replacing the old fixed JOIN_AT.
+    var joinAtY = null;
+
+    function setRows(on2, on3) {
+      rows2.forEach(function (el) { el.classList.toggle('is-on', on2); });
+      rows3.forEach(function (el) { el.classList.toggle('is-on', on3); });
+    }
+    // Tentatively flips the rows, measures, and reports whether the gap
+    // still holds. Safe to call more than once per frame: only the LAST
+    // class state set before the browser paints ever becomes visible, and
+    // this all runs synchronously within one rAF callback.
+    function wouldFit(on2, on3) {
+      setRows(on2, on3);
+      var headerBottom = header.getBoundingClientRect().bottom;
+      var contentTop = heroContent.getBoundingClientRect().top;
+      return (contentTop - headerBottom) >= GAP_MIN;
+    }
 
     function render() {
       ticking = false;
@@ -78,24 +115,37 @@
       // "still translucent." This also matches "grabs the image behind it":
       // the very next thing behind the header once the hero clears is the
       // first carousel row (Bluff Stools).
-      var COLLAPSE_AT = heroEl ? Math.max(heroEl.offsetHeight - 40, JOIN_AT + 40) : JOIN_AT + 400;
-
-      var mt = clamp((y - MULTIPLY_START) / (MULTIPLY_END - MULTIPLY_START));
+      var COLLAPSE_AT = heroEl ? Math.max(heroEl.offsetHeight - 40, 200) : 800;
       var collapsed = y >= COLLAPSE_AT;
-      var row2On = !collapsed && mt > 0.02;
-      var row3On = !collapsed && mt > 0.52;
-      rows2.forEach(function (el) { el.classList.toggle('is-on', row2On); });
-      rows3.forEach(function (el) { el.classList.toggle('is-on', row3On); });
+
+      var row2On, row3On;
+      if (collapsed) {
+        row2On = false; row3On = false;
+      } else if (joinAtY !== null && y >= joinAtY) {
+        // already achieved full-triple on the way down -- hold it tripled
+        // (this is the "meets the nav bar items" join phase) rather than
+        // re-running the gate every frame, which would flicker the rows
+        // back off the instant the shrinking gap dipped under GAP_MIN.
+        row2On = true; row3On = true;
+      } else {
+        joinAtY = null;
+        row2On = y > MULTIPLY_START ? wouldFit(true, false) : false;
+        row3On = row2On && wouldFit(true, true);
+        if (row3On) joinAtY = y;
+      }
+      setRows(row2On, row3On);
 
       header.classList.toggle('is-collapsed', collapsed);
+      nav.classList.toggle('is-collapsed-nav', collapsed);
       header.style.setProperty('--hdr-bg-a', collapsed ? 1 : 0);
 
       if (mobile) {
-        if (pinned) { nav.classList.remove('is-pinned'); nav.style.top = ''; pinned = false; }
+        if (pinned) { nav.classList.remove('is-pinned'); nav.classList.remove('is-collapsed-nav'); nav.style.top = ''; pinned = false; }
         return;
       }
 
-      if (y >= JOIN_AT) {
+      var shouldJoin = collapsed || joinAtY !== null;
+      if (shouldJoin) {
         if (!pinned) {
           // capture the nav's current on-screen position *before* switching
           // it to fixed, then force a reflow, so the CSS transition below
@@ -106,17 +156,27 @@
           void nav.offsetHeight;
           pinned = true;
         }
-        nav.style.top = (collapsed ? PIN_TOP : (header.getBoundingClientRect().bottom + GAP)) + 'px';
+        var headerBottom = header.getBoundingClientRect().bottom;
+        // pre-collapse: dock just under the (still tripled) header. Once
+        // collapsed: tuck up INSIDE the bar's own bottom edge -- the bar's
+        // padding-bottom (see .wordmark-header.is-collapsed in style.css)
+        // is exactly what reserves the room for this, so the nav is
+        // genuinely part of the bar rather than floating below it.
+        nav.style.top = (collapsed
+          ? headerBottom - nav.offsetHeight - NAV_INSET
+          : headerBottom + PIN_GAP) + 'px';
       } else if (pinned) {
         nav.classList.remove('is-pinned');
+        nav.classList.remove('is-collapsed-nav');
         nav.style.top = '';
         pinned = false;
       }
     }
     function onScroll() { if (!ticking) { requestAnimationFrame(render); ticking = true; } }
+    function onResize() { joinAtY = null; onScroll(); }
     if (reduce) { header.style.transition = 'none'; nav.style.transition = 'none'; }
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onResize);
     render();
   })();
 

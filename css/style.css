@@ -54,7 +54,7 @@ img, video{ max-width:100%; display:block; }
 .btn-cta{
   display:inline-flex; align-items:center; gap:var(--sp-8);
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-cta);
-  letter-spacing:.04em; text-transform:uppercase; text-decoration:none;
+  letter-spacing:.05em; text-transform:uppercase; text-decoration:none;
   background: var(--orange); color: var(--white);
   border: 1px solid var(--white);
   padding: var(--sp-12) var(--sp-16);
@@ -76,13 +76,30 @@ img, video{ max-width:100%; display:block; }
    hard-cuts to its collapsed state: rows fold back to one line, a solid
    (non-video) crop of the Bluff Stools carousel photo fills the bar (the
    header "grabs" the image that happens to be sitting behind it at that
-   scroll point) plus its orange bottom edge. Background and row state
-   switch as a hard cut, never a gradual fade -- see js/main.js. */
+   scroll point), and #heroNav tucks up inside the bar's own bottom edge.
+   Background and row state switch as a hard cut, never a gradual fade --
+   see js/main.js. */
 .wordmark-header{
   position: fixed; top:0; left:0; right:0; z-index:50;
   display:flex; align-items:flex-start; justify-content:space-between;
   padding: var(--sp-8) var(--edge);
-  border-bottom: 2px solid rgba(255,160,0, var(--hdr-bg-a, 0));
+  /* NOTE: this used to carry a 2px solid rgba(255,160,0,var(--hdr-bg-a)) border-bottom
+     -- once the header hard-cut to solid, that rendered as a full-width solid
+     orange stripe under the bar (Eliza: "horizontal orange line, where is
+     that coming from?"). Not in Figma (218:69's own boundary line, node
+     218:135, is a hairline, not a 2px orange rule) -- removed outright. */
+}
+/* Collapsed state reserves room below the single wordmark line for #heroNav
+   to dock INSIDE the bar (see #heroNav.is-pinned.is-collapsed-nav below) --
+   Figma 218:69: header bg is 197px tall at the 1440px reference width, of
+   which the wordmark line's own box only accounts for ~139px (8px top pad +
+   131px line), leaving ~58px for the two nav rows + bottom pad. Without
+   this, the header's own solid background box ends right under the
+   wordmark and the docked nav renders past its bottom edge, in the dead
+   zone where the old orange line used to be -- i.e. NOT "part of the nav
+   bar" per Eliza's note. */
+.wordmark-header.is-collapsed{
+  padding-bottom: clamp(48px, 6.8vw, 98px);
 }
 .wordmark-header::before{
   content:''; position:absolute; inset:0; z-index:-1;
@@ -116,15 +133,27 @@ img, video{ max-width:100%; display:block; }
 /* #heroNav docked-under-header state: js/main.js captures the nav's
    current on-screen `top` right before switching it to fixed (so there's
    no jump), then sets `top` to its real target -- the CSS transition above
-   animates between the two. Target is the live header's bottom edge while
-   still tripled, then Figma's exact 131px (Nav Bar Collapse, 218:69) once
-   collapsed. left/right match .hero-content's own box so the nav's column
-   x-positions land identically whether pinned or not. */
+   animates between the two. While still tripled/joining, target is the
+   live header's bottom edge + a small gap (nav sits just under the bar);
+   once collapsed, target is computed from the header's own bottom edge
+   MINUS the nav's height (nav tucks up INSIDE the solid bar instead of
+   floating below it -- see .wordmark-header.is-collapsed's padding-bottom
+   above, which is what makes room for it). left/right match .hero-content's
+   own box so the nav's column x-positions land identically whether pinned
+   or not -- Figma 218:69's nav columns sit at 43.4%/60.8%/~edge-from-right,
+   the same 43.4% .hero-content already uses. */
 #heroNav.is-pinned{
   position:fixed; left:43.4%; right:var(--edge); margin-top:0; height:3.2em; z-index:55;
   transition: top .35s ease; /* matches .wm-row-2/3's .35s so the header's
-    row-collapse and the nav's final dock into 131px happen in lockstep */
+    row-collapse and the nav's final dock happen in lockstep */
 }
+/* Once tucked inside the collapsed bar the nav reads at Figma's much
+   smaller scale (218:69: each link's box is ~28px tall at 1440px ref width,
+   vs. the hero's own --fs-body) -- shrink font-size only in this state; the
+   row-to-row em-based top offsets in .hero-links a:nth-child(4/5/6) scale
+   down automatically with it. */
+#heroNav.is-pinned.is-collapsed-nav{ height:2.1em; }
+#heroNav.is-pinned.is-collapsed-nav a{ font-size:11px; }
 @media (max-width: 900px){ #heroNav.is-pinned{ position:static; left:auto; right:auto; top:auto !important; } }
 
 /* ---------- hand-drawn stamp accent (loose/imperfect by design, intentional) ----------
@@ -164,7 +193,7 @@ img, video{ max-width:100%; display:block; }
 }
 .hero-intro p{
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
-  line-height:1.7; letter-spacing:.03em; text-transform:uppercase; text-align:justify;
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; text-align:justify;
   color: var(--white); margin:0;
 }
 /* 6 separate, equal-hierarchy page links (2 rows x 3 cols) — every link is
@@ -179,7 +208,7 @@ img, video{ max-width:100%; display:block; }
 .hero-links a{
   position:absolute;
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
-  letter-spacing:.04em; text-transform:uppercase; text-decoration:none; color: var(--white);
+  letter-spacing:.05em; text-transform:uppercase; text-decoration:none; color: var(--white);
 }
 .hero-links a:nth-child(1){ top:0; left:0; text-align:left; }
 .hero-links a:nth-child(2){ top:0; right: calc(50% + var(--para-gap) / 2); text-align:right; }
@@ -194,7 +223,7 @@ img, video{ max-width:100%; display:block; }
 .btn-outline{
   display:inline-flex; align-items:center; gap:var(--sp-8);
   font-family: var(--font-body); font-weight:200; font-size:14px;
-  letter-spacing:.04em; text-transform:uppercase; text-decoration:none;
+  letter-spacing:.05em; text-transform:uppercase; text-decoration:none;
   background:transparent; color: var(--white);
   border: 1px solid var(--white);
   padding: var(--sp-8) var(--sp-16);
@@ -255,7 +284,7 @@ img, video{ max-width:100%; display:block; }
   background: transparent; color:#fff;
   padding: 0 var(--sp-16) var(--sp-8);
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
-  letter-spacing:.03em; text-transform:uppercase; white-space:nowrap;
+  letter-spacing:.05em; text-transform:uppercase; white-space:nowrap;
   pointer-events:none;
 }
 
@@ -273,7 +302,7 @@ img, video{ max-width:100%; display:block; }
   background: transparent; color: var(--white); text-decoration:none;
   padding: var(--sp-8) var(--edge) var(--sp-16);
   font-family: var(--font-body); font-weight:200; font-size: 25px;
-  letter-spacing:.04em; text-transform:uppercase; gap: var(--sp-8);
+  letter-spacing:.05em; text-transform:uppercase; gap: var(--sp-8);
 }
 .catalogue-band img{ width:16px; height:16px; }
 .catalogue-band:hover{ color: var(--orange-light); } /* text only -- precisely re-tinting the SVG icon itself via CSS filter isn't reliable, not worth the fragility for a minor icon nuance */
@@ -319,16 +348,24 @@ img, video{ max-width:100%; display:block; }
 .footer-col.footer-col-wide{ left:47%; max-width:220px; }
 .footer-col a{
   text-decoration:none; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
-  letter-spacing:.02em; text-transform:uppercase; color: var(--white); white-space:nowrap;
+  letter-spacing:.05em; text-transform:uppercase; color: var(--white); white-space:nowrap;
 }
 .footer-col.footer-col-wide a{ font-size:14px; white-space:normal; }
 .footer-col a:hover{ text-decoration:underline; }
+
+/* copyright/location -- Figma node 442:1989 (added by Eliza directly to the
+   Homepage frame, 175:1004): "this is footer SOT" going forward, so this
+   pulls the exact text/styling from Figma rather than placeholder copy. */
+.footer-copyright{
+  font-family: var(--font-body); font-weight:200; font-size:16px;
+  letter-spacing:.05em; color: var(--white); line-height:1.5; margin:0;
+}
 
 .newsletter{
   position:absolute; top:0; left:74%; width:26%; min-width:14em;
   display:flex; flex-direction:column; gap: var(--sp-12);
 }
-.newsletter label{ font-family: var(--font-body); font-weight:200; font-size: 14px; letter-spacing:.04em; text-transform:uppercase; }
+.newsletter label{ font-family: var(--font-body); font-weight:200; font-size: 14px; letter-spacing:.05em; text-transform:uppercase; }
 .newsletter form{ position:relative; }
 .newsletter input{
   width:100%; border:0; background: var(--cream);
@@ -351,7 +388,7 @@ img, video{ max-width:100%; display:block; }
   display:flex; align-items:center; justify-content:center; gap:var(--sp-8);
   text-decoration:none; background: var(--white); color: var(--orange);
   font-family: var(--font-body); font-weight:200; font-size:14px;
-  letter-spacing:.02em; text-transform:uppercase;
+  letter-spacing:.05em; text-transform:uppercase;
   padding: var(--sp-12); text-align:center;
   transition: background .18s ease, color .18s ease;
 }
