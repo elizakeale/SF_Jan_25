@@ -67,7 +67,7 @@ img, video{ max-width:100%; display:block; }
   display:flex; align-items:flex-start; justify-content:space-between;
   padding: var(--sp-8) var(--edge);
 }
-.wm-col{ display:flex; flex-direction:column; line-height:.9; }
+.wm-col{ display:flex; flex-direction:column; line-height:.9; position:relative; }
 .wm-col span{
   font-family: var(--font-display); font-weight:400;
   font-size: clamp(2rem, 7vw, 6.25rem); /* ~100px at Figma's 1440px reference width */
@@ -76,7 +76,13 @@ img, video{ max-width:100%; display:block; }
 .wm-left span{ color: var(--cream); }
 .wm-right{ align-items:flex-end; text-align:right; }
 .wm-right span{ color: var(--orange); letter-spacing:.175em; } /* solid fill only — no stroke, per Figma (neither STUDIO nor FRITZ ever has one) */
-.wm-row-2, .wm-row-3{ opacity:0; transform: translateY(-10px); }
+/* rows 2/3 are taken out of flow so the header/wm-col stays exactly one
+   line tall at rest (2026-09-14 fix: previously they reserved layout
+   space even at opacity:0, which pushed .wm-mark's 50%-centered position
+   down below the visible STUDIO/FRITZ line instead of level with it) */
+.wm-row-2, .wm-row-3{ opacity:0; transform: translateY(-10px); position:absolute; left:0; right:0; }
+.wm-row-2{ top:100%; }
+.wm-row-3{ top:200%; }
 
 /* small orange logomark badge, centered between STUDIO and FRITZ (per Figma) */
 .wm-mark{
