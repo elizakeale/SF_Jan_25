@@ -87,7 +87,7 @@ img, video{ max-width:100%; display:block; }
 /* small orange logomark badge, centered between STUDIO and FRITZ (per Figma) */
 .wm-mark{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width:56px; z-index:1; pointer-events:none;
+  width:83px; z-index:1; pointer-events:none;
 }
 .wm-mark img{ width:100%; display:block; }
 
@@ -154,12 +154,12 @@ img, video{ max-width:100%; display:block; }
   letter-spacing:.04em; text-transform:uppercase; text-decoration:none; color: var(--white);
 }
 .hero-links a:nth-child(1){ top:0; left:0; text-align:left; }
-.hero-links a:nth-child(2){ top:0; left:32.4%; text-align:left; }
+.hero-links a:nth-child(2){ top:0; right:54.8%; text-align:right; }
 .hero-links a:nth-child(3){ top:0; right:0; text-align:right; }
 .hero-links a:nth-child(4){ top:1.75em; left:0; text-align:left; }
-.hero-links a:nth-child(5){ top:1.75em; left:32.4%; text-align:left; }
+.hero-links a:nth-child(5){ top:1.75em; right:54.8%; text-align:right; }
 .hero-links a:nth-child(6){ top:1.75em; right:0; text-align:right; }
-.hero-links a:hover{ text-decoration:underline; }
+.hero-links a:hover{ color: var(--orange); }
 
 /* download button: thin outline over the hero photo, left edge, near the
    bottom — Figma's version here is bordered/transparent, not solid-filled */
@@ -222,8 +222,8 @@ img, video{ max-width:100%; display:block; }
   pointer-events:none;
 }
 .carousel .tile figcaption{
-  background: var(--ink); color:#fff;
-  padding: var(--sp-12) var(--sp-16);
+  background: transparent; color:#fff;
+  padding: 0 var(--sp-16) var(--sp-8);
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.03em; text-transform:uppercase; white-space:nowrap;
   pointer-events:none;
@@ -233,23 +233,28 @@ img, video{ max-width:100%; display:block; }
 .scroll-hijack{ position:relative; }
 .scroll-hijack-sticky{
   position:sticky; top:0; height:100vh; overflow:hidden;
-  display:flex; flex-direction:column; justify-content:center;
+  display:flex; flex-direction:column; justify-content:flex-start;
 }
 .scroll-hijack .carousel-track{ overflow-x:hidden; } /* position driven by JS, not native scroll */
 
 /* ---------- catalogue CTA band ---------- */
 .catalogue-band{
-  display:flex; align-items:center; justify-content:space-between;
-  background: var(--ink); color: var(--white); text-decoration:none;
-  padding: var(--sp-16) var(--edge);
-  font-family: var(--font-body); font-weight:200; font-size: var(--fs-cta);
+  display:flex; align-items:center; justify-content:flex-end;
+  background: transparent; color: var(--white); text-decoration:none;
+  padding: var(--sp-8) var(--edge) var(--sp-16);
+  font-family: var(--font-body); font-weight:200; font-size: 25px;
   letter-spacing:.04em; text-transform:uppercase; gap: var(--sp-8);
 }
 .catalogue-band:hover{ text-decoration: underline; }
 
 /* ---------- feature product block ---------- */
-.feature-product{ background: var(--orange); }
+.feature-product{ position:relative; background: var(--orange); }
 .feature-product img{ width:100%; display:block; }
+.feature-arrow{
+  position:absolute; left:94.9%; top:92.8%; width:3.6%; aspect-ratio:1;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:28px; line-height:1; text-decoration:none;
+}
 
 /* ---------- footer ----------
    Per Figma (get_design_context, node 175:1004, footer region): the
@@ -262,7 +267,12 @@ img, video{ max-width:100%; display:block; }
    than a generic wrapping flex row, so the alignment matches exactly. */
 .site-footer{ background: var(--orange); color: var(--white); padding: var(--section-gap) var(--edge) var(--sp-32); }
 .footer-top{ display:flex; flex-direction:column; gap: var(--sp-64); padding-bottom: var(--section-gap); }
-.footer-wm{ display:flex; justify-content:space-between; align-items:flex-start; }
+.footer-wm{ position:relative; display:flex; justify-content:space-between; align-items:flex-start; }
+.footer-wm-mark{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:83px; pointer-events:none;
+}
+.footer-wm-mark img{ width:100%; display:block; }
 .footer-wm span{
   font-family: var(--font-display); font-weight:400;
   font-size: clamp(2.5rem,7vw,5rem); display:block; line-height:1;
@@ -289,7 +299,7 @@ img, video{ max-width:100%; display:block; }
 .newsletter label{ font-family: var(--font-body); font-weight:200; font-size: 14px; letter-spacing:.04em; text-transform:uppercase; }
 .newsletter form{ position:relative; }
 .newsletter input{
-  width:100%; border:1px solid var(--ink); background: var(--cream);
+  width:100%; border:0; background: var(--cream);
   padding: var(--sp-12) 40px var(--sp-12) var(--sp-12);
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
   color: var(--ink);
@@ -301,11 +311,11 @@ img, video{ max-width:100%; display:block; }
   font-size:18px; line-height:1; cursor:pointer; padding: var(--sp-4);
 }
 .newsletter .accent{
-  text-decoration:none; color: var(--ink);
+  display:inline-block; text-decoration:none; color: var(--white);
   font-family: var(--font-body); font-weight:200; font-size:14px;
   letter-spacing:.02em; text-transform:uppercase;
+  border-bottom:1px solid var(--white); padding-bottom: var(--sp-4);
 }
-.newsletter .accent:hover{ text-decoration:underline; }
 
 @media (max-width: 900px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }
@@ -313,11 +323,6 @@ img, video{ max-width:100%; display:block; }
   .newsletter{ position:static !important; width:auto; }
 }
 
-.footer-bottom{
-  border-top:1px solid rgba(28,17,35,.3); padding-top: var(--sp-16);
-  display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--sp-16);
-  font-family: var(--font-body); font-weight:200; font-size:13px; letter-spacing:.04em; text-transform:uppercase;
-}
 
 @media (prefers-reduced-motion: reduce){
   *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }

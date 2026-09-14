@@ -3,6 +3,42 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function clamp(v, a, b) { a = a || 0; b = b === undefined ? 1 : b; return Math.max(a, Math.min(b, v)); }
 
+  /* ---------------- stamp: pinned, but rests above the footer instead of
+     overflowing onto it ---------------- */
+  (function stampFooterStop() {
+    var stamp = document.querySelector('.stamp');
+    var footer = document.querySelector('.site-footer');
+    if (!stamp || !footer) return;
+    var GAP = 40; // matches --sp-40, the section-gap rhythm used elsewhere
+    var resting = false;
+    var ticking = false;
+
+    function render() {
+      ticking = false;
+      var stampH = stamp.getBoundingClientRect().height;
+      var pinnedTop = window.innerHeight * 0.607; // matches .stamp's CSS top:60.7%
+      var footerTop = footer.getBoundingClientRect().top;
+      var shouldRest = footerTop <= pinnedTop + stampH + GAP;
+      if (shouldRest && !resting) {
+        resting = true;
+        stamp.style.position = 'absolute';
+        stamp.style.top = (footer.offsetTop - stampH - GAP) + 'px';
+      } else if (!shouldRest && resting) {
+        resting = false;
+        stamp.style.position = '';
+        stamp.style.top = '';
+      } else if (shouldRest) {
+        // footer height can change (e.g. viewport resize) -- keep it pinned
+        // right above the footer's current position
+        stamp.style.top = (footer.offsetTop - stampH - GAP) + 'px';
+      }
+    }
+    function onScroll() { if (!ticking) { requestAnimationFrame(render); ticking = true; } }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    render();
+  })();
+
   /* ---------------- header: hero -> multiply -> collapse ---------------- */
   (function header() {
     var HERO_END = 300, PEAK = 900, COLLAPSE_END = 1300;
