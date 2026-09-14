@@ -107,7 +107,7 @@ img, video{ max-width:100%; display:block; }
 .stamp{
   position: fixed; left: var(--edge); top:60.7%; z-index:55;
   width:190px; aspect-ratio: 95 / 165; opacity:1;
-  transform: rotate(-4deg); pointer-events:none;
+  pointer-events:none;
 }
 .stamp img{ width:100%; height:100%; object-fit:contain; }
 
@@ -169,6 +169,23 @@ img, video{ max-width:100%; display:block; }
 .btn-outline:hover{ background: var(--white); color: var(--ink); }
 .hero-catalogue-link{
   position:absolute; z-index:2; left: var(--edge); bottom: var(--sp-40);
+}
+
+/* scroll cue: thin vertical line, pulses once on load to invite scrolling
+   (Figma node 321:508 -- x:720/1440=50%, y:755/865(hero)=~87.3%, height:88px) */
+.scroll-cue{
+  position:absolute; left:50%; top:87.3%; z-index:2;
+  width:1px; height:88px; background: rgba(255,255,255,.55);
+  transform: translateX(-50%); transform-origin: top center;
+  pointer-events:none; animation: scrollCuePulse 1.8s ease-out .6s 1 both;
+}
+@keyframes scrollCuePulse{
+  0%   { opacity:.55; transform: translateX(-50%) scaleY(1); }
+  40%  { opacity:1;   transform: translateX(-50%) scaleY(1.25); }
+  100% { opacity:.55; transform: translateX(-50%) scaleY(1); }
+}
+@media (max-width: 900px){
+  .scroll-cue{ display:none; }
 }
 .hero-divider{ border:0; border-top:1px solid var(--line); margin:0; position:relative; z-index:2; }
 
