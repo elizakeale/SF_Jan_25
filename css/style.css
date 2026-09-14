@@ -106,7 +106,7 @@ img, video{ max-width:100%; display:block; }
    Stamp behavior rule in the project plan. Only About and Mobile Hamburger deviate. */
 .stamp{
   position: fixed; left: var(--edge); top:60.7%; z-index:55;
-  width:72px; aspect-ratio: 95 / 165; opacity:1;
+  width:190px; aspect-ratio: 95 / 165; opacity:1;
   transform: rotate(-4deg); pointer-events:none;
 }
 .stamp img{ width:100%; height:100%; object-fit:contain; }
@@ -133,23 +133,26 @@ img, video{ max-width:100%; display:block; }
   line-height:1.7; letter-spacing:.03em; text-transform:uppercase; text-align:justify;
   color: var(--white); margin:0;
 }
-/* three columns, individually positioned + aligned to match Figma exactly
-   (col 1 left-aligned flush left; col 2 left-aligned ~32% in; col 3
-   right-aligned flush with the content block's right edge) rather than an
-   evenly-distributed flex row */
+/* 6 separate, equal-hierarchy page links (2 rows x 3 cols) — every link is
+   its own page (Custom/Showroom/About/Catalogue/Trade/Contact), same size,
+   same solid white color. Individually positioned to match Figma's real
+   column layout (col 1 left-aligned flush left; col 2 left-aligned ~32% in;
+   col 3 right-aligned flush with the content block's right edge) rather
+   than an evenly-distributed flex row. */
 .hero-links{
-  position:relative; height:4.6em; margin-top: var(--sp-24);
+  position:relative; height:3.2em; margin-top: var(--sp-24);
 }
 .hero-links a{
-  position:absolute; top:0;
-  display:flex; flex-direction:column; gap: var(--sp-4);
+  position:absolute;
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.04em; text-transform:uppercase; text-decoration:none; color: var(--white);
 }
-.hero-links a:nth-child(1){ left:0; text-align:left; }
-.hero-links a:nth-child(2){ left:32.4%; text-align:left; }
-.hero-links a:nth-child(3){ right:0; text-align:right; }
-.hero-links a span{ opacity:.7; font-size:.9em; }
+.hero-links a:nth-child(1){ top:0; left:0; text-align:left; }
+.hero-links a:nth-child(2){ top:0; left:32.4%; text-align:left; }
+.hero-links a:nth-child(3){ top:0; right:0; text-align:right; }
+.hero-links a:nth-child(4){ top:1.75em; left:0; text-align:left; }
+.hero-links a:nth-child(5){ top:1.75em; left:32.4%; text-align:left; }
+.hero-links a:nth-child(6){ top:1.75em; right:0; text-align:right; }
 .hero-links a:hover{ text-decoration:underline; }
 
 /* download button: thin outline over the hero photo, left edge, near the
@@ -174,32 +177,33 @@ img, video{ max-width:100%; display:block; }
      back to a simple full-width stacked layout */
   .hero-content{ position:relative; left:auto; right:auto; top:auto; padding: calc(var(--sp-80) + 40px) var(--edge) 0; }
   .hero-intro{ grid-template-columns: 1fr; max-width:600px; }
-  .hero-links{ position:static; height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-24); margin-top: var(--sp-16); }
-  .hero-links a{ position:static; flex-direction:row; gap: var(--sp-4); text-align:left; }
+  .hero-links{ position:static; height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-16) var(--sp-24); margin-top: var(--sp-16); }
+  .hero-links a{ position:static !important; text-align:left !important; }
   .hero-catalogue-link{ position:relative; left:auto; bottom:auto; margin: var(--sp-16) var(--edge) var(--sp-24); }
 }
 
 /* ---------- carousels ---------- */
-.carousel{ position:relative; overflow:hidden; background: var(--ink); }
+.carousel{ position:relative; overflow:hidden; background: var(--orange); }
 .carousel-track{
-  display:flex; overflow-x:auto; scrollbar-width:none;
+  display:flex; align-items:flex-start; overflow-x:auto; scrollbar-width:none;
   cursor:grab; -webkit-overflow-scrolling:touch;
 }
 .carousel-track::-webkit-scrollbar{ display:none; }
 .carousel-track.dragging{ cursor:grabbing; scroll-snap-type:none; }
-.carousel .tile{
-  position:relative; flex:0 0 auto; height: 46vw; max-height:420px; min-height:220px;
-  overflow:hidden;
+.carousel .tile{ flex:0 0 auto; margin:0; }
+.tile-media{
+  position:relative; overflow:hidden; height: 46vw; max-height:420px; min-height:220px;
 }
-.carousel .tile img, .carousel .tile video{
+.tile-media img, .tile-media video{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
   pointer-events:none;
 }
 .carousel .tile figcaption{
-  position:absolute; left: var(--sp-16); right: var(--sp-16); bottom: var(--sp-12);
+  background: var(--ink); color:#fff;
+  padding: var(--sp-12) var(--sp-16);
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
-  letter-spacing:.03em; text-transform:uppercase; color:#fff;
-  text-shadow:0 1px 6px rgba(0,0,0,.4); pointer-events:none;
+  letter-spacing:.03em; text-transform:uppercase; white-space:nowrap;
+  pointer-events:none;
 }
 
 /* pre-footer carousel: scroll-hijacked (vertical scroll -> horizontal, 1:1) */
@@ -224,40 +228,68 @@ img, video{ max-width:100%; display:block; }
 .feature-product{ background: var(--orange); }
 .feature-product img{ width:100%; display:block; }
 
-/* ---------- footer ---------- */
+/* ---------- footer ----------
+   Per Figma (get_design_context, node 175:1004, footer region): the
+   STUDIO/FRITZ wordmark is its own full-width row (STUDIO left, FRITZ
+   right — a reprise of the header), stacked ABOVE the nav columns, not
+   beside them. The 4 columns all start at the same y and sit at fixed x
+   offsets across the content width: 0% (Custom/Catalogue/Showroom),
+   ~21% (Trade/About/Contact), ~47% (FAQ/Warranty/Press/IG), ~74%
+   (newsletter) — reproduced here as absolutely positioned columns rather
+   than a generic wrapping flex row, so the alignment matches exactly. */
 .site-footer{ background: var(--orange); color: var(--white); padding: var(--section-gap) var(--edge) var(--sp-32); }
-.footer-top{
-  display:flex; justify-content:space-between; align-items:flex-start;
-  gap: var(--sp-32); flex-wrap:wrap; padding-bottom: var(--section-gap);
-}
-.footer-top .wm span{
+.footer-top{ display:flex; flex-direction:column; gap: var(--sp-64); padding-bottom: var(--section-gap); }
+.footer-wm{ display:flex; justify-content:space-between; align-items:flex-start; }
+.footer-wm span{
   font-family: var(--font-display); font-weight:400;
   font-size: clamp(2.5rem,7vw,5rem); display:block; line-height:1;
 }
-.footer-top .wm .fw-cream{ color: var(--cream); }
-.footer-top .wm .fw-white{ color: var(--white); }
-.footer-links{ display:flex; flex-wrap:wrap; gap: var(--sp-40); }
-.footer-col{ display:flex; flex-direction:column; gap: var(--sp-12); min-width:9em; }
+.footer-wm .fw-cream{ color: var(--cream); }
+.footer-wm .fw-white{ color: var(--white); }
+
+.footer-links{ position:relative; min-height:9em; }
+.footer-col{ position:absolute; top:0; display:flex; flex-direction:column; gap: var(--sp-12); }
+.footer-col:nth-child(1){ left:0; }
+.footer-col:nth-child(2){ left:21%; }
+.footer-col.footer-col-wide{ left:47%; max-width:220px; }
 .footer-col a{
   text-decoration:none; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
-  letter-spacing:.02em; text-transform:uppercase; color: var(--white);
+  letter-spacing:.02em; text-transform:uppercase; color: var(--white); white-space:nowrap;
 }
+.footer-col.footer-col-wide a{ font-size:14px; white-space:normal; }
 .footer-col a:hover{ text-decoration:underline; }
-.footer-col a.accent{ color: var(--ink); }
-.newsletter{ display:flex; flex-direction:column; gap: var(--sp-12); min-width:14em; }
+
+.newsletter{
+  position:absolute; top:0; left:74%; width:26%; min-width:14em;
+  display:flex; flex-direction:column; gap: var(--sp-12);
+}
 .newsletter label{ font-family: var(--font-body); font-weight:200; font-size: 14px; letter-spacing:.04em; text-transform:uppercase; }
-.newsletter form{ display:flex; gap: var(--sp-8); }
+.newsletter form{ position:relative; }
 .newsletter input{
-  flex:1; border:1px solid var(--ink); background: var(--cream);
-  padding: var(--sp-12); font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
+  width:100%; border:1px solid var(--ink); background: var(--cream);
+  padding: var(--sp-12) 40px var(--sp-12) var(--sp-12);
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
   color: var(--ink);
 }
 .newsletter input::placeholder{ color: var(--ink); opacity:.7; }
 .newsletter button{
-  border:1px solid var(--ink); background: var(--ink); color: var(--cream);
-  font-family: var(--font-body); font-weight:200; font-size: var(--fs-cta); letter-spacing:.04em;
-  text-transform:uppercase; padding: var(--sp-12) var(--sp-16); cursor:pointer;
+  position:absolute; right: var(--sp-8); top:50%; transform:translateY(-50%);
+  border:0; background:none; color: var(--ink);
+  font-size:18px; line-height:1; cursor:pointer; padding: var(--sp-4);
 }
+.newsletter .accent{
+  text-decoration:none; color: var(--ink);
+  font-family: var(--font-body); font-weight:200; font-size:14px;
+  letter-spacing:.02em; text-transform:uppercase;
+}
+.newsletter .accent:hover{ text-decoration:underline; }
+
+@media (max-width: 900px){
+  .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }
+  .footer-col{ position:static !important; }
+  .newsletter{ position:static !important; width:auto; }
+}
+
 .footer-bottom{
   border-top:1px solid rgba(28,17,35,.3); padding-top: var(--sp-16);
   display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--sp-16);
