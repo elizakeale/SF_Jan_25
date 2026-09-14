@@ -61,11 +61,33 @@ img, video{ max-width:100%; display:block; }
 }
 .btn-cta:hover{ background: var(--white); color: var(--orange); }
 
-/* ---------- wordmark (EB Garamond, 100px, per Figma) ---------- */
+/* ---------- wordmark header: hero overlay -> collapsed nav bar ----------
+   Per Figma's 3 reference states (HOMEPAGE / HOMEPAGE - Scroll / HOMEPAGE -
+   Nav Bar Collapse, nodes 175:1004 / 321:517 / 218:69): at rest the header
+   is just STUDIO/FRITZ + the logomark sitting transparently over the hero
+   photo. Once scrolled past the hero, it becomes a fixed 197px bar (Figma's
+   own height) cropped from the top of the same hero photo, with the
+   darkening gradient carried over, a solid orange bottom edge, and the
+   6-item nav (identical column layout to .hero-links, just moved up to
+   sit right under the wordmark) fading in. Height stays constant the whole
+   time -- only the background/border/nav opacity animate via --hdr-bg-a
+   and --nav-a (set in js/main.js), so there's no layout jump. (2026-09-14:
+   replaces the earlier "multiply into 3 stacked rows" attempt, which
+   Eliza flagged as feeling wrong and asked to be redone against the real
+   Nav Bar Collapse frame instead.) */
 .wordmark-header{
-  position: fixed; top:0; left:0; right:0; z-index:50;
+  position: fixed; top:0; left:0; right:0; z-index:50; height:197px; overflow:hidden;
   display:flex; align-items:flex-start; justify-content:space-between;
   padding: var(--sp-8) var(--edge);
+  border-bottom: 2px solid rgba(255,160,0, var(--hdr-bg-a, 0));
+}
+.wordmark-header::before{
+  content:''; position:absolute; inset:0; z-index:-1;
+  background:
+    linear-gradient(0deg, rgba(20,10,25,.65) 0%, rgba(20,10,25,.3) 60%, rgba(20,10,25,.55) 100%),
+    url('images/home/hero-poster.webp') top center / cover no-repeat;
+  opacity: var(--hdr-bg-a, 0);
+  transition: opacity .2s linear;
 }
 .wm-col{ display:flex; flex-direction:column; line-height:.9; position:relative; }
 .wm-col span{
@@ -76,13 +98,6 @@ img, video{ max-width:100%; display:block; }
 .wm-left span{ color: var(--cream); }
 .wm-right{ align-items:flex-end; text-align:right; }
 .wm-right span{ color: var(--orange); letter-spacing:.175em; } /* solid fill only — no stroke, per Figma (neither STUDIO nor FRITZ ever has one) */
-/* rows 2/3 are taken out of flow so the header/wm-col stays exactly one
-   line tall at rest (2026-09-14 fix: previously they reserved layout
-   space even at opacity:0, which pushed .wm-mark's 50%-centered position
-   down below the visible STUDIO/FRITZ line instead of level with it) */
-.wm-row-2, .wm-row-3{ opacity:0; transform: translateY(-10px); position:absolute; left:0; right:0; }
-.wm-row-2{ top:100%; }
-.wm-row-3{ top:200%; }
 
 /* small orange logomark badge, centered between STUDIO and FRITZ (per Figma) */
 .wm-mark{
@@ -91,21 +106,17 @@ img, video{ max-width:100%; display:block; }
 }
 .wm-mark img{ width:100%; display:block; }
 
-.wm-nav{
-  position:absolute; left:50%; top: var(--sp-24);
-  transform: translateX(-50%);
-  display:flex; gap: var(--sp-40);
-  opacity: var(--nav-a, 1);
+/* collapsed nav: reuses .hero-links' own column positioning (same x-layout
+   in Figma, just pulled up to y131/157 instead of y652/678) -- only the
+   vertical placement + fade-in are overridden here. */
+.wordmark-header .hdr-nav{
+  position:absolute; left:43.4%; right:var(--edge); top:131px; height:3.2em; margin-top:0;
+  opacity: var(--nav-a, 0); transition: opacity .2s linear;
+  pointer-events:none;
 }
-.wm-nav a{
-  text-decoration:none; font-family: var(--font-body); font-weight:200;
-  font-size: var(--fs-body); letter-spacing:.04em; text-transform:uppercase;
-  color: var(--white); text-align:center;
-  display:flex; flex-direction:column; gap: var(--sp-4);
-}
-.wm-nav a span{ opacity:.7; font-size:.9em; }
-.wm-nav a:hover{ text-decoration: underline; }
-@media (max-width: 759px){ .wm-nav{ display:none; } }
+.wordmark-header .hdr-nav a{ color: var(--white); }
+@media (max-width: 900px){ .hdr-nav{ display:none; } }
+.wordmark-header.is-collapsed .hdr-nav{ pointer-events:auto; }
 
 /* ---------- hand-drawn stamp accent (loose/imperfect by design, intentional) ----------
    Static/pinned by default (stays put while the page scrolls beneath it) — see the

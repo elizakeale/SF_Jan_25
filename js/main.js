@@ -39,28 +39,26 @@
     render();
   })();
 
-  /* ---------------- header: hero -> multiply -> collapse ---------------- */
+  /* ---------------- header: hero overlay -> collapsed nav bar ----------------
+     Rebuilt 2026-09-14 against the real "Homepage - Nav Bar Collapse" Figma
+     frame (218:69): as the hero scrolls out of view the header settles into
+     a fixed 197px bar cropped from the hero photo with a solid orange
+     bottom edge, and the 6-item nav (same columns as .hero-links, just
+     pulled up under the wordmark) fades in. Replaces the earlier
+     triple-stack "multiply" effect, which Eliza flagged as feeling wrong. */
   (function header() {
-    var HERO_END = 300, PEAK = 900, COLLAPSE_END = 1300;
+    var COLLAPSE_START = 150, COLLAPSE_END = 480;
     var header = document.getElementById('wmHeader');
-    var rows2 = document.querySelectorAll('.wm-row-2');
-    var rows3 = document.querySelectorAll('.wm-row-3');
     if (!header) return;
     var ticking = false;
 
     function render() {
       ticking = false;
-      // stamp is static/always-visible now (see .stamp in style.css) — no
-      // scroll-tied opacity here.
       var y = window.scrollY;
-      var tm = clamp((y - HERO_END) / (PEAK - HERO_END));
-      var tc = clamp((y - PEAK) / (COLLAPSE_END - PEAK));
-      var row2Op = clamp(tm * 2) * (1 - tc);
-      var row3Op = clamp(tm * 2 - 1) * (1 - tc);
-      rows2.forEach(function (el) { el.style.opacity = row2Op; el.style.transform = 'translateY(' + (10 - row2Op * 10) + 'px)'; });
-      rows3.forEach(function (el) { el.style.opacity = row3Op; el.style.transform = 'translateY(' + (10 - row3Op * 10) + 'px)'; });
-      header.style.setProperty('--hdr-bg-a', tc);
-      header.style.setProperty('--nav-a', tc);
+      var t = clamp((y - COLLAPSE_START) / (COLLAPSE_END - COLLAPSE_START));
+      header.style.setProperty('--hdr-bg-a', t);
+      header.style.setProperty('--nav-a', t);
+      header.classList.toggle('is-collapsed', t > 0.6);
     }
     function onScroll() { if (!ticking) { requestAnimationFrame(render); ticking = true; } }
     if (reduce) header.style.transition = 'none';
