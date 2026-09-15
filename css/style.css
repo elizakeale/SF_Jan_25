@@ -125,11 +125,16 @@ img, video{ max-width:100%; display:block; }
 .wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height .7875s ease; } /* round 10: a further 50% slower on top of round 8's own 50% slowdown per "multiplication effect could be more gradual, 50% less fast" (.35s -> .525s -> .7875s) */
 .wm-row-2.is-on, .wm-row-3.is-on{ max-height:140px; }
 
-/* small orange logomark badge -- fixed px, not 50%, so it always sits
-   centered on the single STUDIO/FRITZ line (y=40-123 in Figma, center
-   81.5px) no matter how tall the header currently is during multiply. */
+/* small orange logomark badge -- round 10: "looks too low in the center
+   of page, should be top aligned to STUDIO FRITZ" -- was vertically
+   CENTERED on the wordmark line (translate(-50%,-50%) around a computed
+   midpoint); switched to top-aligned with only horizontal centering, at
+   the same top edge the header's own padding gives STUDIO/FRITZ (--sp-8),
+   so it lines up with the top of the text instead of its middle. Fixed
+   px top (not tied to header height) so it stays correct no matter how
+   tall the header gets during multiply. */
 .wm-mark{
-  position:absolute; left:50%; top:81.5px; transform:translate(-50%,-50%);
+  position:absolute; left:50%; top: var(--sp-8); transform: translateX(-50%);
   width:83px; z-index:1; pointer-events:none;
 }
 .wm-mark img{ width:100%; display:block; }
