@@ -118,7 +118,13 @@ img, video{ max-width:100%; display:block; }
 }
 .wm-left span{ color: var(--cream); }
 .wm-right{ align-items:flex-end; text-align:right; }
-.wm-right span{ color: var(--orange); letter-spacing:.175em; } /* solid fill only — no stroke, per Figma (neither STUDIO nor FRITZ ever has one) */
+.wm-right span{
+  color: var(--orange); letter-spacing:.175em;
+  margin-right: -.175em; /* round 10: cancel the trailing letter-spacing gap
+    after the last glyph so FRITZ's visible right edge -- not just its box
+    edge -- lands flush with hero-links col 3 (About/Contact), per Eliza:
+    "about and contact need to be flushed to the end of Fritz". */
+} /* solid fill only — no stroke, per Figma (neither STUDIO nor FRITZ ever has one) */
 /* multiply rows: revealed by wiping max-height open (in normal flow, so the
    header naturally grows/shrinks), never by fading opacity -- always fully
    solid the instant they're visible, per Eliza's "shouldn't be faded" note. */
@@ -164,7 +170,7 @@ img, video{ max-width:100%; display:block; }
    row-to-row em-based top offsets in .hero-links a:nth-child(4/5/6) scale
    down automatically with it. */
 #heroNav.is-pinned.is-collapsed-nav{ height:2.1em; }
-#heroNav.is-pinned.is-collapsed-nav a{ font-size:11px; }
+/* round 10: nav must NOT shrink once docked -- Eliza: "nav bar items are shrinking... they should just stay the same." (was font-size:11px here) */
 @media (max-width: 900px){ #heroNav.is-pinned{ position:static; left:auto; right:auto; top:auto !important; } }
 
 /* ---------- hand-drawn stamp accent (loose/imperfect by design, intentional) ----------
@@ -327,7 +333,9 @@ img, video{ max-width:100%; display:block; }
 .catalogue-band{
   display:flex; align-items:center; justify-content:flex-end;
   background: transparent; color: var(--white); text-decoration:none;
-  padding: var(--sp-8) var(--edge) var(--sp-16);
+  padding: var(--sp-8) var(--edge) 0; /* round 10: no gap before the cove
+    image below -- Eliza: "no padding between the catalog and the cove
+    table, it should be flush" (was padding-bottom: var(--sp-16)) */
   font-family: var(--font-body); font-weight:200; font-size: 25px;
   letter-spacing:.05em; text-transform:uppercase; gap: var(--sp-8);
 }
