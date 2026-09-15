@@ -307,15 +307,20 @@ img, video{ max-width:100%; display:block; }
 .scroll-hijack{ position:relative; }
 .scroll-hijack-sticky{
   position:sticky; top:0; height:100vh; overflow:hidden; background: var(--orange);
-  display:flex; flex-direction:column; justify-content:flex-end;
-} /* round 10 v2: reverted the flex-stretch attempt on the tiles themselves
-     (it fought each tile's own aspect-ratio and broke the carousel's
-     sizing) -- instead, anchor the (normally-sized) carousel to the
-     BOTTOM of this 100vh pane, so the leftover space (tile-media caps at
-     420px, well under 100vh) lands ABOVE the carousel, against the
-     already-orange feature-product image before it, instead of directly
-     above the footer. Explicit background here too, so that leftover
-     space is never anything but orange. */
+  display:flex; flex-direction:column; justify-content:center;
+} /* round 10 v3: flex-end (v2) just relocated the dead space from below the
+     carousel to above it -- still one large, clearly-visible blank block,
+     now sitting right under the hero, per Eliza's "big padding gaps are
+     still on homepage" follow-up. The 100vh height here is load-bearing
+     for js/main.js's scroll-hijack progress math (wrap.offsetHeight -
+     window.innerHeight must equal the runway) so it can't shrink, and
+     tile-media's height (420px cap) is shared with every other carousel
+     on the site so it shouldn't change just for this section -- so
+     instead of anchoring the leftover space to one edge, split it evenly
+     top/bottom by centering. Same total empty space, but it reads as
+     breathing room around a centered carousel instead of a void before
+     or after it. Explicit background here too, so that leftover space is
+     never anything but orange. */
 .scroll-hijack .carousel-track{ overflow-x:hidden; } /* position driven by JS, not native scroll */
 
 /* ---------- catalogue CTA band ---------- */
