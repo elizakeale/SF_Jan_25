@@ -104,7 +104,11 @@ img, video{ max-width:100%; display:block; }
 .wordmark-header::before{
   content:''; position:absolute; inset:0; z-index:-1;
   background: url('images/home/bluff-table.webp') center 30% / cover no-repeat;
-  opacity: var(--hdr-bg-a, 0); /* hard cut, no transition -- solid, not translucent */
+  opacity: var(--hdr-bg-a, 0);
+  transition: opacity var(--hdr-reveal, 0s) ease; /* 0s going solid (hard cut, per
+    round 6-8's "never translucent" rule) -- js/main.js sets this to a real
+    duration only on the way back up, so un-collapsing seamlessly reveals
+    the rest of the image/video instead of hard-cutting both ways. */
 }
 .wm-col{ display:flex; flex-direction:column; line-height:.9; position:relative; }
 .wm-col span{
@@ -291,22 +295,17 @@ img, video{ max-width:100%; display:block; }
 /* pre-footer carousel: scroll-hijacked (vertical scroll -> horizontal, 1:1) */
 .scroll-hijack{ position:relative; }
 .scroll-hijack-sticky{
-  position:sticky; top:0; height:100vh; overflow:hidden;
-  display:flex; flex-direction:column; justify-content:flex-start;
-}
+  position:sticky; top:0; height:100vh; overflow:hidden; background: var(--orange);
+  display:flex; flex-direction:column; justify-content:flex-end;
+} /* round 10 v2: reverted the flex-stretch attempt on the tiles themselves
+     (it fought each tile's own aspect-ratio and broke the carousel's
+     sizing) -- instead, anchor the (normally-sized) carousel to the
+     BOTTOM of this 100vh pane, so the leftover space (tile-media caps at
+     420px, well under 100vh) lands ABOVE the carousel, against the
+     already-orange feature-product image before it, instead of directly
+     above the footer. Explicit background here too, so that leftover
+     space is never anything but orange. */
 .scroll-hijack .carousel-track{ overflow-x:hidden; } /* position driven by JS, not native scroll */
-/* round 10: "orange padding still between last carousel and footer" -- the
-   real cause wasn't the stamp, it was this carousel's tiles: the generic
-   .tile-media rule caps height at 420px, but .scroll-hijack-sticky is a
-   fixed 100vh pane with justify-content:flex-start (round 5's fix for the
-   gap ABOVE this carousel) -- so anything shorter than 100vh leaves the
-   leftover space stranded BELOW the tile, as blank orange, right where the
-   footer should start. Stretching this carousel's own tiles to fill the
-   sticky pane's full height removes that dead zone entirely. */
-.scroll-hijack-sticky .carousel{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
-.scroll-hijack-sticky .carousel-track{ flex:1 1 auto; min-height:0; }
-.scroll-hijack-sticky .tile{ height:100%; display:flex; flex-direction:column; }
-.scroll-hijack-sticky .tile-media{ flex:1 1 auto; height:auto; max-height:none; min-height:0; }
 
 /* ---------- catalogue CTA band ---------- */
 .catalogue-band{

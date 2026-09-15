@@ -85,6 +85,7 @@
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
     var heroContent = document.querySelector('.hero-content');
+    var heroEl = document.getElementById('hero'); // round 10 backstop: never let the header stay transparent once the hero itself has scrolled out from under it
     var heroIntro = document.querySelector('.hero-intro');
     var row1 = header ? header.querySelector('.wm-row-1') : null;
     var rows2 = document.querySelectorAll('.wm-row-2');
@@ -115,6 +116,11 @@
 
     function setCollapsed(on) {
       header.classList.toggle('is-collapsed', on);
+      // round 10: "as i scroll back up... seamlessly reveal the rest of
+      // the bluff table background and video" -- going solid stays an
+      // instant hard cut (0s), but reverting fades smoothly, via a CSS
+      // var the ::before rule's transition-duration reads.
+      header.style.setProperty('--hdr-reveal', on ? '0s' : '.6s');
       header.style.setProperty('--hdr-bg-a', on ? 1 : 0);
     }
 
@@ -165,7 +171,8 @@
         // between the nav and the header -- and since the paragraphs sit
         // above the nav in the same block, they're already clear by now. --
         var navNaturalTop = navDocTop - y;
-        if (navNaturalTop <= headerBottom + JOIN_BUFFER) {
+        var heroScrolledOut = heroEl && heroEl.getBoundingClientRect().bottom <= headerBottom + JOIN_BUFFER;
+        if (navNaturalTop <= headerBottom + JOIN_BUFFER || heroScrolledOut) {
           var startTop = nav.getBoundingClientRect().top;
           nav.style.top = startTop + 'px';
           nav.classList.add('is-pinned', 'is-collapsed-nav');
