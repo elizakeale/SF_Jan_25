@@ -118,7 +118,7 @@ img, video{ max-width:100%; display:block; }
 /* multiply rows: revealed by wiping max-height open (in normal flow, so the
    header naturally grows/shrinks), never by fading opacity -- always fully
    solid the instant they're visible, per Eliza's "shouldn't be faded" note. */
-.wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height .525s ease; } /* 50% slower per Eliza's "multiply... 50% slower" (was .35s) */
+.wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height .7875s ease; } /* round 10: a further 50% slower on top of round 8's own 50% slowdown per "multiplication effect could be more gradual, 50% less fast" (.35s -> .525s -> .7875s) */
 .wm-row-2.is-on, .wm-row-3.is-on{ max-height:140px; }
 
 /* small orange logomark badge -- fixed px, not 50%, so it always sits
@@ -295,6 +295,18 @@ img, video{ max-width:100%; display:block; }
   display:flex; flex-direction:column; justify-content:flex-start;
 }
 .scroll-hijack .carousel-track{ overflow-x:hidden; } /* position driven by JS, not native scroll */
+/* round 10: "orange padding still between last carousel and footer" -- the
+   real cause wasn't the stamp, it was this carousel's tiles: the generic
+   .tile-media rule caps height at 420px, but .scroll-hijack-sticky is a
+   fixed 100vh pane with justify-content:flex-start (round 5's fix for the
+   gap ABOVE this carousel) -- so anything shorter than 100vh leaves the
+   leftover space stranded BELOW the tile, as blank orange, right where the
+   footer should start. Stretching this carousel's own tiles to fill the
+   sticky pane's full height removes that dead zone entirely. */
+.scroll-hijack-sticky .carousel{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+.scroll-hijack-sticky .carousel-track{ flex:1 1 auto; min-height:0; }
+.scroll-hijack-sticky .tile{ height:100%; display:flex; flex-direction:column; }
+.scroll-hijack-sticky .tile-media{ flex:1 1 auto; height:auto; max-height:none; min-height:0; }
 
 /* ---------- catalogue CTA band ---------- */
 .catalogue-band{
@@ -339,7 +351,7 @@ img, video{ max-width:100%; display:block; }
   font-size: clamp(2.5rem,7vw,5rem); display:block; line-height:1;
 }
 .footer-wm .fw-cream{ color: var(--cream); }
-.footer-wm .fw-white{ color: var(--white); }
+.footer-wm .fw-white{ color: var(--white); letter-spacing:.175em; } /* matches the header FRITZ's own tracking exception (.wm-right span) -- round 10: "FRITZ spacing in footer looks too narrow" */
 
 .footer-links{ position:relative; min-height:9em; }
 .footer-col{ position:absolute; top:0; display:flex; flex-direction:column; gap: var(--sp-12); }

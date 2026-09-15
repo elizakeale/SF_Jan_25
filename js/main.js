@@ -45,43 +45,39 @@
   })();
 
   /* ---------------- header: multiply -> nav joins -> collapse ----------------
-     Corrected 2026-09-14, third pass, after Eliza's screenshots showed the
-     second pass's fixes made things worse: "multiply effect should come
-     one at a time and 50% slower / nav bar items flipped ABOVE the
-     paragraphs / paragraphs are still being underlayed under STUDIO FRITZ
-     / ...comes in too late, should do this at top after it passes the
-     paragraphs / nav bar is completely transparent over the body." Two
-     root causes, both fixed below:
-     (1) The collision check measured the header's bottom edge via
-     getBoundingClientRect() the SAME frame a row's class was toggled --
-     but max-height is a CSS TRANSITION, so that read still reflected the
-     pre-transition (smaller) height, not the row's true final height. The
-     gate could pass on a row that was actually going to grow into the
-     paragraphs a fraction of a second later. Replaced with an analytic
-     prediction (predictedHeaderBottom) built from each row's own
-     scrollHeight -- scrollHeight reports true intrinsic content height
-     regardless of a max-height clip or an in-flight transition, so the
-     prediction is correct instantly, not just after the animation settles.
-     (2) Joining used to trigger the instant a collision check *passed*
-     (i.e. the moment there was "enough room" to triple) -- at the top of
-     the page there's always technically enough room, so join fired almost
-     immediately and the nav jumped up near the header while the
-     paragraphs were still sitting untouched below it ("flipped ABOVE the
-     paragraphs"). Join now triggers on a physical, not permissive,
-     condition: the SAME #heroNav's own natural (unpinned) scroll position
-     -- tracked once as a document-coordinate constant, navDocTop --
-     actually reaching the header's current bottom edge. Since the nav
-     always sits below the paragraphs in the hero-content block, by the
-     time the nav reaches the header the paragraphs have necessarily
-     already scrolled up and out from under it ("after it passes the
-     paragraphs"). Collapse now fires in the exact same instant as join,
-     not on a separate later hero-height trigger -- so there's no longer a
-     window where the nav is pinned but the header is still transparent
-     over the hero photo/video ("completely transparent over the body"). */
+     Round 10 correction (2026-09-15), after Eliza's screenshots showed two
+     remaining problems in the round-9 rebuild: "paragraph hides behind
+     STUDIO FRITZ, it should just drop off and disappear as you scroll
+     rather than go behind it" and "its only repeating twice, should
+     repeat 3 times." Root cause of BOTH, found together:
+     Round 9 only collision-gated row 3 (checked contentTop vs. a
+     predicted header height before allowing the second triple-row) --
+     row 2 had NO gate at all, just a raw scroll-distance threshold. So
+     row 2 alone could already grow tall enough to reach the paragraphs
+     with zero protection ("hides behind STUDIO FRITZ"), while row 3's
+     gate, calibrated to never let the *header* touch the paragraphs, was
+     incidentally strict enough that it rarely got the chance to turn on
+     at all ("only repeating twice").
+     Fixed by decoupling the two concerns instead of layering more gate
+     conditions on the rows themselves: the paragraphs (.hero-intro) now
+     fade on their OWN, smoothly, as the live gap between the header's
+     predicted bottom edge and the paragraphs' top edge closes -- so they
+     are already gone (opacity 0) well before the header could physically
+     reach them, at any viewport size, with no fixed pixel guesswork
+     ("drop off and disappear as you scroll," never "go behind"). With
+     that protection in place, row 2/row 3 no longer need to be gated by
+     paragraph proximity at all -- they're driven purely by scroll
+     distance + stagger, so a full triple is reachable every time there's
+     enough scroll room before the nav's own join trigger cuts it off
+     ("should repeat 3 times"). Also, per "multiplication effect could be
+     more gradual, 50% less fast" -- a further 50% slowdown on top of
+     round 8's own 50% slowdown (.35s -> .525s -> .7875s), and the row
+     stagger distance scaled up to match so row 2 still visibly finishes
+     opening before row 3 starts ("one at a time"). */
   (function header() {
     var MULTIPLY_START = 80; // scroll (px) before the wordmark starts multiplying at all
-    var ROW_STAGGER = 150; // extra scroll (px) required between row 2 and row 3 turning on -- "one at a time," not together
-    var GAP_MIN = 24; // required predicted clearance (px) between header bottom and paragraphs' top
+    var ROW_STAGGER = 225; // extra scroll (px) required between row 2 and row 3 turning on -- scaled up with the slower transition so row 2 visibly finishes before row 3 starts
+    var PARA_FADE_ZONE = 160; // px of header-to-paragraph clearance over which .hero-intro smoothly fades out -- large enough that opacity always reaches 0 well before the header could physically reach the paragraphs
     var JOIN_BUFFER = 8; // dock the instant the nav would otherwise be covered, not a frame late
     var UNJOIN_MARGIN = 48; // extra hysteresis (px) before un-joining on the way back up, so it doesn't flicker right at the boundary
     var NAV_INSET = 16; // how far the nav tucks up from the collapsed bar's own bottom edge
@@ -89,6 +85,7 @@
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
     var heroContent = document.querySelector('.hero-content');
+    var heroIntro = document.querySelector('.hero-intro');
     var row1 = header ? header.querySelector('.wm-row-1') : null;
     var rows2 = document.querySelectorAll('.wm-row-2');
     var rows3 = document.querySelectorAll('.wm-row-3');
@@ -131,20 +128,35 @@
       if (mobile) {
         setRows(false, false);
         setCollapsed(false);
+        if (heroIntro) heroIntro.style.opacity = '';
         if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); nav.style.top = ''; pinned = false; row2OnAtY = null; }
         return;
       }
 
       if (!pinned) {
-        // -- multiply, gated one row at a time and never past the point of
-        // overlapping the paragraphs --
+        // -- multiply, one row at a time, purely on scroll distance + stagger.
+        // No longer gated by paragraph proximity -- see the comment above:
+        // the paragraphs protect themselves independently (fade below), so
+        // the rows are free to reach a full triple every time. --
         var row2On = y > MULTIPLY_START;
         if (row2On && row2OnAtY === null) row2OnAtY = y;
         if (!row2On) row2OnAtY = null;
         var staggered = row2OnAtY !== null && (y - row2OnAtY) >= ROW_STAGGER;
-        var contentTop = heroContent.getBoundingClientRect().top;
-        var row3On = row2On && staggered && (contentTop - predictedHeaderBottom(true, true)) >= GAP_MIN;
+        var row3On = row2On && staggered;
         setRows(row2On, row3On);
+
+        var headerBottom = predictedHeaderBottom(row2On, row3On);
+
+        // -- paragraphs fade out smoothly as the header's predicted bottom
+        // edge closes in on them, so they are already invisible well
+        // before any visual overlap could happen ("drop off and
+        // disappear... rather than go behind it") -- proportional to the
+        // real live gap, so it self-adjusts to any viewport height. --
+        if (heroIntro) {
+          var contentTop = heroContent.getBoundingClientRect().top;
+          var gap = contentTop - headerBottom;
+          heroIntro.style.opacity = clamp(gap / PARA_FADE_ZONE, 0, 1);
+        }
 
         // -- join trigger: has the nav's own natural (still in normal flow)
         // position now reached the header, whatever the header's current
@@ -152,7 +164,6 @@
         // permissive one, so it can never fire while there's still daylight
         // between the nav and the header -- and since the paragraphs sit
         // above the nav in the same block, they're already clear by now. --
-        var headerBottom = predictedHeaderBottom(row2On, row3On);
         var navNaturalTop = navDocTop - y;
         if (navNaturalTop <= headerBottom + JOIN_BUFFER) {
           var startTop = nav.getBoundingClientRect().top;
@@ -164,12 +175,14 @@
           // phase where the nav is pinned over a still-transparent header
           setRows(false, false);
           setCollapsed(true);
+          if (heroIntro) heroIntro.style.opacity = 0;
         } else {
           setCollapsed(false);
         }
       }
 
       if (pinned) {
+        if (heroIntro) heroIntro.style.opacity = 0;
         var bottom = header.getBoundingClientRect().bottom;
         nav.style.top = (bottom - nav.offsetHeight - NAV_INSET) + 'px';
         // reverse of the join condition, plus a hysteresis margin, so
