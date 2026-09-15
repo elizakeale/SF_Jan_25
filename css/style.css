@@ -128,13 +128,15 @@ img, video{ max-width:100%; display:block; }
 /* small orange logomark badge -- round 10: "looks too low in the center
    of page, should be top aligned to STUDIO FRITZ" -- was vertically
    CENTERED on the wordmark line (translate(-50%,-50%) around a computed
-   midpoint); switched to top-aligned with only horizontal centering, at
-   the same top edge the header's own padding gives STUDIO/FRITZ (--sp-8),
-   so it lines up with the top of the text instead of its middle. Fixed
+   midpoint); switched to top-aligned. Round 10 follow-up: pure --sp-8
+   (the header's own padding-top / the line-box's top edge) read as too
+   high -- the display font's line-box has extra leading above the glyphs'
+   visual cap-height, so aligning to the padding edge sits above the
+   actual top of the "S"/"F". Nudged down to split the difference. Fixed
    px top (not tied to header height) so it stays correct no matter how
    tall the header gets during multiply. */
 .wm-mark{
-  position:absolute; left:50%; top: var(--sp-8); transform: translateX(-50%);
+  position:absolute; left:50%; top: calc(var(--sp-8) + 18px); transform: translateX(-50%);
   width:83px; z-index:1; pointer-events:none;
 }
 .wm-mark img{ width:100%; display:block; }
@@ -251,12 +253,16 @@ img, video{ max-width:100%; display:block; }
   position:absolute; left:50%; top:87.3%; z-index:2;
   width:1px; height:88px; background: rgba(255,255,255,.55);
   transform: translateX(-50%); transform-origin: top center;
-  pointer-events:none; animation: scrollCuePulse 1.8s ease-out .6s 1 both;
+  pointer-events:none; animation: scrollCuePulse 5s ease-out .6s infinite both;
 }
 @keyframes scrollCuePulse{
-  0%   { opacity:.55; transform: translateX(-50%) scaleY(1); }
-  40%  { opacity:1;   transform: translateX(-50%) scaleY(1.25); }
-  100% { opacity:.55; transform: translateX(-50%) scaleY(1); }
+  /* round 10: repeat every 5s instead of once on load -- pulse shape/timing
+     unchanged (was 0%/40%/100% over a 1.8s duration), just rescaled into
+     the front slice of a 5s cycle so it pulses then holds at rest. */
+  0%    { opacity:.55; transform: translateX(-50%) scaleY(1); }
+  14.4% { opacity:1;   transform: translateX(-50%) scaleY(1.25); }
+  36%   { opacity:.55; transform: translateX(-50%) scaleY(1); }
+  100%  { opacity:.55; transform: translateX(-50%) scaleY(1); }
 }
 @media (max-width: 900px){
   .scroll-cue{ display:none; }
