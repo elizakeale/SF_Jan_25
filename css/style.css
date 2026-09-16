@@ -103,14 +103,19 @@ img, video{ max-width:100%; display:block; }
 }
 /* On the orange bar, the orange FRITZ and the orange logomark would both
    disappear into the background -- Figma's orange frame renders them
-   light instead. The logomark is flipped to white with a filter rather
-   than swapping in logomark-white.svg, so there's no second request and
-   no chance of the two files drifting apart. */
+   light. FRITZ goes white; the logomark swaps to the real white asset
+   (images/logos/logomark/logomark-white.svg -- the same file the footer
+   already uses), not a CSS filter, so what renders is the drawn artwork
+   rather than a recolored approximation of it. Both files sit in the
+   markup and only their display toggles, so the swap is instant with no
+   flash while a second file fetches. */
 .wordmark-header.is-collapsed .wm-right span{ color: var(--white); }
-.wordmark-header.is-collapsed .wm-mark img{ filter: brightness(0) invert(1); }
+.wm-mark .wm-mark-white{ display:none; }
+.wordmark-header.is-collapsed .wm-mark .wm-mark-orange{ display:none; }
+.wordmark-header.is-collapsed .wm-mark .wm-mark-white{ display:block; }
 /* ...and the nav's orange hover would be invisible on orange too, so
-   while docked it goes to the dark ink instead. */
-#heroNav.is-collapsed-nav a:hover{ color: var(--ink); }
+   while docked it hovers to cream. */
+#heroNav.is-collapsed-nav a:hover{ color: var(--cream); }
 /* Collapsed-state bar: SOLID ORANGE, per Figma "HOMEPAGE - Scroll 4 -
    Nav Bar Collapse - Orange". This replaces the frozen bluff-table crop
    -- Eliza's call, to isolate one variable: a flat fill either reads as
