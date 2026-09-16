@@ -101,9 +101,26 @@ img, video{ max-width:100%; display:block; }
 .wordmark-header.is-collapsed{
   padding-bottom: clamp(48px, 6.8vw, 98px);
 }
+/* On the orange bar, the orange FRITZ and the orange logomark would both
+   disappear into the background -- Figma's orange frame renders them
+   light instead. The logomark is flipped to white with a filter rather
+   than swapping in logomark-white.svg, so there's no second request and
+   no chance of the two files drifting apart. */
+.wordmark-header.is-collapsed .wm-right span{ color: var(--white); }
+.wordmark-header.is-collapsed .wm-mark img{ filter: brightness(0) invert(1); }
+/* ...and the nav's orange hover would be invisible on orange too, so
+   while docked it goes to the dark ink instead. */
+#heroNav.is-collapsed-nav a:hover{ color: var(--ink); }
+/* Collapsed-state bar: SOLID ORANGE, per Figma "HOMEPAGE - Scroll 4 -
+   Nav Bar Collapse - Orange". This replaces the frozen bluff-table crop
+   -- Eliza's call, to isolate one variable: a flat fill either reads as
+   solid or it doesn't, with no ambiguity about whether we're seeing the
+   captured image or the live video behind it. js/main.js drives
+   --hdr-bg-a (0 -> 1 hard cut on the way down, fading back on the way
+   up), so the reveal behavior is unchanged. */
 .wordmark-header::before{
   content:''; position:absolute; inset:0; z-index:-1;
-  background: url('images/home/bluff-table.webp') center 30% / cover no-repeat;
+  background: var(--orange);
   opacity: var(--hdr-bg-a, 0);
   transition: opacity var(--hdr-reveal, 0s) ease; /* 0s going solid (hard cut, per
     round 6-8's "never translucent" rule) -- js/main.js sets this to a real
