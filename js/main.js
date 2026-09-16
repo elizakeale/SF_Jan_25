@@ -88,8 +88,8 @@
     var PARA_FADE_ZONE = 160; // px of header-to-paragraph clearance over which .hero-intro smoothly fades out -- large enough that opacity always reaches 0 well before the header could physically reach the paragraphs
     var JOIN_BUFFER = 8; // dock the instant the nav would otherwise be covered, not a frame late
     var UNJOIN_MARGIN = 48; // extra hysteresis (px) before un-joining on the way back up, so it doesn't flicker right at the boundary
-    var NAV_INSET = 12; // gap under the docked nav -- Figma 460:1999: nav block ends at y=185 in a bar whose bottom edge (460:2015) is y=197
-    var NAV_FADE_ZONE = 90; // px of clearance over which the hero nav fades as the growing wordmark closes in -- Eliza: "the nav bar elements start to hide behind the third Fritz... they should never overlap"
+    var NAV_GAP = 33; // wordmark bottom -> docked nav top. Figma 460:1999: nav y=131, bar padTop 8, wordmark line ~90 => 33
+    var NAV_BOTTOM_AIR = 24; // air under the second nav row; Figma's own is 12, which read tight live
 
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
@@ -127,6 +127,15 @@
     function collapsedHeaderBottom() {
       var cs = getComputedStyle(header);
       return (parseFloat(cs.paddingTop) || 0) + row1.scrollHeight + (parseFloat(cs.paddingBottom) || 0);
+    }
+
+    // Figma measures the docked nav DOWN from the bar's top (y=131), not up
+    // from its bottom edge -- which matters because the bar's bottom padding
+    // is what carries the air under the second row. Measuring from the top
+    // means adding that air never drags the nav up into the wordmark.
+    function navDockTop() {
+      var padTop = parseFloat(getComputedStyle(header).paddingTop) || 0;
+      return padTop + row1.scrollHeight + NAV_GAP;
     }
 
     function setRows(on2, on3) {
@@ -179,14 +188,10 @@
           heroIntro.style.opacity = clamp(gap / PARA_FADE_ZONE, 0, 1);
         }
 
-        // The paragraphs got out of the way, but the nav sits below them in
-        // the same block and did not -- so the third row of STUDIO/FRITZ
-        // came down on top of CUSTOM/ABOUT/CONTACT. Same treatment: fade on
-        // the nav's own live clearance, so it is gone before the wordmark
-        // can reach it and simply reappears once docked. No transition
-        // needed -- this is scroll-linked, so it is already smooth.
-        var navClear = nav.getBoundingClientRect().top - headerBottom;
-        nav.style.opacity = clamp(navClear / NAV_FADE_ZONE, 0, 1);
+        // The nav is never faded -- Eliza: "they should be continuous and
+        // persistent and static." Overlap with the growing wordmark is
+        // prevented by docking before it can happen (navWouldBeCovered
+        // below), not by hiding the nav on the way there.
 
         // -- join trigger. This used to be geometric ("has the header
         // physically reached the nav yet"), which on the real layout fired
@@ -199,7 +204,8 @@
         // viewport too short to fit the whole multiply over the hero. --
         var heroScrolledOut = heroEl && heroEl.getBoundingClientRect().bottom <= headerBottom + JOIN_BUFFER;
         var multiplyHeld = y > MULTIPLY_START + ROW_STAGGER + ROW3_HOLD;
-        if (multiplyHeld || heroScrolledOut) {
+        var navWouldBeCovered = nav.getBoundingClientRect().top <= headerBottom + JOIN_BUFFER;
+        if (multiplyHeld || navWouldBeCovered || heroScrolledOut) {
           nav.classList.add('is-pinned', 'is-collapsed-nav');
           // .hero-content carries z-index:2, which makes it its own
           // stacking context -- so the nav's own z-index:55 was trapped
@@ -220,9 +226,8 @@
           // frame, so its .45s glide and the rows' .45s fold run as one
           // motion rather than the nav chasing the bar down after the fact.
           var barBottom = collapsedHeaderBottom();
-          pinnedTop = barBottom - nav.offsetHeight - NAV_INSET;
+          pinnedTop = navDockTop();
           nav.style.top = pinnedTop + 'px';
-          nav.style.opacity = 1;
           // the pre-footer carousel sticks below the bar rather than under
           // it -- see .scroll-hijack-sticky's top: var(--hdr-h)
           document.documentElement.style.setProperty('--hdr-h', barBottom + 'px');
@@ -234,11 +239,10 @@
 
       if (pinned) {
         if (heroIntro) heroIntro.style.opacity = 0;
-        nav.style.opacity = 1;
         // Only rewrite `top` when the target actually moves (a resize), so
         // steady-state scrolling never touches it -- writing it every frame
         // is what fought the CSS transition and made the dock stutter.
-        var target = collapsedHeaderBottom() - nav.offsetHeight - NAV_INSET;
+        var target = navDockTop();
         if (pinnedTop === null || Math.abs(target - pinnedTop) > 0.5) {
           pinnedTop = target;
           nav.style.top = target + 'px';
@@ -350,14 +354,18 @@
         var inner = hijacked.filter(function (h) { return wrap.contains(h.el); })[0];
         if (!inner) return;
         var rect = wrap.getBoundingClientRect();
-        // The pane is no longer viewport-tall, so the pin lasts
-        // wrapHeight - paneHeight, not wrapHeight - viewportHeight.
         var pane = wrap.querySelector('.scroll-hijack-sticky');
-        var total = wrap.offsetHeight - (pane ? pane.offsetHeight : window.innerHeight);
-        if (total <= 0) return;
+        var paneH = pane ? pane.offsetHeight : 0;
+        var max = Math.max(0, inner.track.scrollWidth - inner.track.clientWidth);
+        // Size the runway to the real horizontal distance, 1:1: scrolling
+        // down a pixel moves the carousel across a pixel, and a viewport
+        // wide enough to show everything costs no extra scroll at all.
+        var wantH = paneH + max;
+        if (Math.abs(wrap.offsetHeight - wantH) > 1) wrap.style.height = wantH + 'px';
+        var total = wantH - paneH;
+        if (total <= 0) { inner.track.scrollLeft = 0; return; }
         var scrolledInto = -rect.top;
         var progress = clamp(scrolledInto / total);
-        var max = inner.track.scrollWidth - inner.track.clientWidth;
         inner.track.scrollLeft = progress * max;
       });
     }
