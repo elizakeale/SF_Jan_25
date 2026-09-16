@@ -100,6 +100,13 @@ img, video{ max-width:100%; display:block; }
    bar" per Eliza's note. */
 .wordmark-header.is-collapsed{
   padding-bottom: clamp(48px, 6.8vw, 98px);
+  /* The multiply REVEAL is deliberately slow (.7875s -- Eliza's "more
+     gradual, 50% less fast"), but the collapse is a different beat: it has
+     to land in lockstep with the nav rising into the bar, and at .7875s
+     that read as two separate events. Collapse gets its own faster
+     duration, matched exactly by #heroNav.is-pinned's own transition
+     below, so the wordmark folding and the nav docking are one motion. */
+  --wm-row-dur: .45s;
 }
 /* On the orange bar, the orange FRITZ and the orange logomark would both
    disappear into the background -- Figma's orange frame renders them
@@ -150,7 +157,7 @@ img, video{ max-width:100%; display:block; }
 /* multiply rows: revealed by wiping max-height open (in normal flow, so the
    header naturally grows/shrinks), never by fading opacity -- always fully
    solid the instant they're visible, per Eliza's "shouldn't be faded" note. */
-.wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height .7875s ease; } /* round 10: a further 50% slower on top of round 8's own 50% slowdown per "multiplication effect could be more gradual, 50% less fast" (.35s -> .525s -> .7875s) */
+.wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height var(--wm-row-dur, .7875s) ease; } /* round 10: a further 50% slower on top of round 8's own 50% slowdown per "multiplication effect could be more gradual, 50% less fast" (.35s -> .525s -> .7875s) */
 .wm-row-2.is-on, .wm-row-3.is-on{ max-height:140px; }
 
 /* small orange logomark badge -- round 10: "looks too low in the center
@@ -183,8 +190,9 @@ img, video{ max-width:100%; display:block; }
    the same 43.4% .hero-content already uses. */
 #heroNav.is-pinned{
   position:fixed; left:43.4%; right:var(--edge); margin-top:0; height:3.2em; z-index:55;
-  transition: top .35s ease; /* matches .wm-row-2/3's .35s so the header's
-    row-collapse and the nav's final dock happen in lockstep */
+  transition: top .45s ease; /* matches --wm-row-dur on
+    .wordmark-header.is-collapsed, so the rows folding up and the nav
+    rising into the bar start and finish together instead of staggering */
 }
 /* Once tucked inside the collapsed bar the nav reads at Figma's much
    smaller scale (218:69: each link's box is ~28px tall at 1440px ref width,
@@ -358,6 +366,18 @@ img, video{ max-width:100%; display:block; }
      or after it. Explicit background here too, so that leftover space is
      never anything but orange. */
 .scroll-hijack .carousel-track{ overflow-x:hidden; } /* position driven by JS, not native scroll */
+/* The sticky pane has to stay a full viewport tall (the hijack's scroll
+   math depends on it), so any height the carousel doesn't use shows up as
+   dead orange -- above it, below it, or split between the two, which is
+   all the last three attempts ever managed to do. The fix is to stop
+   leaving a gap at all: for THIS carousel only, the tiles fill the pane's
+   height, and each tile's own aspect-ratio drives its width from there,
+   so nothing is stretched or distorted. Result: flush to the cove image
+   above, flush to the footer below. */
+.scroll-hijack .tile-media{
+  height: calc(100vh - 28px); /* 28px ~= the caption line + its bottom padding */
+  max-height:none; min-height:0;
+}
 
 /* ---------- catalogue CTA band ---------- */
 .catalogue-band{

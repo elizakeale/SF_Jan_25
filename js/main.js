@@ -81,7 +81,7 @@
     var PARA_FADE_ZONE = 160; // px of header-to-paragraph clearance over which .hero-intro smoothly fades out -- large enough that opacity always reaches 0 well before the header could physically reach the paragraphs
     var JOIN_BUFFER = 8; // dock the instant the nav would otherwise be covered, not a frame late
     var UNJOIN_MARGIN = 48; // extra hysteresis (px) before un-joining on the way back up, so it doesn't flicker right at the boundary
-    var NAV_INSET = 16; // how far the nav tucks up from the collapsed bar's own bottom edge
+    var NAV_INSET = 28; // how far the nav tucks up from the collapsed bar's own bottom edge -- Figma's orange collapse frame leaves clear air under the second nav row, which 16px didn't
 
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
@@ -98,6 +98,7 @@
     var row2OnAtY = null; // scrollY at which row 2 first turned on this downward pass -- drives the stagger
     var row3OnAtY = null; // scrollY at which row 3 turned on -- drives ROW3_HOLD
     var joinY = null; // scrollY at which the header joined/collapsed -- the un-join is measured back from here, never from geometry (see the pinned branch)
+    var pinnedTop = null; // last `top` written to the docked nav -- only rewritten when it actually changes (resize), never per frame
 
     // True intrinsic header height for a given hypothetical row state, from
     // each row's own scrollHeight (unaffected by max-height/overflow:hidden
@@ -109,6 +110,17 @@
       if (on2) h += rows2[0].scrollHeight;
       if (on3) h += rows3[0].scrollHeight;
       return h + padTop; // header's own top/bottom padding match pre-collapse
+    }
+
+    // The collapsed bar's final height, readable on the same frame the
+    // collapse starts: padding isn't transitioned, and row 1 never
+    // animates, so this is exact even while rows 2/3 are still folding.
+    // Measuring the LIVE header instead (getBoundingClientRect) is what
+    // made the dock jumpy -- it re-aimed the nav every frame at a target
+    // that was itself still moving, fighting the nav's own transition.
+    function collapsedHeaderBottom() {
+      var cs = getComputedStyle(header);
+      return (parseFloat(cs.paddingTop) || 0) + row1.scrollHeight + (parseFloat(cs.paddingBottom) || 0);
     }
 
     function setRows(on2, on3) {
@@ -135,7 +147,7 @@
         setRows(false, false);
         setCollapsed(false);
         if (heroIntro) heroIntro.style.opacity = '';
-        if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); heroContent.classList.remove('is-nav-pinned'); nav.style.top = ''; pinned = false; row2OnAtY = null; row3OnAtY = null; joinY = null; }
+        if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); heroContent.classList.remove('is-nav-pinned'); nav.style.top = ''; pinned = false; row2OnAtY = null; row3OnAtY = null; joinY = null; pinnedTop = null; }
         return;
       }
 
@@ -196,6 +208,11 @@
           // phase where the nav is pinned over a still-transparent header
           setRows(false, false);
           setCollapsed(true);
+          // ...and the nav is aimed at its FINAL resting place in that same
+          // frame, so its .45s glide and the rows' .45s fold run as one
+          // motion rather than the nav chasing the bar down after the fact.
+          pinnedTop = collapsedHeaderBottom() - nav.offsetHeight - NAV_INSET;
+          nav.style.top = pinnedTop + 'px';
           if (heroIntro) heroIntro.style.opacity = 0;
         } else {
           setCollapsed(false);
@@ -204,8 +221,14 @@
 
       if (pinned) {
         if (heroIntro) heroIntro.style.opacity = 0;
-        var bottom = header.getBoundingClientRect().bottom;
-        nav.style.top = (bottom - nav.offsetHeight - NAV_INSET) + 'px';
+        // Only rewrite `top` when the target actually moves (a resize), so
+        // steady-state scrolling never touches it -- writing it every frame
+        // is what fought the CSS transition and made the dock stutter.
+        var target = collapsedHeaderBottom() - nav.offsetHeight - NAV_INSET;
+        if (pinnedTop === null || Math.abs(target - pinnedTop) > 0.5) {
+          pinnedTop = target;
+          nav.style.top = target + 'px';
+        }
         // reverse of the join condition, plus a hysteresis margin, so
         // scrolling back up un-joins smoothly instead of flickering right
         // at the boundary
@@ -223,6 +246,7 @@
           setCollapsed(false);
           pinned = false;
           joinY = null;
+          pinnedTop = null;
           row2OnAtY = null;
           row3OnAtY = null;
         }
