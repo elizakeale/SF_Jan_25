@@ -266,7 +266,10 @@ img, video{ max-width:100%; display:block; }
    col 3 right-aligned flush with the content block's right edge) rather
    than an evenly-distributed flex row. */
 .hero-links{
-  position:relative; height:3.2em; margin-top: var(--sp-24);
+  /* Figma 175:1004: nav rows at y=652 and y=678 (26px pitch), block running
+     652->706 = 54 tall, starting 34 below the paragraph block's bottom edge
+     at y=618. Was 3.2em/24px, which is why the rows sat a touch tight. */
+  position:relative; height:3.4em; margin-top:34px;
 }
 .hero-links a{
   position:absolute;
@@ -276,24 +279,25 @@ img, video{ max-width:100%; display:block; }
 .hero-links a:nth-child(1){ top:0; left:0; text-align:left; }
 .hero-links a:nth-child(2){ top:0; right: calc(50% + var(--para-gap) / 2); text-align:right; }
 .hero-links a:nth-child(3){ top:0; right:0; text-align:right; }
-.hero-links a:nth-child(4){ top:1.75em; left:0; text-align:left; }
-.hero-links a:nth-child(5){ top:1.75em; right: calc(50% + var(--para-gap) / 2); text-align:right; }
-.hero-links a:nth-child(6){ top:1.75em; right:0; text-align:right; }
+.hero-links a:nth-child(4){ top:1.625em; left:0; text-align:left; }
+.hero-links a:nth-child(5){ top:1.625em; right: calc(50% + var(--para-gap) / 2); text-align:right; }
+.hero-links a:nth-child(6){ top:1.625em; right:0; text-align:right; }
 .hero-links a:hover{ color: var(--orange); }
 
 /* download button: thin outline over the hero photo, left edge, near the
    bottom — Figma's version here is bordered/transparent, not solid-filled */
 .btn-outline{
-  display:inline-flex; align-items:center; gap:var(--sp-8);
+  display:inline-flex; align-items:center; gap:30px; /* Figma: arrow starts at
+    x=345, label ends at 315 -- label left, arrow right, 30 between them */
   font-family: var(--font-body); font-weight:200; font-size:14px;
   letter-spacing:.05em; text-transform:uppercase; text-decoration:none;
   background:transparent; color: var(--white);
   border: 1px solid var(--white);
-  padding: var(--sp-8) var(--sp-16);
+  padding: 4px 10px; /* Figma 175:1004 Group 16: 324x33 box, label inset 8/4 */
   transition: background .18s ease, color .18s ease;
 }
 .btn-outline:hover{ background: var(--white); color: var(--ink); }
-.btn-outline img{ width:12px; height:12px; }
+.btn-outline img{ width:9px; height:9px; } /* Figma Group 17: 9x9 */
 .btn-outline:hover img{ filter: invert(1); } /* white arrow -> dark on hover's white fill */
 .hero-catalogue-link{
   position:absolute; z-index:2; left: var(--edge); bottom: var(--sp-40);
@@ -349,7 +353,9 @@ img, video{ max-width:100%; display:block; }
 }
 .carousel .tile figcaption{
   background: transparent; color:#fff;
-  padding: 0 var(--sp-16) var(--sp-8);
+  padding: 0 var(--sp-16) var(--sp-8) 0; /* Figma: captions are flush with their
+    own tile's left edge (175:1030 x=866 = image x=866, and the same for
+    175:1035 / 175:1033) -- the 16px inset was ours, not the design's */
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.05em; text-transform:uppercase; white-space:nowrap;
   pointer-events:none;
@@ -386,13 +392,14 @@ img, video{ max-width:100%; display:block; }
 .catalogue-band{
   display:flex; align-items:center; justify-content:flex-end;
   background: transparent; color: var(--white); text-decoration:none;
-  padding: var(--sp-8) var(--edge) 0; /* round 10: no gap before the cove
-    image below -- Eliza: "no padding between the catalog and the cove
-    table, it should be flush" (was padding-bottom: var(--sp-16)) */
+  padding: 28px 21px 0; /* Figma 175:1023/175:1024: the CATALOGUE line sits 28
+    below the caption row (which ends y=1289) and its box ends at y=1361 --
+    exactly where the cove image starts, so zero bottom padding, confirmed.
+    Arrow sits 21 from the frame's right edge, not the 40 page margin. */
   font-family: var(--font-body); font-weight:200; font-size: 25px;
   letter-spacing:.05em; text-transform:uppercase; gap: var(--sp-8);
 }
-.catalogue-band img{ width:16px; height:16px; }
+.catalogue-band img{ width:19px; height:20px; } /* Figma 175:1024 */
 .catalogue-band:hover{ color: var(--orange-light); } /* text only -- precisely re-tinting the SVG icon itself via CSS filter isn't reliable, not worth the fragility for a minor icon nuance */
 
 /* ---------- feature product block ---------- */
