@@ -204,6 +204,14 @@ img, video{ max-width:100%; display:block; }
   position:absolute; z-index:2;
   left: 43.4%; right: var(--edge); top: 60.1%;
 }
+/* z-index:2 above makes .hero-content its own stacking context, which
+   traps #heroNav's z-index:55 inside it -- so once docked, the nav could
+   never paint above .wordmark-header (z-index:50). The header covered the
+   docked nav and ate its pointer events, which is why hover stopped
+   turning the links orange, and why the bar's solid background would have
+   hidden the nav outright. js/main.js adds this class only while the nav
+   is docked, so the un-docked hero keeps its original stacking. */
+.hero-content.is-nav-pinned{ z-index: 60; }
 .hero-intro{
   display:grid; gap: var(--para-gap);
   grid-template-columns: 1fr 1fr;

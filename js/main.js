@@ -77,6 +77,7 @@
   (function header() {
     var MULTIPLY_START = 80; // scroll (px) before the wordmark starts multiplying at all
     var ROW_STAGGER = 225; // extra scroll (px) required between row 2 and row 3 turning on -- scaled up with the slower transition so row 2 visibly finishes before row 3 starts
+    var ROW3_HOLD = 260; // scroll (px) the full 3x wordmark stays up before the header joins/collapses -- without this the join fires the instant row 3 turns on and folds it away again in the same frame, so the wordmark only ever appears to double
     var PARA_FADE_ZONE = 160; // px of header-to-paragraph clearance over which .hero-intro smoothly fades out -- large enough that opacity always reaches 0 well before the header could physically reach the paragraphs
     var JOIN_BUFFER = 8; // dock the instant the nav would otherwise be covered, not a frame late
     var UNJOIN_MARGIN = 48; // extra hysteresis (px) before un-joining on the way back up, so it doesn't flicker right at the boundary
@@ -95,7 +96,8 @@
     var ticking = false;
     var pinned = false;
     var row2OnAtY = null; // scrollY at which row 2 first turned on this downward pass -- drives the stagger
-    var navDocTop = null; // nav's natural top in DOCUMENT coordinates -- stable while unpinned, since .hero-content is a %-of-.hero position independent of scroll or of how tall the header currently is
+    var row3OnAtY = null; // scrollY at which row 3 turned on -- drives ROW3_HOLD
+    var joinY = null; // scrollY at which the header joined/collapsed -- the un-join is measured back from here, never from geometry (see the pinned branch)
 
     // True intrinsic header height for a given hypothetical row state, from
     // each row's own scrollHeight (unaffected by max-height/overflow:hidden
@@ -129,13 +131,11 @@
       var y = window.scrollY;
       var mobile = window.innerWidth <= 900;
 
-      if (!pinned) navDocTop = nav.getBoundingClientRect().top + y;
-
       if (mobile) {
         setRows(false, false);
         setCollapsed(false);
         if (heroIntro) heroIntro.style.opacity = '';
-        if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); nav.style.top = ''; pinned = false; row2OnAtY = null; }
+        if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); heroContent.classList.remove('is-nav-pinned'); nav.style.top = ''; pinned = false; row2OnAtY = null; row3OnAtY = null; joinY = null; }
         return;
       }
 
@@ -149,6 +149,8 @@
         if (!row2On) row2OnAtY = null;
         var staggered = row2OnAtY !== null && (y - row2OnAtY) >= ROW_STAGGER;
         var row3On = row2On && staggered;
+        if (row3On && row3OnAtY === null) row3OnAtY = y;
+        if (!row3On) row3OnAtY = null;
         setRows(row2On, row3On);
 
         var headerBottom = predictedHeaderBottom(row2On, row3On);
@@ -164,34 +166,32 @@
           heroIntro.style.opacity = clamp(gap / PARA_FADE_ZONE, 0, 1);
         }
 
-        // -- join trigger: has the nav's own natural (still in normal flow)
-        // position now reached the header, whatever the header's current
-        // height happens to be? This is a physical condition, not a
-        // permissive one, so it can never fire while there's still daylight
-        // between the nav and the header -- and since the paragraphs sit
-        // above the nav in the same block, they're already clear by now. --
-        var navNaturalTop = navDocTop - y;
+        // -- join trigger. This used to be geometric ("has the header
+        // physically reached the nav yet"), which on the real layout fired
+        // far later than its own numbers predicted and, once re-tuned,
+        // fought the un-join test frame by frame. It is now purely
+        // scroll-distance based: the full 3x wordmark must have been up
+        // for ROW3_HOLD px before the header docks and hard-cuts to its
+        // collapsed state -- multiply, THEN dock, per the header's own
+        // original design note. heroScrolledOut stays as a backstop for a
+        // viewport too short to fit the whole multiply over the hero. --
         var heroScrolledOut = heroEl && heroEl.getBoundingClientRect().bottom <= headerBottom + JOIN_BUFFER;
-        // round 10 v2: the geometric "has the header physically reached
-        // the nav yet" trigger (navNaturalTop <= headerBottom+JOIN_BUFFER)
-        // turned out unreliable in practice -- on Eliza's real layout it
-        // was firing far later than the numbers predicted (or effectively
-        // never, short of the heroScrolledOut backstop), leaving the
-        // header sitting transparent with the nav still in its 2-row
-        // unpinned layout for a long, visually-static stretch of scroll
-        // ("there's a weird glitch... like nothing's happening for a
-        // while"). Per the header's own original design comment --
-        // multiply, THEN dock, THEN hard-cut to collapsed -- join is now
-        // simply "the 3x multiply has finished" (a plain scroll-distance
-        // condition, not dependent on measuring the header/nav geometry
-        // at all), with heroScrolledOut kept as a backstop for a short
-        // viewport where multiply might not fit before the hero ends.
-        if (row3On || heroScrolledOut) {
+        var multiplyHeld = row3On && row3OnAtY !== null && (y - row3OnAtY) >= ROW3_HOLD;
+        if (multiplyHeld || heroScrolledOut) {
           var startTop = nav.getBoundingClientRect().top;
           nav.style.top = startTop + 'px';
           nav.classList.add('is-pinned', 'is-collapsed-nav');
+          // .hero-content carries z-index:2, which makes it its own
+          // stacking context -- so the nav's own z-index:55 was trapped
+          // inside it and could never rise above the header's z-index:50.
+          // The header therefore painted OVER the docked nav and swallowed
+          // its mouse events, which is why hover stopped turning the links
+          // orange. Raise the whole block above the header, but only while
+          // docked, so the un-docked hero still sits behind it as before.
+          heroContent.classList.add('is-nav-pinned');
           void nav.offsetHeight;
           pinned = true;
+          joinY = y;
           // collapse happens in the SAME instant as join -- no lingering
           // phase where the nav is pinned over a still-transparent header
           setRows(false, false);
@@ -209,14 +209,22 @@
         // reverse of the join condition, plus a hysteresis margin, so
         // scrolling back up un-joins smoothly instead of flickering right
         // at the boundary
-        var singleLineBottom = predictedHeaderBottom(false, false);
-        var natTop = navDocTop - y;
-        if (natTop > singleLineBottom + JOIN_BUFFER + UNJOIN_MARGIN) {
+        // The un-join MUST mirror the join, not re-test geometry: at the
+        // moment we dock, the nav's own natural position is still far
+        // below the header, so a geometric un-join test is already true
+        // and the header un-joins on the very next frame -- join, un-join,
+        // join, un-join, every frame. That thrash is what made the
+        // wordmark look like it only doubled, killed the hover state, and
+        // left --hdr-bg-a landing on 0 so the bar never went solid.
+        if (joinY !== null && y < joinY - UNJOIN_MARGIN) {
           nav.classList.remove('is-pinned', 'is-collapsed-nav');
+          heroContent.classList.remove('is-nav-pinned');
           nav.style.top = '';
           setCollapsed(false);
           pinned = false;
+          joinY = null;
           row2OnAtY = null;
+          row3OnAtY = null;
         }
       }
     }
