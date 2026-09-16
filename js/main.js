@@ -75,13 +75,21 @@
      stagger distance scaled up to match so row 2 still visibly finishes
      opening before row 3 starts ("one at a time"). */
   (function header() {
-    var MULTIPLY_START = 80; // scroll (px) before the wordmark starts multiplying at all
-    var ROW_STAGGER = 225; // extra scroll (px) required between row 2 and row 3 turning on -- scaled up with the slower transition so row 2 visibly finishes before row 3 starts
-    var ROW3_HOLD = 260; // scroll (px) the full 3x wordmark stays up before the header joins/collapses -- without this the join fires the instant row 3 turns on and folds it away again in the same frame, so the wordmark only ever appears to double
+    // Every step below is an ABSOLUTE scroll depth, not a delta measured
+    // from wherever the previous step happened to fire. The delta version
+    // meant a fast scroll could blow past row 3's window entirely and land
+    // straight on the join -- Eliza: "the third Fritz only shows up
+    // sometimes." Fixed depths make the sequence identical every pass, at
+    // any scroll speed, and the whole thing now completes by 440px so it
+    // fits comfortably inside the hero.
+    var MULTIPLY_START = 60; // row 2 on
+    var ROW_STAGGER = 180; // + this = row 3 on (240)
+    var ROW3_HOLD = 200; // + this = the full 3x has been up long enough; dock (440)
     var PARA_FADE_ZONE = 160; // px of header-to-paragraph clearance over which .hero-intro smoothly fades out -- large enough that opacity always reaches 0 well before the header could physically reach the paragraphs
     var JOIN_BUFFER = 8; // dock the instant the nav would otherwise be covered, not a frame late
     var UNJOIN_MARGIN = 48; // extra hysteresis (px) before un-joining on the way back up, so it doesn't flicker right at the boundary
-    var NAV_INSET = 28; // how far the nav tucks up from the collapsed bar's own bottom edge -- Figma's orange collapse frame leaves clear air under the second nav row, which 16px didn't
+    var NAV_INSET = 12; // gap under the docked nav -- Figma 460:1999: nav block ends at y=185 in a bar whose bottom edge (460:2015) is y=197
+    var NAV_FADE_ZONE = 90; // px of clearance over which the hero nav fades as the growing wordmark closes in -- Eliza: "the nav bar elements start to hide behind the third Fritz... they should never overlap"
 
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
@@ -95,8 +103,6 @@
 
     var ticking = false;
     var pinned = false;
-    var row2OnAtY = null; // scrollY at which row 2 first turned on this downward pass -- drives the stagger
-    var row3OnAtY = null; // scrollY at which row 3 turned on -- drives ROW3_HOLD
     var joinY = null; // scrollY at which the header joined/collapsed -- the un-join is measured back from here, never from geometry (see the pinned branch)
     var pinnedTop = null; // last `top` written to the docked nav -- only rewritten when it actually changes (resize), never per frame
 
@@ -147,7 +153,7 @@
         setRows(false, false);
         setCollapsed(false);
         if (heroIntro) heroIntro.style.opacity = '';
-        if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); heroContent.classList.remove('is-nav-pinned'); nav.style.top = ''; pinned = false; row2OnAtY = null; row3OnAtY = null; joinY = null; pinnedTop = null; }
+        if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); heroContent.classList.remove('is-nav-pinned'); nav.style.top = ''; pinned = false; joinY = null; pinnedTop = null; }
         return;
       }
 
@@ -157,12 +163,7 @@
         // the paragraphs protect themselves independently (fade below), so
         // the rows are free to reach a full triple every time. --
         var row2On = y > MULTIPLY_START;
-        if (row2On && row2OnAtY === null) row2OnAtY = y;
-        if (!row2On) row2OnAtY = null;
-        var staggered = row2OnAtY !== null && (y - row2OnAtY) >= ROW_STAGGER;
-        var row3On = row2On && staggered;
-        if (row3On && row3OnAtY === null) row3OnAtY = y;
-        if (!row3On) row3OnAtY = null;
+        var row3On = y > MULTIPLY_START + ROW_STAGGER;
         setRows(row2On, row3On);
 
         var headerBottom = predictedHeaderBottom(row2On, row3On);
@@ -178,6 +179,15 @@
           heroIntro.style.opacity = clamp(gap / PARA_FADE_ZONE, 0, 1);
         }
 
+        // The paragraphs got out of the way, but the nav sits below them in
+        // the same block and did not -- so the third row of STUDIO/FRITZ
+        // came down on top of CUSTOM/ABOUT/CONTACT. Same treatment: fade on
+        // the nav's own live clearance, so it is gone before the wordmark
+        // can reach it and simply reappears once docked. No transition
+        // needed -- this is scroll-linked, so it is already smooth.
+        var navClear = nav.getBoundingClientRect().top - headerBottom;
+        nav.style.opacity = clamp(navClear / NAV_FADE_ZONE, 0, 1);
+
         // -- join trigger. This used to be geometric ("has the header
         // physically reached the nav yet"), which on the real layout fired
         // far later than its own numbers predicted and, once re-tuned,
@@ -188,10 +198,8 @@
         // original design note. heroScrolledOut stays as a backstop for a
         // viewport too short to fit the whole multiply over the hero. --
         var heroScrolledOut = heroEl && heroEl.getBoundingClientRect().bottom <= headerBottom + JOIN_BUFFER;
-        var multiplyHeld = row3On && row3OnAtY !== null && (y - row3OnAtY) >= ROW3_HOLD;
+        var multiplyHeld = y > MULTIPLY_START + ROW_STAGGER + ROW3_HOLD;
         if (multiplyHeld || heroScrolledOut) {
-          var startTop = nav.getBoundingClientRect().top;
-          nav.style.top = startTop + 'px';
           nav.classList.add('is-pinned', 'is-collapsed-nav');
           // .hero-content carries z-index:2, which makes it its own
           // stacking context -- so the nav's own z-index:55 was trapped
@@ -211,8 +219,13 @@
           // ...and the nav is aimed at its FINAL resting place in that same
           // frame, so its .45s glide and the rows' .45s fold run as one
           // motion rather than the nav chasing the bar down after the fact.
-          pinnedTop = collapsedHeaderBottom() - nav.offsetHeight - NAV_INSET;
+          var barBottom = collapsedHeaderBottom();
+          pinnedTop = barBottom - nav.offsetHeight - NAV_INSET;
           nav.style.top = pinnedTop + 'px';
+          nav.style.opacity = 1;
+          // the pre-footer carousel sticks below the bar rather than under
+          // it -- see .scroll-hijack-sticky's top: var(--hdr-h)
+          document.documentElement.style.setProperty('--hdr-h', barBottom + 'px');
           if (heroIntro) heroIntro.style.opacity = 0;
         } else {
           setCollapsed(false);
@@ -221,6 +234,7 @@
 
       if (pinned) {
         if (heroIntro) heroIntro.style.opacity = 0;
+        nav.style.opacity = 1;
         // Only rewrite `top` when the target actually moves (a resize), so
         // steady-state scrolling never touches it -- writing it every frame
         // is what fought the CSS transition and made the dock stutter.
@@ -243,12 +257,11 @@
           nav.classList.remove('is-pinned', 'is-collapsed-nav');
           heroContent.classList.remove('is-nav-pinned');
           nav.style.top = '';
+          document.documentElement.style.setProperty('--hdr-h', '0px');
           setCollapsed(false);
           pinned = false;
           joinY = null;
           pinnedTop = null;
-          row2OnAtY = null;
-          row3OnAtY = null;
         }
       }
     }
@@ -337,7 +350,10 @@
         var inner = hijacked.filter(function (h) { return wrap.contains(h.el); })[0];
         if (!inner) return;
         var rect = wrap.getBoundingClientRect();
-        var total = wrap.offsetHeight - window.innerHeight;
+        // The pane is no longer viewport-tall, so the pin lasts
+        // wrapHeight - paneHeight, not wrapHeight - viewportHeight.
+        var pane = wrap.querySelector('.scroll-hijack-sticky');
+        var total = wrap.offsetHeight - (pane ? pane.offsetHeight : window.innerHeight);
         if (total <= 0) return;
         var scrolledInto = -rect.top;
         var progress = clamp(scrolledInto / total);

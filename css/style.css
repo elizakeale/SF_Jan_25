@@ -171,8 +171,9 @@ img, video{ max-width:100%; display:block; }
    px top (not tied to header height) so it stays correct no matter how
    tall the header gets during multiply. */
 .wm-mark{
-  position:absolute; left:50%; top: calc(var(--sp-8) + 18px); transform: translateX(-50%);
-  width:83px; z-index:1; pointer-events:none;
+  position:absolute; left:50%; top:40px; transform: translateX(-50%);
+  width:83px; z-index:1; pointer-events:none; /* Figma 460:2063: x=679 w=83
+    (centred on the 1440 frame) at y=40 -- measured, not eyeballed */
 }
 .wm-mark img{ width:100%; display:block; }
 
@@ -190,16 +191,23 @@ img, video{ max-width:100%; display:block; }
    the same 43.4% .hero-content already uses. */
 #heroNav.is-pinned{
   position:fixed; left:43.4%; right:var(--edge); margin-top:0; height:3.2em; z-index:55;
-  transition: top .45s ease; /* matches --wm-row-dur on
-    .wordmark-header.is-collapsed, so the rows folding up and the nav
-    rising into the bar start and finish together instead of staggering */
+  transition: none; /* Eliza: "it comes down and shoots all the way down and
+    then comes back up... can we just have it just show up because it's just
+    adding thrash." Animating `top` here is what produced that -- the nav is
+    now placed directly in the bar with no travel at all. */
 }
 /* Once tucked inside the collapsed bar the nav reads at Figma's much
    smaller scale (218:69: each link's box is ~28px tall at 1440px ref width,
    vs. the hero's own --fs-body) -- shrink font-size only in this state; the
    row-to-row em-based top offsets in .hero-links a:nth-child(4/5/6) scale
    down automatically with it. */
-#heroNav.is-pinned.is-collapsed-nav{ height:2.1em; }
+/* 2.1em was sized for the old shrunken nav type and UNDERSTATED the real
+   two-row content (~3.4em), so positioning from this box left the second
+   row hanging past the bar's bottom edge -- Eliza: "the bottom row of nav
+   is just being cut off by the orange." Figma 460:2022-2027: rows at
+   y=131 and y=157, each 28 tall, so the block runs 131->185 inside a
+   197-tall bar. */
+#heroNav.is-pinned.is-collapsed-nav{ height:3.4em; }
 /* round 10: nav must NOT shrink once docked -- Eliza: "nav bar items are shrinking... they should just stay the same." (was font-size:11px here) */
 @media (max-width: 900px){ #heroNav.is-pinned{ position:static; left:auto; right:auto; top:auto !important; } }
 
@@ -333,7 +341,7 @@ img, video{ max-width:100%; display:block; }
 .carousel-track.dragging{ cursor:grabbing; scroll-snap-type:none; }
 .carousel .tile{ flex:0 0 auto; margin:0; }
 .tile-media{
-  position:relative; overflow:hidden; height: 46vw; max-height:420px; min-height:220px;
+  position:relative; overflow:hidden; height: 46vw; max-height:389px; min-height:220px; /* Figma: every carousel tile is 389 tall (460:2046/2028/2005/2002 and 460:2049-2052) */
 }
 .tile-media img, .tile-media video{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
@@ -350,8 +358,7 @@ img, video{ max-width:100%; display:block; }
 /* pre-footer carousel: scroll-hijacked (vertical scroll -> horizontal, 1:1) */
 .scroll-hijack{ position:relative; }
 .scroll-hijack-sticky{
-  position:sticky; top:0; height:100vh; overflow:hidden; background: var(--orange);
-  display:flex; flex-direction:column; justify-content:center;
+  position:sticky; top: var(--hdr-h, 0px); height:auto; overflow:hidden; background: var(--orange);
 } /* round 10 v3: flex-end (v2) just relocated the dead space from below the
      carousel to above it -- still one large, clearly-visible blank block,
      now sitting right under the hero, per Eliza's "big padding gaps are
@@ -366,18 +373,14 @@ img, video{ max-width:100%; display:block; }
      or after it. Explicit background here too, so that leftover space is
      never anything but orange. */
 .scroll-hijack .carousel-track{ overflow-x:hidden; } /* position driven by JS, not native scroll */
-/* The sticky pane has to stay a full viewport tall (the hijack's scroll
-   math depends on it), so any height the carousel doesn't use shows up as
-   dead orange -- above it, below it, or split between the two, which is
-   all the last three attempts ever managed to do. The fix is to stop
-   leaving a gap at all: for THIS carousel only, the tiles fill the pane's
-   height, and each tile's own aspect-ratio drives its width from there,
-   so nothing is stretched or distorted. Result: flush to the cove image
-   above, flush to the footer below. */
-.scroll-hijack .tile-media{
-  height: calc(100vh - 28px); /* 28px ~= the caption line + its bottom padding */
-  max-height:none; min-height:0;
-}
+/* Blowing the tiles up to fill a viewport-tall pane was the wrong lever --
+   Figma has this carousel at the same 389 band as every other one
+   (460:2049-2052), sitting flush under the cove image (which ends at
+   y=1656, exactly where the band starts) and running straight into the
+   footer. So the pane hugs the band instead of being a viewport-tall box
+   with slack that has to be parked somewhere, and it sticks BELOW the
+   collapsed bar (--hdr-h, published by js/main.js) so the bar never
+   covers it. */
 
 /* ---------- catalogue CTA band ---------- */
 .catalogue-band{
