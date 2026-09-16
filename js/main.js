@@ -75,26 +75,35 @@
      stagger distance scaled up to match so row 2 still visibly finishes
      opening before row 3 starts ("one at a time"). */
   (function header() {
-    // Every step below is an ABSOLUTE scroll depth, not a delta measured
-    // from wherever the previous step happened to fire. The delta version
-    // meant a fast scroll could blow past row 3's window entirely and land
-    // straight on the join -- Eliza: "the third Fritz only shows up
-    // sometimes." Fixed depths make the sequence identical every pass, at
-    // any scroll speed, and the whole thing now completes by 440px so it
-    // fits comfortably inside the hero.
-    var MULTIPLY_START = 60; // row 2 on
-    var ROW_STAGGER = 180; // + this = row 3 on (240)
-    var ROW3_HOLD = 200; // + this = the full 3x has been up long enough; dock (440)
-    var PARA_FADE_ZONE = 160; // px of header-to-paragraph clearance over which .hero-intro smoothly fades out -- large enough that opacity always reaches 0 well before the header could physically reach the paragraphs
-    var JOIN_BUFFER = 8; // dock the instant the nav would otherwise be covered, not a frame late
-    var UNJOIN_MARGIN = 48; // extra hysteresis (px) before un-joining on the way back up, so it doesn't flicker right at the boundary
-    var NAV_GAP = 33; // wordmark bottom -> docked nav top. Figma 460:1999: nav y=131, bar padTop 8, wordmark line ~90 => 33
-    var NAV_BOTTOM_AIR = 24; // air under the second nav row; Figma's own is 12, which read tight live
+    /* ------------------------------------------------------------------
+       The whole sequence is anchored to ONE measured number: dockDepth,
+       the scroll depth at which the hero nav's own natural position lands
+       exactly where it sits inside the collapsed bar. Docking THERE costs
+       zero pixels -- the links are already on that pixel, so fixing them
+       in place moves nothing. That removes the jump entirely, rather than
+       trying to smooth it.
+
+       Every earlier step is placed as a FRACTION of that runway, never as
+       a hardcoded pixel count, so the pacing is identical on a 13" laptop
+       and a 27" iMac -- the same class of bug as the old fixed tile cap
+       and fixed carousel runway.
+
+       The wordmark un-stacks on the way down as the mirror of how it
+       stacked up (same .7875s wipe, reversed), finishing before the links
+       arrive. So the three-deep wordmark is never hanging over them, and
+       the bar closing around the nav is the single event in the sequence.
+       ------------------------------------------------------------------ */
+    var T_ROW2_ON = 0.08; // fractions of dockDepth
+    var T_ROW3_ON = 0.30;
+    var T_ROW3_OFF = 0.55; // un-stack well before the links reach the 3-row block
+    var T_ROW2_OFF = 0.75;
+    var PARA_FADE_ZONE = 160; // px of clearance over which the paragraphs fade -- scroll-linked, so it reads as driven rather than triggered
+    var NAV_GAP = 33; // wordmark bottom -> nav top inside the bar. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
+    var UNDOCK_MARGIN = 2; // float-safety only; the dock is zero-pixel, so it needs no real hysteresis
 
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
     var heroContent = document.querySelector('.hero-content');
-    var heroEl = document.getElementById('hero'); // round 10 backstop: never let the header stay transparent once the hero itself has scrolled out from under it
     var heroIntro = document.querySelector('.hero-intro');
     var row1 = header ? header.querySelector('.wm-row-1') : null;
     var rows2 = document.querySelectorAll('.wm-row-2');
@@ -103,39 +112,34 @@
 
     var ticking = false;
     var pinned = false;
-    var joinY = null; // scrollY at which the header joined/collapsed -- the un-join is measured back from here, never from geometry (see the pinned branch)
-    var pinnedTop = null; // last `top` written to the docked nav -- only rewritten when it actually changes (resize), never per frame
+    var navFlowTop = null; // nav's natural top in DOCUMENT coords, valid only while unpinned
+    var dockDepth = null;
+    var lastTop = null;
 
-    // True intrinsic header height for a given hypothetical row state, from
-    // each row's own scrollHeight (unaffected by max-height/overflow:hidden
-    // or by a transition currently in flight) -- never a live, possibly
-    // mid-animation, getBoundingClientRect() read.
-    function predictedHeaderBottom(on2, on3) {
-      var padTop = parseFloat(getComputedStyle(header).paddingTop) || 0;
-      var h = padTop + row1.scrollHeight;
-      if (on2) h += rows2[0].scrollHeight;
-      if (on3) h += rows3[0].scrollHeight;
-      return h + padTop; // header's own top/bottom padding match pre-collapse
-    }
+    function padTop() { return parseFloat(getComputedStyle(header).paddingTop) || 0; }
 
-    // The collapsed bar's final height, readable on the same frame the
-    // collapse starts: padding isn't transitioned, and row 1 never
-    // animates, so this is exact even while rows 2/3 are still folding.
-    // Measuring the LIVE header instead (getBoundingClientRect) is what
-    // made the dock jumpy -- it re-aimed the nav every frame at a target
-    // that was itself still moving, fighting the nav's own transition.
-    function collapsedHeaderBottom() {
+    // Where the nav rests inside the bar. Depends only on the padding-top and
+    // row 1, neither of which the collapse changes -- so this is the same
+    // number before and after docking, which is what makes the dock free.
+    function navRestTop() { return padTop() + row1.scrollHeight + NAV_GAP; }
+
+    function barBottom() {
       var cs = getComputedStyle(header);
       return (parseFloat(cs.paddingTop) || 0) + row1.scrollHeight + (parseFloat(cs.paddingBottom) || 0);
     }
 
-    // Figma measures the docked nav DOWN from the bar's top (y=131), not up
-    // from its bottom edge -- which matters because the bar's bottom padding
-    // is what carries the air under the second row. Measuring from the top
-    // means adding that air never drags the nav up into the wordmark.
-    function navDockTop() {
-      var padTop = parseFloat(getComputedStyle(header).paddingTop) || 0;
-      return padTop + row1.scrollHeight + NAV_GAP;
+    // Intrinsic header height for a hypothetical row state, from each row's
+    // own scrollHeight -- never a mid-animation getBoundingClientRect read.
+    function predictedBottom(on2, on3) {
+      var h = padTop() + row1.scrollHeight;
+      if (on2) h += rows2[0].scrollHeight;
+      if (on3) h += rows3[0].scrollHeight;
+      return h + padTop();
+    }
+
+    function measure() {
+      navFlowTop = nav.getBoundingClientRect().top + window.scrollY;
+      dockDepth = Math.max(1, navFlowTop - navRestTop());
     }
 
     function setRows(on2, on3) {
@@ -143,137 +147,83 @@
       rows3.forEach(function (el) { el.classList.toggle('is-on', on3); });
     }
 
-    function setCollapsed(on) {
-      header.classList.toggle('is-collapsed', on);
-      // round 10: "as i scroll back up... seamlessly reveal the rest of
-      // the bluff table background and video" -- going solid stays an
-      // instant hard cut (0s), but reverting fades smoothly, via a CSS
-      // var the ::before rule's transition-duration reads.
-      header.style.setProperty('--hdr-reveal', on ? '0s' : '.6s');
-      header.style.setProperty('--hdr-bg-a', on ? 1 : 0);
+    function dock() {
+      nav.classList.add('is-pinned', 'is-collapsed-nav');
+      // .hero-content's z-index:2 makes it a stacking context, trapping the
+      // nav below the header -- raise it only while docked.
+      heroContent.classList.add('is-nav-pinned');
+      lastTop = navRestTop();
+      nav.style.top = lastTop + 'px';
+      header.classList.add('is-collapsed');
+      header.style.setProperty('--hdr-bg-a', 1);
+      // the pre-footer carousel sticks below the bar, not under it
+      document.documentElement.style.setProperty('--hdr-h', barBottom() + 'px');
+      pinned = true;
+    }
+
+    function undock() {
+      nav.classList.remove('is-pinned', 'is-collapsed-nav');
+      heroContent.classList.remove('is-nav-pinned');
+      nav.style.top = '';
+      header.classList.remove('is-collapsed');
+      header.style.setProperty('--hdr-bg-a', 0);
+      document.documentElement.style.setProperty('--hdr-h', '0px');
+      pinned = false;
+      lastTop = null;
+      measure();
     }
 
     function render() {
       ticking = false;
       var y = window.scrollY;
-      var mobile = window.innerWidth <= 900;
 
-      if (mobile) {
+      if (window.innerWidth <= 900) {
         setRows(false, false);
-        setCollapsed(false);
         if (heroIntro) heroIntro.style.opacity = '';
-        if (pinned) { nav.classList.remove('is-pinned', 'is-collapsed-nav'); heroContent.classList.remove('is-nav-pinned'); nav.style.top = ''; pinned = false; joinY = null; pinnedTop = null; }
+        if (pinned) undock();
         return;
       }
 
+      if (!pinned) measure();
+
+      if (!pinned && y >= dockDepth) dock();
+      else if (pinned && y < dockDepth - UNDOCK_MARGIN) undock();
+
+      // --- rows: a monotonic function of scroll depth, so scrolling back up
+      // replays the same states in reverse and nothing can oscillate.
+      var on2 = false, on3 = false;
       if (!pinned) {
-        // -- multiply, one row at a time, purely on scroll distance + stagger.
-        // No longer gated by paragraph proximity -- see the comment above:
-        // the paragraphs protect themselves independently (fade below), so
-        // the rows are free to reach a full triple every time. --
-        var row2On = y > MULTIPLY_START;
-        var row3On = y > MULTIPLY_START + ROW_STAGGER;
-        setRows(row2On, row3On);
+        var t = y / dockDepth;
+        if (t >= T_ROW2_ON && t < T_ROW2_OFF) on2 = true;
+        if (t >= T_ROW3_ON && t < T_ROW3_OFF) on3 = true;
+      }
+      setRows(on2, on3);
 
-        var headerBottom = predictedHeaderBottom(row2On, row3On);
-
-        // -- paragraphs fade out smoothly as the header's predicted bottom
-        // edge closes in on them, so they are already invisible well
-        // before any visual overlap could happen ("drop off and
-        // disappear... rather than go behind it") -- proportional to the
-        // real live gap, so it self-adjusts to any viewport height. --
-        if (heroIntro) {
-          var contentTop = heroContent.getBoundingClientRect().top;
-          var gap = contentTop - headerBottom;
-          heroIntro.style.opacity = clamp(gap / PARA_FADE_ZONE, 0, 1);
-        }
-
-        // The nav is never faded -- Eliza: "they should be continuous and
-        // persistent and static." Overlap with the growing wordmark is
-        // prevented by docking before it can happen (navWouldBeCovered
-        // below), not by hiding the nav on the way there.
-
-        // -- join trigger. This used to be geometric ("has the header
-        // physically reached the nav yet"), which on the real layout fired
-        // far later than its own numbers predicted and, once re-tuned,
-        // fought the un-join test frame by frame. It is now purely
-        // scroll-distance based: the full 3x wordmark must have been up
-        // for ROW3_HOLD px before the header docks and hard-cuts to its
-        // collapsed state -- multiply, THEN dock, per the header's own
-        // original design note. heroScrolledOut stays as a backstop for a
-        // viewport too short to fit the whole multiply over the hero. --
-        var heroScrolledOut = heroEl && heroEl.getBoundingClientRect().bottom <= headerBottom + JOIN_BUFFER;
-        var multiplyHeld = y > MULTIPLY_START + ROW_STAGGER + ROW3_HOLD;
-        var navWouldBeCovered = nav.getBoundingClientRect().top <= headerBottom + JOIN_BUFFER;
-        if (multiplyHeld || navWouldBeCovered || heroScrolledOut) {
-          nav.classList.add('is-pinned', 'is-collapsed-nav');
-          // .hero-content carries z-index:2, which makes it its own
-          // stacking context -- so the nav's own z-index:55 was trapped
-          // inside it and could never rise above the header's z-index:50.
-          // The header therefore painted OVER the docked nav and swallowed
-          // its mouse events, which is why hover stopped turning the links
-          // orange. Raise the whole block above the header, but only while
-          // docked, so the un-docked hero still sits behind it as before.
-          heroContent.classList.add('is-nav-pinned');
-          void nav.offsetHeight;
-          pinned = true;
-          joinY = y;
-          // collapse happens in the SAME instant as join -- no lingering
-          // phase where the nav is pinned over a still-transparent header
-          setRows(false, false);
-          setCollapsed(true);
-          // ...and the nav is aimed at its FINAL resting place in that same
-          // frame, so its .45s glide and the rows' .45s fold run as one
-          // motion rather than the nav chasing the bar down after the fact.
-          var barBottom = collapsedHeaderBottom();
-          pinnedTop = navDockTop();
-          nav.style.top = pinnedTop + 'px';
-          // the pre-footer carousel sticks below the bar rather than under
-          // it -- see .scroll-hijack-sticky's top: var(--hdr-h)
-          document.documentElement.style.setProperty('--hdr-h', barBottom + 'px');
-          if (heroIntro) heroIntro.style.opacity = 0;
+      if (heroIntro) {
+        if (pinned) {
+          heroIntro.style.opacity = 0;
         } else {
-          setCollapsed(false);
+          var gap = heroContent.getBoundingClientRect().top - predictedBottom(on2, on3);
+          heroIntro.style.opacity = clamp(gap / PARA_FADE_ZONE, 0, 1);
         }
       }
 
+      // while docked, `top` is only rewritten if the target genuinely moves
       if (pinned) {
-        if (heroIntro) heroIntro.style.opacity = 0;
-        // Only rewrite `top` when the target actually moves (a resize), so
-        // steady-state scrolling never touches it -- writing it every frame
-        // is what fought the CSS transition and made the dock stutter.
-        var target = navDockTop();
-        if (pinnedTop === null || Math.abs(target - pinnedTop) > 0.5) {
-          pinnedTop = target;
+        var target = navRestTop();
+        if (lastTop === null || Math.abs(target - lastTop) > 0.5) {
+          lastTop = target;
           nav.style.top = target + 'px';
-        }
-        // reverse of the join condition, plus a hysteresis margin, so
-        // scrolling back up un-joins smoothly instead of flickering right
-        // at the boundary
-        // The un-join MUST mirror the join, not re-test geometry: at the
-        // moment we dock, the nav's own natural position is still far
-        // below the header, so a geometric un-join test is already true
-        // and the header un-joins on the very next frame -- join, un-join,
-        // join, un-join, every frame. That thrash is what made the
-        // wordmark look like it only doubled, killed the hover state, and
-        // left --hdr-bg-a landing on 0 so the bar never went solid.
-        if (joinY !== null && y < joinY - UNJOIN_MARGIN) {
-          nav.classList.remove('is-pinned', 'is-collapsed-nav');
-          heroContent.classList.remove('is-nav-pinned');
-          nav.style.top = '';
-          document.documentElement.style.setProperty('--hdr-h', '0px');
-          setCollapsed(false);
-          pinned = false;
-          joinY = null;
-          pinnedTop = null;
         }
       }
     }
+
     function onScroll() { if (!ticking) { requestAnimationFrame(render); ticking = true; } }
-    function onResize() { row2OnAtY = null; onScroll(); }
+    function onResize() { if (pinned) undock(); measure(); onScroll(); }
     if (reduce) { header.style.transition = 'none'; nav.style.transition = 'none'; }
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
+    measure();
     render();
   })();
 

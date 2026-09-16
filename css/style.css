@@ -110,9 +110,9 @@ img, video{ max-width:100%; display:block; }
      gradual, 50% less fast"), but the collapse is a different beat: it has
      to land in lockstep with the nav rising into the bar, and at .7875s
      that read as two separate events. Collapse gets its own faster
-     duration, matched exactly by #heroNav.is-pinned's own transition
-     below, so the wordmark folding and the nav docking are one motion. */
-  --wm-row-dur: .45s;
+     duration. NOW REMOVED: the wordmark un-stacks on the way down as the
+     mirror of how it stacked up, so both directions use the same .7875s
+     wipe and the collapse is no longer a separate faster event. */
 }
 /* On the orange bar, the orange FRITZ and the orange logomark would both
    disappear into the background -- Figma's orange frame renders them
@@ -133,17 +133,17 @@ img, video{ max-width:100%; display:block; }
    Nav Bar Collapse - Orange". This replaces the frozen bluff-table crop
    -- Eliza's call, to isolate one variable: a flat fill either reads as
    solid or it doesn't, with no ambiguity about whether we're seeing the
-   captured image or the live video behind it. js/main.js drives
-   --hdr-bg-a (0 -> 1 hard cut on the way down, fading back on the way
-   up), so the reveal behavior is unchanged. */
+   captured image or the live video behind it. js/main.js flips --hdr-bg-a
+   at the dock point, which is the one event in the whole sequence. */
 .wordmark-header::before{
   content:''; position:absolute; inset:0; z-index:-1;
   background: var(--orange);
   opacity: var(--hdr-bg-a, 0);
-  transition: opacity var(--hdr-reveal, 0s) ease; /* 0s going solid (hard cut, per
-    round 6-8's "never translucent" rule) -- js/main.js sets this to a real
-    duration only on the way back up, so un-collapsing seamlessly reveals
-    the rest of the image/video instead of hard-cutting both ways. */
+  /* No transition, deliberately, in EITHER direction. The bar appears on
+     the exact frame the nav lands in it, and disappears on the exact frame
+     it leaves -- a fade would be a second event with its own clock, which
+     is the kind of thing that reads as jiggle. (The asymmetric
+     --hdr-reveal fade this used to carry is gone with it.) */
 }
 .wm-col{ display:flex; flex-direction:column; line-height:.9; position:relative; }
 .wm-col span{
@@ -434,7 +434,7 @@ img, video{ max-width:100%; display:block; }
    ~21% (Trade/About/Contact), ~47% (FAQ/Warranty/Press/IG), ~74%
    (newsletter) — reproduced here as absolutely positioned columns rather
    than a generic wrapping flex row, so the alignment matches exactly. */
-.site-footer{ background: var(--orange); color: var(--white); padding: 0 var(--edge) var(--sp-32); } /* Figma (175:1004): footer wordmark sits flush against the last carousel row -- zero top padding, confirmed 2026-09-14 ("orange padding still between last carousel and footer, there should be no padding besides where it says catalogue") */
+.site-footer{ background: var(--orange); color: var(--white); padding: 40px var(--edge) var(--sp-32); } /* Figma (175:1004 / 460:1999) actually has the footer wordmark flush with the caption row -- 2745 to 2745, zero gap -- and that was confirmed on 2026-09-14. Overridden on 2026-09-16 after Eliza flagged it as too narrow three separate times looking at the live page: 40px top. A deliberate departure from Figma, not a miss. */
 .footer-top{ display:flex; flex-direction:column; gap: var(--sp-64); padding-bottom: var(--section-gap); }
 .footer-wm{ position:relative; display:flex; justify-content:space-between; align-items:flex-start; }
 .footer-wm-mark{
