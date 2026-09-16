@@ -122,10 +122,18 @@ img, video{ max-width:100%; display:block; }
    rather than a recolored approximation of it. Both files sit in the
    markup and only their display toggles, so the swap is instant with no
    flash while a second file fetches. */
+/* These used to SWAP at the moment the bar went solid, which was fine for a
+   hard cut. With the orange now ramping in over scroll, a swap would leave
+   FRITZ orange-on-orange for part of the ramp and the logomark popping at
+   one end of it -- so both cross-fade on the same --hdr-bg-a the background
+   uses. One driver, everything in step. (The plain rule is the fallback if
+   color-mix isn't available; it just snaps, as before.) */
 .wordmark-header.is-collapsed .wm-right span{ color: var(--white); }
-.wm-mark .wm-mark-white{ display:none; }
-.wordmark-header.is-collapsed .wm-mark .wm-mark-orange{ display:none; }
-.wordmark-header.is-collapsed .wm-mark .wm-mark-white{ display:block; }
+.wordmark-header.is-collapsed .wm-right span{
+  color: color-mix(in srgb, var(--white) calc(var(--hdr-bg-a, 0) * 100%), var(--orange));
+}
+.wm-mark .wm-mark-white{ position:absolute; inset:0; opacity: var(--hdr-bg-a, 0); }
+.wm-mark .wm-mark-orange{ opacity: calc(1 - var(--hdr-bg-a, 0)); }
 /* ...and the nav's orange hover would be invisible on orange too, so
    while docked it hovers to cream. */
 #heroNav.is-collapsed-nav a:hover{ color: var(--cream); }
@@ -506,16 +514,19 @@ img, video{ max-width:100%; display:block; }
    text (404:410, fill #ffa000) -- a filled button, not an underlined
    link. Sized to match the email input above it. */
 .newsletter .accent{
-  display:flex; align-items:center; justify-content:center; gap:var(--sp-8);
+  display:flex; align-items:center; justify-content:space-between; /* Figma
+    404:410 label at x=1062 in a box starting x=1049, Group 30 arrow at
+    x=1379 against a right edge of 1400: label left, arrow right -- it was
+    centred */
   text-decoration:none; background: var(--white); color: var(--orange);
   font-family: var(--font-body); font-weight:200; font-size:14px;
   letter-spacing:.05em; text-transform:uppercase;
-  padding: var(--sp-12); text-align:center;
+  padding: 4px 11px; text-align:left; /* 351x33 box, label inset 13/4 */
   margin-top: var(--sp-24); /* the bigger of the two footer newsletter gaps -- see .newsletter's own comment */
   transition: background .18s ease, color .18s ease;
 }
 .newsletter .accent:hover{ background: var(--orange-light); color: var(--white); }
-.newsletter .accent img{ width:12px; height:12px; }
+.newsletter .accent img{ width:10px; height:10px; } /* Figma Group 30: 10.5x10 */
 
 @media (max-width: 900px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }

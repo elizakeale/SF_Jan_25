@@ -100,6 +100,12 @@
     var PARA_FADE_ZONE = 160; // px of clearance over which the paragraphs fade -- scroll-linked, so it reads as driven rather than triggered
     var NAV_GAP = 33; // wordmark bottom -> nav top inside the bar. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
     var UNDOCK_MARGIN = 2; // float-safety only; the dock is zero-pixel, so it needs no real hysteresis
+    var BG_FADE = 0.18; // fraction of dockDepth over which the orange ramps in.
+      // Eliza: "should we do a fade in for the orange nav -- it does feel
+      // drastic." It's a fade, but NOT a CSS transition: opacity is a
+      // function of scroll position, so it's still the scroll driving it and
+      // there's no second clock ticking alongside. It reaches exactly 1 on
+      // the frame the nav docks, and runs backwards on the way up.
 
     var header = document.getElementById('wmHeader');
     var nav = document.getElementById('heroNav');
@@ -154,8 +160,6 @@
       heroContent.classList.add('is-nav-pinned');
       lastTop = navRestTop();
       nav.style.top = lastTop + 'px';
-      header.classList.add('is-collapsed');
-      header.style.setProperty('--hdr-bg-a', 1);
       // the pre-footer carousel sticks below the bar, not under it
       document.documentElement.style.setProperty('--hdr-h', barBottom() + 'px');
       pinned = true;
@@ -165,8 +169,6 @@
       nav.classList.remove('is-pinned', 'is-collapsed-nav');
       heroContent.classList.remove('is-nav-pinned');
       nav.style.top = '';
-      header.classList.remove('is-collapsed');
-      header.style.setProperty('--hdr-bg-a', 0);
       document.documentElement.style.setProperty('--hdr-h', '0px');
       pinned = false;
       lastTop = null;
@@ -188,6 +190,20 @@
 
       if (!pinned && y >= dockDepth) dock();
       else if (pinned && y < dockDepth - UNDOCK_MARGIN) undock();
+
+      // --- the orange, ramped on scroll position. .is-collapsed carries the
+      // taller padding the docked nav needs, so it goes on at the START of
+      // the ramp while the bar is still fully transparent -- the box grows
+      // invisibly, and what fades in is already its final height.
+      var bgA;
+      if (pinned) {
+        bgA = 1;
+      } else {
+        var fade = dockDepth * BG_FADE;
+        bgA = clamp((y - (dockDepth - fade)) / fade, 0, 1);
+      }
+      header.style.setProperty('--hdr-bg-a', bgA);
+      header.classList.toggle('is-collapsed', pinned || bgA > 0);
 
       // --- rows: a monotonic function of scroll depth, so scrolling back up
       // replays the same states in reverse and nothing can oscillate.
