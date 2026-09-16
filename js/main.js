@@ -172,19 +172,21 @@
         // above the nav in the same block, they're already clear by now. --
         var navNaturalTop = navDocTop - y;
         var heroScrolledOut = heroEl && heroEl.getBoundingClientRect().bottom <= headerBottom + JOIN_BUFFER;
-        // round 10: don't let the header join/collapse mid-multiply --
-        // once row 2 is on but row 3 hasn't had its full ROW_STAGGER yet,
-        // the header's own growing height was reaching the nav (and
-        // triggering an early join) before the 3x multiply ever got to
-        // play out, per Eliza: "the three times multiplication seems to
-        // be gone." Hold off joining while multiplyPending, UNLESS the
-        // hero has physically scrolled out from under the header first --
-        // that backstop still overrides, so a short viewport can't strand
-        // the header transparent while it waits for a multiply that will
-        // never fit.
-        var multiplyPending = row2On && !row3On;
-        var navReached = navNaturalTop <= headerBottom + JOIN_BUFFER;
-        if ((navReached && !multiplyPending) || heroScrolledOut) {
+        // round 10 v2: the geometric "has the header physically reached
+        // the nav yet" trigger (navNaturalTop <= headerBottom+JOIN_BUFFER)
+        // turned out unreliable in practice -- on Eliza's real layout it
+        // was firing far later than the numbers predicted (or effectively
+        // never, short of the heroScrolledOut backstop), leaving the
+        // header sitting transparent with the nav still in its 2-row
+        // unpinned layout for a long, visually-static stretch of scroll
+        // ("there's a weird glitch... like nothing's happening for a
+        // while"). Per the header's own original design comment --
+        // multiply, THEN dock, THEN hard-cut to collapsed -- join is now
+        // simply "the 3x multiply has finished" (a plain scroll-distance
+        // condition, not dependent on measuring the header/nav geometry
+        // at all), with heroScrolledOut kept as a backstop for a short
+        // viewport where multiply might not fit before the hero ends.
+        if (row3On || heroScrolledOut) {
           var startTop = nav.getBoundingClientRect().top;
           nav.style.top = startTop + 'px';
           nav.classList.add('is-pinned', 'is-collapsed-nav');

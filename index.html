@@ -8,6 +8,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Estedad:wght@200..900&display=swap">
 <link rel="stylesheet" href="css/style.css">
+<!-- round 10: preload the header's collapsed-state background so it's
+     decoded and ready before the user ever scrolls to the join point --
+     otherwise the header can still read as transparent for a beat while
+     this loads, exactly when Eliza needs it to already be solid. -->
+<link rel="preload" as="image" href="images/home/bluff-table.webp">
 <link rel="icon" type="image/svg+xml" href="images/logos/logomark/logomark-orange.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="images/logos/logomark/logomark-orange.png">
 <link rel="apple-touch-icon" href="images/logos/logomark/logomark-orange@2x.png">
@@ -87,7 +92,7 @@
   </a>
 
   <section class="feature-product" id="catalogue">
-    <img src="images/home/feature-cove.webp" alt="Studio Fritz furniture, feature view">
+    <img src="images/home/feature-cove.webp" alt="Studio Fritz furniture, feature view" width="2400" height="1600">
     <a class="feature-arrow" href="catalogue.html" aria-label="View catalogue"><img src="images/logos/arrows/arrow-white.svg" alt=""></a>
   </section>
 
