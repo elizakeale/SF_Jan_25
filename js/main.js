@@ -264,22 +264,28 @@
     var paused = false;
     var dragging = false, dragStartX = 0, dragStartScroll = 0, dragMoved = false;
 
-    // duplicate tiles once for a seamless infinite loop (skip for hijacked:
-    // that one is fully scroll-position-driven, finite, no loop needed)
-    if (!isHijacked) {
-      var originalHTML = track.innerHTML;
-      track.innerHTML = originalHTML + originalHTML;
+    // Duplicate the tiles once for a seamless infinite loop -- now for the
+    // hijacked carousel too. It used to be excluded because it was purely
+    // scroll-position-driven and finite; it now drifts like the others
+    // whenever the scroll isn't actively driving it, so it needs the loop.
+    var originalHTML = track.innerHTML;
+    track.innerHTML = originalHTML + originalHTML;
+
+    // One set's width. Everything positional below works in this space and
+    // wraps, so drift, drag and the scroll-hijack can hand off to each
+    // other at any point without a jump.
+    function loopWidth() { return track.scrollWidth / 2; }
+    function setLeft(l) {
+      var w = loopWidth();
+      if (w > 0) { l = l % w; if (l < 0) l += w; }
+      track.scrollLeft = l;
     }
 
     function autoStep() {
-      if (!isHijacked && !paused && !dragging && !reduce) {
-        track.scrollLeft += speed;
-        var half = track.scrollWidth / 2;
-        if (track.scrollLeft >= half) track.scrollLeft -= half;
-      }
+      if (!paused && !dragging && !reduce) setLeft(track.scrollLeft + speed);
       requestAnimationFrame(autoStep);
     }
-    if (!isHijacked) requestAnimationFrame(autoStep);
+    requestAnimationFrame(autoStep);
 
     // drag-to-scroll (mouse + touch, via pointer events)
     track.addEventListener('pointerdown', function (e) {
@@ -293,12 +299,7 @@
       if (!dragging) return;
       var dx = e.clientX - dragStartX;
       if (Math.abs(dx) > 3) dragMoved = true;
-      track.scrollLeft = dragStartScroll - dx;
-      if (!isHijacked) {
-        var half = track.scrollWidth / 2;
-        if (track.scrollLeft >= half) track.scrollLeft -= half;
-        if (track.scrollLeft < 0) track.scrollLeft += half;
-      }
+      setLeft(dragStartScroll - dx);
     });
     function endDrag(e) {
       if (!dragging) return;
@@ -314,14 +315,26 @@
     track.addEventListener('pointercancel', endDrag);
     track.addEventListener('pointerleave', function (e) { if (dragging && e.buttons === 0) endDrag(e); });
 
-    if (isHijacked) hijacked.push({ el: el, track: track, setPaused: function (p) { paused = p; } });
+    if (isHijacked) hijacked.push({
+      el: el, track: track,
+      setPaused: function (p) { paused = p; },
+      loopWidth: loopWidth, setLeft: setLeft,
+      base: 0, engaged: false
+    });
   });
 
   /* ---------------- scroll-hijack: the carousel immediately before the
-     footer. A tall wrapper (--runway) holds a position:sticky pane; scroll
-     progress through the wrapper maps 1:1 to the track's horizontal
-     position. Auto-drift is already off for this carousel (isHijacked);
-     drag still works at any time. ---------------- */
+     footer. A tall wrapper holds a position:sticky pane; while the page is
+     scrolling THROUGH that wrapper, vertical scroll drives the track
+     horizontally 1:1 and the drift pauses. Outside that range the drift
+     owns the track and the hijack doesn't touch it, so the carousel is
+     always alive -- Eliza: "autoscrolling always, and only starts to be
+     manually scrolled as I get below it."
+
+     The hand-off is RELATIVE, not absolute: on engaging we capture
+     wherever the drift had got to and move on from there, rather than
+     snapping to a position computed from zero. That's what makes entering
+     and leaving the range invisible. Drag still works at any time. */
   var wrappers = Array.prototype.slice.call(document.querySelectorAll('.scroll-hijack'));
   if (wrappers.length && hijacked.length) {
     function renderHijack() {
@@ -331,17 +344,24 @@
         var rect = wrap.getBoundingClientRect();
         var pane = wrap.querySelector('.scroll-hijack-sticky');
         var paneH = pane ? pane.offsetHeight : 0;
-        var max = Math.max(0, inner.track.scrollWidth - inner.track.clientWidth);
+        // The track is doubled for the loop, so one set is scrollWidth/2 --
+        // measuring the raw scrollWidth here would double the runway.
+        var travel = Math.max(0, inner.loopWidth() - inner.track.clientWidth);
         // Size the runway to the real horizontal distance, 1:1: scrolling
         // down a pixel moves the carousel across a pixel, and a viewport
         // wide enough to show everything costs no extra scroll at all.
-        var wantH = paneH + max;
+        var wantH = paneH + travel;
         if (Math.abs(wrap.offsetHeight - wantH) > 1) wrap.style.height = wantH + 'px';
-        var total = wantH - paneH;
-        if (total <= 0) { inner.track.scrollLeft = 0; return; }
+        if (travel <= 0) { inner.engaged = false; inner.setPaused(false); return; }
+
         var scrolledInto = -rect.top;
-        var progress = clamp(scrolledInto / total);
-        inner.track.scrollLeft = progress * max;
+        var engaged = scrolledInto >= 0 && scrolledInto <= travel;
+        if (engaged && !inner.engaged) inner.base = inner.track.scrollLeft; // pick up where the drift left off
+        inner.engaged = engaged;
+        inner.setPaused(engaged); // drift yields while the scroll is driving
+
+        if (!engaged) return; // outside the range the drift owns the track
+        inner.setLeft(inner.base + clamp(scrolledInto / travel) * travel);
       });
     }
     var ticking2 = false;
