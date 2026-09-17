@@ -344,7 +344,13 @@ img, video{ max-width:100%; display:block; }
 @media (max-width: 900px){
   .scroll-cue{ display:none; }
 }
-.hero-divider{ border:0; border-top:1px solid var(--line); margin:0; position:relative; z-index:2; }
+/* .hero-divider removed 2026-09-17. It was a 1px rgba(255,255,255,.28)
+   rule on the hero/carousel seam; against the orange body that renders as
+   a pale strip, which is what Eliza saw as "the thin orange line or gap
+   above the catalogue carousel". Figma does carry a hairline there
+   (321:509 at y=865, and 175:1012 at y=901), so this is a deliberate
+   departure from the file, not an oversight -- at 1px over that seam it
+   reads as a rendering artifact rather than a rule. */
 
 @media (max-width: 900px){
   /* below the width the 1440px reference composition was built at, drop
