@@ -610,7 +610,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   transition: background .18s ease, color .18s ease;
 }
 .newsletter .accent:hover{ background: var(--orange-light); color: var(--white); }
-.newsletter .accent img{ width: calc(10 * var(--u)); height: calc(10 * var(--u)); } /* Figma Group 30: 10.5x10 */
+.newsletter .accent img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); } /* same 14x14 artboard as the input arrow; Figma draws them at equal size */
 
 @media (max-width: 900px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }
