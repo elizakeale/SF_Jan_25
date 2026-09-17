@@ -323,52 +323,53 @@
     });
   });
 
-  /* ---------------- scroll-hijack: the carousel immediately before the
-     footer. A tall wrapper holds a position:sticky pane; while the page is
-     scrolling THROUGH that wrapper, vertical scroll drives the track
-     horizontally 1:1 and the drift pauses. Outside that range the drift
-     owns the track and the hijack doesn't touch it, so the carousel is
-     always alive -- Eliza: "autoscrolling always, and only starts to be
-     manually scrolled as I get below it."
+  /* ---------------- scroll takeover at the foot of the page ----------
+     Eliza: "the scroll down eventually stops when i can see full footer,
+     and then if i try to keep scrolling, it'll just takeover the scroll of
+     the carousel."
 
-     The hand-off is RELATIVE, not absolute: on engaging we capture
-     wherever the drift had got to and move on from there, rather than
-     snapping to a position computed from zero. That's what makes entering
-     and leaving the range invisible. Drag still works at any time. */
+     So this is NOT the old mid-page hijack, where the carousel pinned and
+     you scrolled through a tall runway to get past it. That runway is gone
+     -- the section is now just a band in normal flow, and the page scrolls
+     to its natural bottom with the footer fully in view. Only THEN does
+     further downward scroll get captured and turned into horizontal
+     movement.
+
+     Which means it can't be driven by scroll POSITION the way the old one
+     was: at the bottom there is no scroll range left to read. It reads the
+     wheel delta directly and preventDefault()s it, so the page stays put
+     and the input goes to the carousel instead. Scrolling up is never
+     captured, so leaving is instant and the page is never trapped.
+
+     The drift pauses while the takeover is actively being driven and picks
+     up again shortly after the input stops, so the carousel is still
+     always alive. Drag still works at any time. ---------------- */
   var wrappers = Array.prototype.slice.call(document.querySelectorAll('.scroll-hijack'));
   if (wrappers.length && hijacked.length) {
-    function renderHijack() {
-      wrappers.forEach(function (wrap) {
-        var inner = hijacked.filter(function (h) { return wrap.contains(h.el); })[0];
-        if (!inner) return;
-        var rect = wrap.getBoundingClientRect();
-        var pane = wrap.querySelector('.scroll-hijack-sticky');
-        var paneH = pane ? pane.offsetHeight : 0;
-        // The track is doubled for the loop, so one set is scrollWidth/2 --
-        // measuring the raw scrollWidth here would double the runway.
-        var travel = Math.max(0, inner.loopWidth() - inner.track.clientWidth);
-        // Size the runway to the real horizontal distance, 1:1: scrolling
-        // down a pixel moves the carousel across a pixel, and a viewport
-        // wide enough to show everything costs no extra scroll at all.
-        var wantH = paneH + travel;
-        if (Math.abs(wrap.offsetHeight - wantH) > 1) wrap.style.height = wantH + 'px';
-        if (travel <= 0) { inner.engaged = false; inner.setPaused(false); return; }
+    var target = hijacked[0];
 
-        var scrolledInto = -rect.top;
-        var engaged = scrolledInto >= 0 && scrolledInto <= travel;
-        if (engaged && !inner.engaged) inner.base = inner.track.scrollLeft; // pick up where the drift left off
-        inner.engaged = engaged;
-        inner.setPaused(engaged); // drift yields while the scroll is driving
-
-        if (!engaged) return; // outside the range the drift owns the track
-        inner.setLeft(inner.base + clamp(scrolledInto / travel) * travel);
-      });
+    // Drop the runway height the old mechanism sized onto the wrapper; the
+    // band is in flow now and sizes to its own content.
+    function unsizeWrappers() {
+      wrappers.forEach(function (wrap) { if (wrap.style.height) wrap.style.height = ''; });
     }
-    var ticking2 = false;
-    window.addEventListener('scroll', function () {
-      if (!ticking2) { requestAnimationFrame(function () { ticking2 = false; renderHijack(); }); ticking2 = true; }
-    }, { passive: true });
-    window.addEventListener('resize', renderHijack);
-    renderHijack();
+    unsizeWrappers();
+    window.addEventListener('resize', unsizeWrappers);
+
+    function atBottom() {
+      var doc = document.documentElement;
+      return (window.innerHeight + window.scrollY) >= (doc.scrollHeight - 2);
+    }
+
+    var resumeTimer = null;
+    window.addEventListener('wheel', function (e) {
+      // only downward input, only once the page has nothing left to give
+      if (e.deltaY <= 0 || !atBottom()) return;
+      e.preventDefault();
+      target.setPaused(true);
+      target.setLeft(target.track.scrollLeft + e.deltaY);
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(function () { target.setPaused(false); }, 400);
+    }, { passive: false }); // non-passive is required: we preventDefault
   }
 })();
