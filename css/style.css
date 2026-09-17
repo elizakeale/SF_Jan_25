@@ -187,6 +187,21 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      is the kind of thing that reads as jiggle. (The asymmetric
      --hdr-reveal fade this used to carry is gone with it.) */
 }
+/* The wordmarks are links (home), so the hover states below are a real
+   affordance rather than decoration on inert text. NOTE: no colour
+   TRANSITION on the header wordmark, deliberately -- FRITZ already
+   cross-fades there as a function of scroll (--hdr-bg-a), and layering a
+   timed transition on top of a scroll-linked one is exactly the second
+   clock that made this page feel jittery. The footer has no such ramp, so
+   it gets the site's usual .18s. */
+.wm-link, .footer-wm a{ text-decoration:none; color:inherit; display:block; }
+.wm-link:hover .wm-left span{ color: var(--white); }
+.wordmark-header .wm-link:hover .wm-right span,
+.wordmark-header.is-collapsed .wm-link:hover .wm-right span{ color: var(--orange-light); }
+.footer-wm span{ transition: color .18s ease; }
+.footer-wm a:hover .fw-cream{ color: var(--white); }
+.footer-wm a:hover .fw-white{ color: var(--orange-light); }
+
 .wm-col{ display:flex; flex-direction:column; line-height:.9; position:relative; }
 .wm-col span{
   font-family: var(--font-display); font-weight:400;
@@ -556,11 +571,12 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      uniform gap value doesn't capture that, so the base gap matches the
      tight spacing and .accent below adds the extra gap before the button
      ("download summer catalogue layout is wrong") */
-.newsletter label{ font-family: var(--font-body); font-weight:200; font-size: 14px; letter-spacing:.05em; text-transform:uppercase; }
+.newsletter label{ font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u)); letter-spacing:.05em; text-transform:uppercase; }
 .newsletter form{ position:relative; }
 .newsletter input{
   width:100%; border:0; background: var(--cream);
-  padding: var(--sp-12) 40px var(--sp-12) var(--sp-12);
+  height: calc(35 * var(--u)); /* Figma 404:400 "Rectangle 8": 351x35 */
+  padding: 0 calc(40 * var(--u)) 0 calc(13 * var(--u)); /* label inset x=1062 in a box at x=1049 */
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
   color: var(--ink);
 }
@@ -570,7 +586,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   border:0; background:none; cursor:pointer; padding: var(--sp-4);
   display:flex; align-items:center; justify-content:center;
 }
-.newsletter button img{ width:14px; height:14px; transition: opacity .15s ease; }
+.newsletter button img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); transition: opacity .15s ease; }
 .newsletter button:hover img{ opacity:.6; }
 /* Figma (404:401, "Rectangle 9"): a solid white box under the download
    text (404:410, fill #ffa000) -- a filled button, not an underlined
@@ -581,14 +597,20 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
     x=1379 against a right edge of 1400: label left, arrow right -- it was
     centred */
   text-decoration:none; background: var(--white); color: var(--orange);
-  font-family: var(--font-body); font-weight:200; font-size:14px;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  padding: 4px 11px; text-align:left; /* 351x33 box, label inset 13/4 */
-  margin-top: var(--sp-24); /* the bigger of the two footer newsletter gaps -- see .newsletter's own comment */
+  /* Figma 404:401 "Rectangle 9" is 351x33 and the input above it is 351x35
+     -- near-identical heights. Ours came out ~25 tall against a ~43 input,
+     which is the "too thin" Eliza flagged. Height is set explicitly rather
+     than derived from padding, so the proportion holds whatever the line
+     box does. */
+  min-height: calc(33 * var(--u));
+  padding: 0 calc(11 * var(--u)) 0 calc(13 * var(--u)); text-align:left;
+  margin-top: calc(31 * var(--u)); /* Figma: input bottom 2965 -> button top 2996 */
   transition: background .18s ease, color .18s ease;
 }
 .newsletter .accent:hover{ background: var(--orange-light); color: var(--white); }
-.newsletter .accent img{ width:10px; height:10px; } /* Figma Group 30: 10.5x10 */
+.newsletter .accent img{ width: calc(10 * var(--u)); height: calc(10 * var(--u)); } /* Figma Group 30: 10.5x10 */
 
 @media (max-width: 900px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }
