@@ -13,17 +13,42 @@
   --white: #ffffff;
   --line: rgba(255,255,255,0.28);
 
-  --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-16: 16px;
-  --sp-24: 24px; --sp-32: 32px; --sp-40: 40px; --sp-48: 48px;
-  --sp-64: 64px; --sp-80: 80px; --sp-96: 96px; --sp-120: 120px;
+  /* ---- FLUID SCALE -------------------------------------------------
+     1u = one Figma pixel at the 1440 reference frame (100/1440 =
+     .0694vw). Every desktop dimension below is a multiple of it, so the
+     composition scales as ONE unit rather than each value scaling by its
+     own rule. That mix is what actually broke things: percentage-based
+     positions moved while hardcoded px stayed put, so captions outgrew
+     their images, the logomark drifted off the cap line, and the tiles
+     left a strip on the right of a wide screen.
+
+     At exactly 1440 this is 1px, so the design renders at true size and
+     every Figma number in this file still reads as itself. Clamped so it
+     stops shrinking around 1150 (mobile takes over at 900) and stops
+     growing around 2000, which is the knob for how large the composition
+     gets on a big display.
+
+     Two things deliberately do NOT use it: hairlines/borders (a .8px
+     border renders fuzzy) and the mobile block below 900px, which is
+     getting its own mobile-first design. ------------------------------ */
+  --u: clamp(0.8px, 0.0694vw, 1.4px);
+
+  --sp-4: calc(4 * var(--u));  --sp-8: calc(8 * var(--u));
+  --sp-12: calc(12 * var(--u)); --sp-16: calc(16 * var(--u));
+  --sp-24: calc(24 * var(--u)); --sp-32: calc(32 * var(--u));
+  --sp-40: calc(40 * var(--u)); --sp-48: calc(48 * var(--u));
+  --sp-64: calc(64 * var(--u)); --sp-80: calc(80 * var(--u));
+  --sp-96: calc(96 * var(--u)); --sp-120: calc(120 * var(--u));
 
   --edge: var(--sp-16);
   --section-gap: var(--sp-24);
 
-  --fs-headline: 20px;
-  --fs-body: 16px;
-  --fs-input: 16px;
-  --fs-cta: 15px;
+  --nav-gap: calc(33 * var(--u)); /* wordmark bottom -> docked nav top; Figma 460:1999 */
+
+  --fs-headline: calc(20 * var(--u));
+  --fs-body: calc(16 * var(--u));
+  --fs-input: calc(16 * var(--u));
+  --fs-cta: calc(15 * var(--u));
 
   --font-display: "EB Garamond", Georgia, serif;
   --font-body: "Estedad", ui-sans-serif, system-ui, sans-serif;
@@ -112,7 +137,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      other side of the same sum: 33 gap + ~54 nav + 24 air beneath it.
      (Figma's own 12 read too tight live, so the air is a deliberate
      departure -- the only one in this block.) */
-  padding-bottom: 111px;
+  padding-bottom: calc(111 * var(--u));
   /* The multiply REVEAL is deliberately slow (.7875s -- Eliza's "more
      gradual, 50% less fast"), but the collapse is a different beat: it has
      to land in lockstep with the nav rising into the bar, and at .7875s
@@ -163,7 +188,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .wm-col{ display:flex; flex-direction:column; line-height:.9; position:relative; }
 .wm-col span{
   font-family: var(--font-display); font-weight:400;
-  font-size: clamp(2rem, 7vw, 6.25rem); /* ~100px at Figma's 1440px reference width */
+  font-size: calc(100 * var(--u)); /* Figma's 100px wordmark -- now one multiple of the shared scale instead of its own clamp, so it can't drift against everything else */
   white-space:nowrap;
 }
 .wm-left span{ color: var(--cream); }
@@ -179,7 +204,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    header naturally grows/shrinks), never by fading opacity -- always fully
    solid the instant they're visible, per Eliza's "shouldn't be faded" note. */
 .wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height var(--wm-row-dur, .7875s) ease; } /* round 10: a further 50% slower on top of round 8's own 50% slowdown per "multiplication effect could be more gradual, 50% less fast" (.35s -> .525s -> .7875s) */
-.wm-row-2.is-on, .wm-row-3.is-on{ max-height:140px; }
+.wm-row-2.is-on, .wm-row-3.is-on{ max-height: calc(140 * var(--u)); }
 
 /* small orange logomark badge -- round 10: "looks too low in the center
    of page, should be top aligned to STUDIO FRITZ" -- was vertically
@@ -192,8 +217,8 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    px top (not tied to header height) so it stays correct no matter how
    tall the header gets during multiply. */
 .wm-mark{
-  position:absolute; left:50%; top:22px; transform: translateX(-50%);
-  width:83px; z-index:1; pointer-events:none;
+  position:absolute; left:50%; top: calc(22 * var(--u)); transform: translateX(-50%);
+  width: calc(83 * var(--u)); z-index:1; pointer-events:none;
   /* Figma 460:2063 puts the mark at x=679 w=83 (centred on the 1440 frame),
      y=40 -- and taking that 40 literally is what left it sitting low.
      Figma's wordmark TEXT BOX is 131 tall for a 100px face; ours renders in
@@ -244,7 +269,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    Stamp behavior rule in the project plan. Only About and Mobile Hamburger deviate. */
 .stamp{
   position: fixed; left: var(--edge); top:60.7%; z-index:55;
-  width:142px; /* scaled down 25% from 190px per Eliza's 2026-09-14 note */
+  width: calc(142 * var(--u)); /* scaled down 25% from 190px per Eliza's 2026-09-14 note */
   opacity:1;
   pointer-events:none;
 }
@@ -297,7 +322,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   /* Figma 175:1004: nav rows at y=652 and y=678 (26px pitch), block running
      652->706 = 54 tall, starting 34 below the paragraph block's bottom edge
      at y=618. Was 3.2em/24px, which is why the rows sat a touch tight. */
-  position:relative; height:3.4em; margin-top:34px;
+  position:relative; height:3.4em; margin-top: calc(34 * var(--u));
 }
 .hero-links a{
   position:absolute;
@@ -315,17 +340,17 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 /* download button: thin outline over the hero photo, left edge, near the
    bottom — Figma's version here is bordered/transparent, not solid-filled */
 .btn-outline{
-  display:inline-flex; align-items:center; gap:30px; /* Figma: arrow starts at
+  display:inline-flex; align-items:center; gap: calc(30 * var(--u)); /* Figma: arrow starts at
     x=345, label ends at 315 -- label left, arrow right, 30 between them */
-  font-family: var(--font-body); font-weight:200; font-size:14px;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase; text-decoration:none;
   background:transparent; color: var(--white);
   border: 1px solid var(--white);
-  padding: 4px 10px; /* Figma 175:1004 Group 16: 324x33 box, label inset 8/4 */
+  padding: calc(4 * var(--u)) calc(10 * var(--u)); /* Figma 175:1004 Group 16: 324x33 box, label inset 8/4 */
   transition: background .18s ease, color .18s ease;
 }
 .btn-outline:hover{ background: var(--white); color: var(--ink); }
-.btn-outline img{ width:9px; height:9px; } /* Figma Group 17: 9x9 */
+.btn-outline img{ width: calc(9 * var(--u)); height: calc(9 * var(--u)); } /* Figma Group 17: 9x9 */
 .btn-outline:hover img{ filter: invert(1); } /* white arrow -> dark on hover's white fill */
 .hero-catalogue-link{
   position:absolute; z-index:2; left: var(--edge); bottom: var(--sp-40);
@@ -335,7 +360,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    (Figma node 321:508 -- x:720/1440=50%, y:755/865(hero)=~87.3%, height:88px) */
 .scroll-cue{
   position:absolute; left:50%; top:87.3%; z-index:2;
-  width:1px; height:88px; background: rgba(255,255,255,.55);
+  width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.55); /* width stays a real 1px -- hairlines don't scale */
   transform: translateX(-50%); transform-origin: top center;
   pointer-events:none; animation: scrollCuePulse 5s ease-out .6s infinite both;
 }

@@ -98,7 +98,7 @@
     var T_ROW3_OFF = 0.55; // un-stack well before the links reach the 3-row block
     var T_ROW2_OFF = 0.75;
     var PARA_FADE_ZONE = 160; // px of clearance over which the paragraphs fade -- scroll-linked, so it reads as driven rather than triggered
-    var NAV_GAP = 33; // wordmark bottom -> nav top inside the bar. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
+    var NAV_GAP_U = 33; // wordmark bottom -> nav top inside the bar, in FIGMA px. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
     var UNDOCK_MARGIN = 2; // float-safety only; the dock is zero-pixel, so it needs no real hysteresis
     var BG_FADE = 0.18; // fraction of dockDepth over which the orange ramps in.
       // Eliza: "should we do a fade in for the orange nav -- it does feel
@@ -127,7 +127,16 @@
     // Where the nav rests inside the bar. Depends only on the padding-top and
     // row 1, neither of which the collapse changes -- so this is the same
     // number before and after docking, which is what makes the dock free.
-    function navRestTop() { return padTop() + row1.scrollHeight + NAV_GAP; }
+    // The page now scales through --u (1 Figma px, see :root in style.css),
+    // so a raw 33 here would stop matching the CSS the moment the viewport
+    // left 1440. Rather than duplicate the clamp formula in JS -- two
+    // sources of truth for one number is exactly the drift this change is
+    // meant to end -- derive the scale from a length the cascade has
+    // already resolved: the header's padding-top is var(--sp-8), i.e. 8u.
+    // (getComputedStyle on the custom property itself is no use; it hands
+    // back the unresolved "calc(...)" token.)
+    function scale() { return (parseFloat(getComputedStyle(header).paddingTop) || 8) / 8; }
+    function navRestTop() { return padTop() + row1.scrollHeight + NAV_GAP_U * scale(); }
 
     function barBottom() {
       var cs = getComputedStyle(header);
