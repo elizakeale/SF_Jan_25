@@ -1,1 +1,13 @@
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Editor
+.vscode/
+*.code-workspace
+
+# Google Drive / sync artifacts
+*conflicted copy*
+*.tmp
