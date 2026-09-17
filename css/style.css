@@ -185,16 +185,9 @@ img, video{ max-width:100%; display:block; }
    px top (not tied to header height) so it stays correct no matter how
    tall the header gets during multiply. */
 .wm-mark{
-  position:absolute; left:50%; top:22px; transform: translateX(-50%);
-  width:83px; z-index:1; pointer-events:none;
-  /* Figma 460:2063 puts the mark at x=679 w=83 (centred on the 1440 frame),
-     y=40 -- and taking that 40 literally is what left it sitting low.
-     Figma's wordmark TEXT BOX is 131 tall for a 100px face; ours renders in
-     a 90px line box (line-height .9), so the glyphs sit at a different
-     offset inside it and the same 40px lands well below the cap line.
-     What Figma actually shows is the mark's top flush with the wordmark's
-     cap height, which on our metrics is ~22. Aligning to the cap reproduces
-     the design; copying the raw y does not. */
+  position:absolute; left:50%; top:40px; transform: translateX(-50%);
+  width:83px; z-index:1; pointer-events:none; /* Figma 460:2063: x=679 w=83
+    (centred on the 1440 frame) at y=40 -- measured, not eyeballed */
 }
 .wm-mark img{ width:100%; display:block; }
 
