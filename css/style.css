@@ -43,7 +43,14 @@ body{
   -webkit-font-smoothing: antialiased;
 }
 a{ color:inherit; }
-img, video{ max-width:100%; display:block; }
+img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
+  load-bearing, not tidiness: an <img> with width/height ATTRIBUTES (which we
+  set for layout stability) has them applied as presentational hints, so a
+  CSS `width:100%` with no matching height leaves the height pinned at the
+  attribute's px value -- the image stretches vertically and squashes
+  horizontally, worse the narrower the viewport. Rules that genuinely want a
+  fixed height (.tile-media img, the icon sizes) are all more specific and
+  still win. */
 :focus-visible{ outline: 2px solid var(--ink); outline-offset: 3px; }
 
 .eyebrow{
@@ -393,6 +400,7 @@ img, video{ max-width:100%; display:block; }
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.05em; text-transform:uppercase; white-space:nowrap;
   pointer-events:none;
+  width:0; min-width:100%; overflow:hidden; text-overflow:ellipsis;
 }
 
 /* pre-footer carousel: scroll-hijacked (vertical scroll -> horizontal, 1:1) */
