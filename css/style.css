@@ -24,13 +24,14 @@
 
      At exactly 1440 this is 1px, so the design renders at true size and
      every Figma number in this file still reads as itself. Clamped so it
-     stops shrinking around 1150 (mobile takes over at 900) and stops
-     growing around 2000, which is the knob for how large the composition
-     gets on a big display.
+     stops shrinking around 1150 -- which is exactly where mobile now takes
+     over, so there is no range where this has stopped scaling but the
+     window is still narrowing -- and stops growing around 2000, which is
+     the knob for how large the composition gets on a big display.
 
      Two things deliberately do NOT use it: hairlines/borders (a .8px
-     border renders fuzzy) and the mobile block below 900px, which is
-     getting its own mobile-first design. ------------------------------ */
+     border renders fuzzy) and the mobile block below 1152px, which has its
+     own scale token (--mu, one Figma pixel at the 402 mobile frame). ------------------------------ */
   --u: clamp(0.8px, 0.0694vw, 1.4px);
 
   --sp-4: calc(4 * var(--u));  --sp-8: calc(8 * var(--u));
@@ -279,7 +280,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    197-tall bar. */
 #heroNav.is-pinned.is-collapsed-nav{ height:3.4em; }
 /* round 10: nav must NOT shrink once docked -- Eliza: "nav bar items are shrinking... they should just stay the same." (was font-size:11px here) */
-@media (max-width: 900px){ #heroNav.is-pinned{ position:static; left:auto; right:auto; top:auto !important; } }
+@media (max-width: 1152px){ #heroNav.is-pinned{ position:static; left:auto; right:auto; top:auto !important; } }
 
 /* ---------- hand-drawn stamp accent (loose/imperfect by design, intentional) ----------
    Static/pinned by default (stays put while the page scrolls beneath it) — see the
@@ -390,7 +391,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   36%   { opacity:.55; transform: translateX(-50%) scaleY(1); }
   100%  { opacity:.55; transform: translateX(-50%) scaleY(1); }
 }
-@media (max-width: 900px){
+@media (max-width: 1152px){
   .scroll-cue{ display:none; }
 }
 /* .hero-divider removed 2026-09-17. It was a 1px rgba(255,255,255,.28)
@@ -401,7 +402,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    departure from the file, not an oversight -- at 1px over that seam it
    reads as a rendering artifact rather than a rule. */
 
-@media (max-width: 900px){
+@media (max-width: 1152px){
   /* below the width the 1440px reference composition was built at, drop
      back to a simple full-width stacked layout */
   .hero-content{ position:relative; left:auto; right:auto; top:auto; padding: calc(var(--sp-80) + 40px) var(--edge) 0; }
@@ -410,6 +411,14 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   .hero-links a{ position:static !important; text-align:left !important; }
   .hero-catalogue-link{ position:relative; left:auto; bottom:auto; margin: var(--sp-16) var(--edge) var(--sp-24); }
 }
+
+/* ---------- mobile-only elements: off by default ----------
+   These have no desktop equivalent in Figma, so they are hidden here and
+   switched on inside the mobile block rather than the other way round --
+   desktop stays exactly as it was. */
+.nav-toggle{ display:none; }
+.mobile-menu{ display:none; }
+.band-about{ display:none; }
 
 /* ---------- carousels ---------- */
 .carousel{ position:relative; overflow:hidden; background: var(--orange); }
@@ -617,12 +626,226 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .newsletter .accent:hover{ background: var(--orange-light); color: var(--white); }
 .newsletter .accent img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); } /* same 14x14 artboard as the input arrow; Figma draws them at equal size */
 
-@media (max-width: 900px){
+@media (max-width: 1152px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }
   .footer-col{ position:static !important; }
   .newsletter{ position:static !important; width:auto; }
 }
 
+
+
+/* ============================================================
+   MOBILE — built from Figma's 402-wide frames:
+     160:104   HOMEPAGE - Mobile            (base)
+     278:1285  HOMEPAGE - Mobile - Scroll
+     278:1232  HOMEPAGE - Mobile - Nav Bar Collapse
+     242:177   HOMEPAGE - Mobile - Hamburger
+
+   Same approach as desktop, one scale down: 1mu = one Figma pixel at the
+   402 reference, so every number below still reads as itself.
+
+   Breakpoint is 1152, not 900. That closes the dead zone the architecture
+   doc flagged: --u stops shrinking at ~1152 (its 0.8 floor) while mobile
+   used to wait until 900, so between the two the desktop composition had
+   stopped scaling but the window kept narrowing.
+
+   NOT here, because Figma's mobile frames don't have them: the multiply
+   effect (Eliza: "there's no multiply effect on STUDIO FRITZ"), the hero
+   nav links, the hero download button, the scroll cue, the per-tile
+   captions, and the feature-image arrow.
+   ============================================================ */
+@media (max-width: 1152px){
+  :root{
+    /* 100/402 = .2488vw. Floor holds the small phones (320 -> .8);
+       ceiling caps it around 500 so the phone composition doesn't inflate
+       across the tablet range -- see the note at the end of this block. */
+    --mu: clamp(0.78px, 0.2488vw, 1.25px);
+    --edge: calc(16 * var(--mu));
+    --section-gap: calc(32 * var(--mu));
+  }
+
+  /* ---------- header: fixed bar, no multiply ----------
+     Identical in all three scroll frames (wordmark y=4, mark 36 at x=183,
+     hamburger lines at y=52/57/62), so the bar never changes size -- the
+     only thing that happens on scroll is the orange ramping in, on the
+     same --hdr-bg-a driver desktop uses. FRITZ and the logomark
+     cross-fade with it for free. */
+  .wm-row-2, .wm-row-3{ display:none; }
+  .wordmark-header{
+    height: calc(68 * var(--mu));          /* Figma 278:1232: band starts y=68 */
+    padding: 0 var(--edge);
+    align-items:center;
+  }
+  .wordmark-header.is-collapsed{ padding-bottom:0; }  /* nothing docks in here */
+  .wm-col span{ font-size: calc(40 * var(--mu)); }    /* 342:75 STUDIO 144 wide / 342:76 FRITZ 142 -> 40 both ways */
+  .wm-mark{ top: calc(16 * var(--mu)); width: calc(36 * var(--mu)); }  /* 411:981 */
+
+  .nav-toggle{
+    display:flex; flex-direction:column; justify-content:space-between;
+    position:absolute; right: var(--edge); top: calc(52 * var(--mu));
+    width: calc(19 * var(--mu)); height: calc(11 * var(--mu));
+    padding:0; border:0; background:none; cursor:pointer; color: var(--white);
+  }
+  .nav-toggle span{ display:block; width:100%; height:1px; background: currentColor; transition: transform .2s ease, opacity .2s ease; }
+  /* the visible lines are 19x11; this grows the tap target to ~44 without
+     moving them */
+  .nav-toggle::after{ content:''; position:absolute; inset: calc(-16 * var(--mu)) calc(-12 * var(--mu)); }
+  .nav-toggle.is-open span:nth-child(1){ transform: translateY(calc(5 * var(--mu))) rotate(45deg); }
+  .nav-toggle.is-open span:nth-child(2){ opacity:0; }
+  .nav-toggle.is-open span:nth-child(3){ transform: translateY(calc(-5 * var(--mu))) rotate(-45deg); }
+
+  /* ---------- hero ----------
+     Figma 160:104: photo 0..468, intro paragraph over it at y=314, second
+     paragraph at y=483 -- BELOW the seam, on orange. Rather than duplicate
+     the copy, .hero-content keeps both paragraphs and overflows the hero;
+     the hero's bottom margin is the room it overflows into. */
+  .hero{
+    min-height:0; height: calc(468 * var(--mu));
+    overflow:visible;
+    margin-bottom: calc(147 * var(--mu));   /* 468 -> carousel at 615 */
+  }
+  .hero::after{ background: linear-gradient(0deg, rgba(20,10,25,.75) 0%, rgba(20,10,25,.05) 55%, transparent 78%); }
+  .hero-content{
+    position:absolute; z-index:2;
+    top: calc(314 * var(--mu));
+    left: calc(17 * var(--mu));
+    right: calc(74 * var(--mu));            /* 205:68 is 311 wide, stopping short of the stamp at x=348 */
+    padding:0;
+  }
+  .hero-intro{ grid-template-columns:1fr; gap: calc(32 * var(--mu)); max-width:none; }
+  .hero-intro p{ font-size: calc(16 * var(--mu)); line-height:1.7; }
+  /* 205:68 is 137 tall across 5 lines = 27.4/line, and 16 x 1.7 = 27.2.
+     (205:69's own box reports 74, which can't be right for its 4 lines at
+     the same size -- a hand-resized text box. The 5-line one is the
+     trustworthy measurement, and it agrees with desktop.) */
+  .hero-links, .hero-catalogue-link, .scroll-cue, .feature-arrow{ display:none; }
+
+  /* 244:483: the stamp scrolls with the page here rather than staying
+     pinned to the viewport -- it sits at y=375 in the base frame and y=180
+     once scrolled, i.e. it moves with the hero. */
+  .stamp{
+    position:absolute;
+    left: calc(348 * var(--mu)); top: calc(375 * var(--mu));
+    width: calc(44 * var(--mu));
+  }
+
+  /* ---------- carousels ---------- */
+  .tile-media{ height: calc(119 * var(--mu)); min-height:0; max-height:none; }   /* 242:81 etc: 119 band */
+  .scroll-hijack .tile-media{ height: calc(103 * var(--mu)); }                    /* 242:94 etc: 103 band */
+  .carousel .tile figcaption{ display:none; }   /* no per-tile captions in the mobile frames */
+
+  .catalogue-band{
+    padding: calc(16 * var(--mu)) calc(20 * var(--mu)) calc(10 * var(--mu));
+    font-size: calc(21 * var(--mu)); gap: calc(8 * var(--mu));
+  }
+  .catalogue-band img{ width: calc(13 * var(--mu)); height: calc(13 * var(--mu)); }  /* 278:1321 Group 2 */
+  /* 404:798 / 404:831: ABOUT sits flush between the band and the footer
+     wordmark (band ends 1152, text 1153, footer 1188). */
+  .band-about{ display:flex; padding: calc(1 * var(--mu)) calc(20 * var(--mu)) 0; }
+
+  /* ---------- footer ----------
+     Mobile SPLITS the wordmark: STUDIO opens the footer (y=1188) and FRITZ
+     closes it (y=1823) with everything in between. .footer-wm goes
+     display:contents so its three children become flex items of
+     .footer-top and can be re-ordered, instead of the markup being
+     duplicated or forked. */
+  .site-footer{ padding: 0 var(--edge) calc(82 * var(--mu)); }
+  .footer-top{ display:flex; flex-direction:column; gap:0; padding-bottom:0; }
+  .footer-wm{ display:contents; }
+  .footer-wm span{
+    font-size: calc(106 * var(--mu)); line-height:1.3;
+    /* 404:787 STUDIO is 380 wide and 404:788 FRITZ is 375, against desktop's
+       358/354 at a 100 face -- both give 106 independently. 1.3 line-height
+       reproduces Figma's own 138-tall box, so the gaps below are Figma's
+       numbers unmodified. */
+  }
+  .footer-wm > a:first-of-type{ order:1; }
+  .footer-links{ order:2; margin-top: calc(10 * var(--mu)); }
+  .footer-wm > a:last-of-type{ order:3; margin-top: calc(19 * var(--mu)); }
+  .footer-wm-mark{
+    order:4; position:static; transform:none;
+    width: calc(83 * var(--mu)); margin: calc(8 * var(--mu)) auto 0;   /* 404:776, centred at x=160+41.5 = 201.5 = 402/2 */
+  }
+  .footer-copyright{ order:5; margin-top: calc(40 * var(--mu)); font-size: calc(14 * var(--mu)); }
+
+  .footer-links{
+    position:static; min-height:0;
+    display:grid; grid-template-columns: auto auto;
+    row-gap: calc(29 * var(--mu)); column-gap:0;
+  }
+  .footer-col{ position:static !important; gap: calc(2 * var(--mu)); }
+  .footer-col:nth-child(1){ grid-column:1; justify-self:start; align-items:flex-start; text-align:left; }
+  .footer-col:nth-child(2){ grid-column:2; justify-self:end; align-items:flex-end; text-align:right; right:auto; }
+  .footer-col.footer-col-wide{
+    grid-column:1 / -1; left:auto; max-width:none;
+    align-items:flex-end; text-align:right; gap: calc(15 * var(--mu));
+  }
+  .footer-col a{ font-size: calc(21 * var(--mu)); line-height:1.667; }
+  /* 404:781 CUSTOM 89 wide vs desktop's 67 at 16px -> 21.3, and the other
+     five links agree to within .3 of that. */
+  .footer-col.footer-col-wide a{ font-size: calc(14 * var(--mu)); line-height:1.5; color: var(--cream); }
+  /* 404:777 FAQ is 189 vs desktop's 221 at 16 -> 13.7, and its three
+     siblings all land on 13.7 too. Cream rather than white: in the mobile
+     frames this column reads visibly softer than CUSTOM/CATALOGUE beside
+     it, which are solid white. JUDGMENT CALL -- say if it should be white. */
+
+  .newsletter{
+    grid-column:1 / -1; position:static !important; width:auto; left:auto; top:auto;
+    margin-top: calc(28 * var(--mu)); gap: calc(8 * var(--mu));
+  }
+  .newsletter label{ font-size: calc(15 * var(--mu)); }
+  .newsletter input{
+    height: calc(50 * var(--mu));                                  /* 411:1089 Rectangle 7: 370x50 */
+    font-size: calc(18 * var(--mu));
+    padding: 0 calc(45 * var(--mu)) 0 calc(16 * var(--mu));         /* 411:1100 sits at x=32 in a box at x=16 */
+  }
+  .newsletter button{ right: calc(13.5 * var(--mu)); }
+  .newsletter .accent{
+    min-height: calc(33 * var(--mu));                               /* 411:1090 Rectangle 8: 370x33 */
+    margin-top: calc(24 * var(--mu));                               /* input ends 1747 -> button 1771 */
+    font-size: calc(15 * var(--mu)); padding: 0 calc(14 * var(--mu));
+  }
+  .newsletter button img,
+  .newsletter .accent img{ width: calc(10.5 * var(--mu)); height: calc(10.5 * var(--mu)); }  /* Group 30/31: 10.48x10 */
+
+  /* ---------- hamburger overlay (242:177) ---------- */
+  .mobile-menu{
+    display:flex; flex-direction:column;
+    position:fixed; inset:0; z-index:45;      /* under the header's 50, so the wordmark stays put */
+    background: var(--orange);
+    padding: calc(146 * var(--mu)) var(--edge) calc(40 * var(--mu));
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
+  .mobile-menu[hidden]{ display:none; }
+  body.menu-open{ overflow:hidden; }
+  /* With the panel open the bar is sitting on orange whatever the scroll
+     position says, so force the collapsed colouring -- otherwise at the top
+     of the page FRITZ and the logomark are still orange, on orange. */
+  body.menu-open .wordmark-header{ --hdr-bg-a: 1 !important; }
+  body.menu-open .wm-right span{ color: var(--white); }
+
+  .mm-links{ display:flex; justify-content:space-between; }           /* 342:173 x=17 / 342:177 right edge 386 */
+  .mm-col-right{ align-items:flex-end; text-align:right; }
+  .mm-fleuron{ width: calc(80 * var(--mu)); margin: calc(53 * var(--mu)) auto 0 0; opacity:.9; }  /* 342:172 at x=17 y=270 */
+  .mm-fleuron img{ width:100%; height:auto; display:block; }
+  .mm-secondary{ display:flex; flex-direction:column; margin-top: calc(-66 * var(--mu)); }  /* 342:168 y=285 overlaps the fleuron's column */
+  .mm-newsletter{ margin-top: calc(82 * var(--mu)); }                 /* 342:170 ends 414 -> label at 475 */
+  /* the download button is OUTLINED here, not the filled white one the
+     footer uses -- 242:177 draws it as a bordered box on orange */
+  .mm-accent{
+    background:transparent; color: var(--white);
+    border:1px solid var(--white);
+  }
+  .mm-accent:hover{ background: var(--white); color: var(--orange); }
+  .mm-stamp{ width: calc(95 * var(--mu)); margin: calc(82 * var(--mu)) 0 0 auto; }  /* 244:485 at x=291 y=643 */
+  .mm-stamp img{ width:100%; height:auto; display:block; }
+}
+
+/* UNDESIGNED RANGE: roughly 520 to 1152. Figma only has 402-wide mobile
+   frames and a 1440 desktop frame, so above ~520 this is the phone
+   composition stretched, with --mu capped so the type doesn't inflate with
+   it. It holds together, but it is an extrapolation, not a design -- a
+   tablet frame in Figma is what would settle it. */
 
 @media (prefers-reduced-motion: reduce){
   *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }

@@ -21,6 +21,13 @@
 
     function render() {
       ticking = false;
+      // Mobile parks the stamp in the hero with CSS (Figma 244:483 -- it
+      // scrolls with the page rather than staying pinned to the viewport),
+      // so clear anything this pinning pass left inline and stay out of it.
+      if (window.innerWidth <= 1152) {
+        if (resting) { resting = false; stamp.style.position = ''; stamp.style.top = ''; }
+        return;
+      }
       var stampH = stamp.getBoundingClientRect().height;
       var pinnedTop = window.innerHeight * 0.607; // matches .stamp's CSS top:60.7%
       var releaseY = target.offsetTop + target.offsetHeight - window.innerHeight;
@@ -100,6 +107,7 @@
     var PARA_FADE_ZONE = 160; // px of clearance over which the paragraphs fade -- scroll-linked, so it reads as driven rather than triggered
     var NAV_GAP_U = 33; // wordmark bottom -> nav top inside the bar, in FIGMA px. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
     var UNDOCK_MARGIN = 2; // float-safety only; the dock is zero-pixel, so it needs no real hysteresis
+    var MOBILE_BG_FADE = 0.12; // fraction of viewport height; ~100px at 843
     var BG_FADE = 0.18; // fraction of dockDepth over which the orange ramps in.
       // Eliza: "should we do a fade in for the orange nav -- it does feel
       // drastic." It's a fade, but NOT a CSS transition: opacity is a
@@ -188,10 +196,21 @@
       ticking = false;
       var y = window.scrollY;
 
-      if (window.innerWidth <= 900) {
+      if (window.innerWidth <= 1152) {
+        /* Mobile has no multiply and nothing to dock: Figma's three scroll
+           frames (160:104 / 278:1285 / 278:1232) draw the bar identically
+           every time, so it never changes size. All that happens on scroll
+           is the orange ramping in -- and because it rides the same
+           --hdr-bg-a driver desktop uses, FRITZ and the logomark cross-fade
+           with it for free rather than needing a rule of their own. */
         setRows(false, false);
         if (heroIntro) heroIntro.style.opacity = '';
         if (pinned) undock();
+        var mFade = window.innerHeight * MOBILE_BG_FADE;
+        header.style.setProperty('--hdr-bg-a', clamp(y / mFade, 0, 1));
+        header.classList.toggle('is-collapsed', y > 0);
+        // the sticky pre-footer band reads this to know where to stop
+        document.documentElement.style.setProperty('--hdr-h', header.offsetHeight + 'px');
         return;
       }
 
@@ -369,6 +388,14 @@
        lasts long enough to register as a held moment. */
     var GAIN = 1.1;         // px of carousel travel per px of scroll
     var RUNWAY_MIN = 1000;  // px -- see sizeRunway()
+    /* Mobile runs the same mechanism on its own numbers. The band there is
+       103 Figma px rather than 389, so one full set of four tiles is only
+       ~500px wide instead of ~1600 -- desktop's travel would spin it more
+       than two whole loops. These keep it to roughly one. */
+    var GAIN_M = 0.7, RUNWAY_MIN_M = 700;
+    function mobile() { return window.innerWidth <= 1152; }
+    function gain() { return mobile() ? GAIN_M : GAIN; }
+    function runwayMin() { return mobile() ? RUNWAY_MIN_M : RUNWAY_MIN; }
     var lastY = window.scrollY;
     var idleTimer = null;
     var lastTop = -1, lastVH = -1, dirty = true;
@@ -407,7 +434,7 @@
       dirty = false; lastTop = top; lastVH = vh;
       var paneH = pane.offsetHeight;
       var strip = vh - top - paneH;
-      wrap.style.height = (paneH + Math.max(strip, RUNWAY_MIN)) + 'px';
+      wrap.style.height = (paneH + Math.max(strip, runwayMin())) + 'px';
     }
     function remeasure() { dirty = true; sizeRunway(); }
     remeasure();
@@ -430,7 +457,7 @@
       lastY = y;
       if (!dy || !pinned()) return;
       target.setPaused(true);
-      target.setLeft(target.track.scrollLeft + dy * GAIN);
+      target.setLeft(target.track.scrollLeft + dy * gain());
       clearTimeout(idleTimer);
       // drift picks back up shortly after the scroll stops, so the
       // carousel is never sitting dead
@@ -438,3 +465,33 @@
     }, { passive: true });
   }
 })();
+  /* ---------------- mobile menu (Figma 242:177) ----------------
+     Click, Escape and any link inside all close it; so does crossing back
+     over the breakpoint, so the panel can't be left open and invisible in a
+     desktop window. The panel sits UNDER the header in z, so the wordmark
+     stays exactly where it was -- opening the menu moves nothing. */
+  (function () {
+    var toggle = document.getElementById('navToggle');
+    var menu = document.getElementById('mobileMenu');
+    if (!toggle || !menu) return;
+
+    function setOpen(open) {
+      menu.hidden = !open;
+      document.body.classList.toggle('menu-open', open);
+      toggle.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+
+    toggle.addEventListener('click', function () { setOpen(menu.hidden); });
+    menu.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !menu.hidden) { setOpen(false); toggle.focus(); }
+    });
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 1152 && !menu.hidden) setOpen(false);
+    });
+  })();
+
