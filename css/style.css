@@ -699,7 +699,12 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      cross-fade with it for free. */
   .wm-row-2, .wm-row-3{ display:none; }
   .wordmark-header{
-    height: calc(68 * var(--mu));          /* Figma 278:1232: band starts y=68 */
+    height: calc(81 * var(--mu));
+    /* 278:1232's carousel band moved 68 -> 81 and the hamburger lines 52/57/62
+       -> 56/61/66, which is Eliza's "nav bar is a bit too narrow vertically
+       and needs more padding under the hamburger": 15 of air under the icon
+       instead of 2. (Line 16 still sits at 68 in the file, but the bar reads
+       to where content actually starts.) */
     padding: calc(4 * var(--mu)) var(--edge) 0;
     align-items:flex-start;
     /* was align-items:center, which put the 40mu line box at 14..54 -- the
@@ -720,7 +725,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 
   .nav-toggle{
     display:flex; flex-direction:column; justify-content:space-between;
-    position:absolute; right: var(--edge); top: calc(54 * var(--mu));
+    position:absolute; right: var(--edge); top: calc(56 * var(--mu));
     width: calc(19 * var(--mu)); height: calc(11 * var(--mu));
     padding:0; border:0; background:none; cursor:pointer; color: var(--white);
   }
@@ -780,7 +785,8 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   .carousel .tile figcaption{ display:none; }   /* no per-tile captions in the mobile frames */
 
   .catalogue-band{
-    padding: calc(16 * var(--mu)) calc(20 * var(--mu)) calc(10 * var(--mu));
+    /* 278:1232, tightened: band ends 200, CATALOGUE at 208, cove at 248 */
+    padding: calc(8 * var(--mu)) calc(20 * var(--mu)) calc(5 * var(--mu));
     font-size: calc(16 * var(--mu)); gap: calc(8 * var(--mu));
     /* Figma has these at 21 (278:1320 is 115 wide, same as the footer's
        CATALOGUE), but on a 402 frame that makes them the largest type on
@@ -792,7 +798,9 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   .catalogue-band img{ width: calc(11 * var(--mu)); height: calc(11 * var(--mu)); }
   /* 404:798 / 404:831: ABOUT sits flush between the band and the footer
      wordmark (band ends 1152, text 1153, footer 1188). */
-  .band-about{ display:flex; padding: calc(1 * var(--mu)) calc(20 * var(--mu)) 0; }
+  /* 278:1232: ABOUT starts level with the band's own bottom edge, and the
+     footer wordmark follows 12 later */
+  .band-about{ display:flex; padding: 0 var(--edge) calc(12 * var(--mu)); }
 
   /* ---------- footer ----------
      Mobile SPLITS the wordmark: STUDIO opens the footer (y=1188) and FRITZ
@@ -800,7 +808,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      display:contents so its three children become flex items of
      .footer-top and can be re-ordered, instead of the markup being
      duplicated or forked. */
-  .site-footer{ padding: 0 var(--edge) calc(82 * var(--mu)); }
+  .site-footer{ padding: 0 var(--edge) calc(46 * var(--mu)); }  /* label ends 2242, frame 2288 */
   .footer-top{ display:flex; flex-direction:column; gap:0; padding-bottom:0; }
   .footer-wm{ display:contents; }
   .footer-wm span{
@@ -817,15 +825,16 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
     order:4; position:static; transform:none;
     width: calc(83 * var(--mu)); margin: calc(8 * var(--mu)) auto 0;   /* 404:776, centred at x=160+41.5 = 201.5 = 402/2 */
   }
-  .footer-bottom{ order:5; margin-top: calc(40 * var(--mu)); }
+  .footer-bottom{ order:5; margin-top: calc(44 * var(--mu)); }  /* mark ends 2052, legal at 2096 */
   .footer-copyright{ font-size: calc(14 * var(--mu)); text-align:center; }
   .footer-copyright br{ display:inline; }   /* two lines here */
   .fc-sep{ display:none; }                  /* ...so the comma steps aside */
+  /* 160:104: legal ends 2142, rule 2158..2208, label at 2219 */
   .back-to-top{
-    gap: calc(16 * var(--mu)); margin-top: calc(24 * var(--mu));
+    gap: calc(11 * var(--mu)); margin-top: calc(16 * var(--mu));
     font-size: calc(14 * var(--mu));
   }
-  .btt-line{ height: calc(48 * var(--mu)); }
+  .btt-line{ height: calc(50 * var(--mu)); }
 
   .footer-links{
     position:static; min-height:0;
@@ -867,38 +876,53 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   .newsletter button img,
   .newsletter .accent img{ width: calc(10.5 * var(--mu)); height: calc(10.5 * var(--mu)); }  /* Group 30/31: 10.48x10 */
 
-  /* ---------- hamburger overlay (242:177) ---------- */
+  /* ---------- hamburger overlay (242:177, rearranged 2026-09-18) ----------
+     The columns are no longer side by side: CUSTOM/CATALOGUE/SHOWROOM sit
+     top left, TRADE/ABOUT/CONTACT drop lower on the right, and the stamp
+     grew to 130x226 and moved to the left where it overlaps the right
+     column's band. Nothing about that reads as a flow layout, so the panel
+     is one positioned canvas at Figma's own 752 height with each piece at
+     its measured coordinate -- trying to express it as stacked rows would
+     be fighting the design rather than reproducing it. The canvas scrolls
+     if the viewport is shorter than it. */
   .mobile-menu{
-    display:flex; flex-direction:column;
+    display:block;
     position:fixed; inset:0; z-index:45;      /* under the header's 50, so the wordmark stays put */
     background: var(--orange);
-    padding: calc(146 * var(--mu)) var(--edge) calc(40 * var(--mu));
     overflow-y:auto; -webkit-overflow-scrolling:touch;
   }
   .mobile-menu[hidden]{ display:none; }
+  .mm-inner{ position:relative; height: calc(752 * var(--mu)); }
   body.menu-open{ overflow:hidden; }
-  /* With the panel open the bar is sitting on orange whatever the scroll
-     position says, so force the collapsed colouring -- otherwise at the top
-     of the page FRITZ and the logomark are still orange, on orange. */
+  /* With the panel open the bar sits on orange whatever the scroll position
+     says, so force the collapsed colouring -- otherwise at the top of the
+     page FRITZ and the logomark are still orange, on orange. */
   body.menu-open .wordmark-header{ --hdr-bg-a: 1 !important; }
   body.menu-open .wm-right span{ color: var(--white); }
 
-  .mm-links{ display:flex; justify-content:space-between; }           /* 342:173 x=17 / 342:177 right edge 386 */
-  .mm-col-right{ align-items:flex-end; text-align:right; }
-  .mm-fleuron{ width: calc(80 * var(--mu)); margin: calc(53 * var(--mu)) auto 0 0; opacity:.9; }  /* 342:172 at x=17 y=270 */
-  .mm-fleuron img{ width:100%; height:auto; display:block; }
-  .mm-secondary{ display:flex; flex-direction:column; margin-top: calc(-66 * var(--mu)); }  /* 342:168 y=285 overlaps the fleuron's column */
-  .mm-newsletter{ margin-top: calc(82 * var(--mu)); }                 /* 342:170 ends 414 -> label at 475 */
+  .mm-links{ display:contents; }             /* the two columns position themselves */
+  .mm-col-a{ position:absolute; left: calc(17 * var(--mu)); top: calc(146 * var(--mu)); }
+  .mm-col-b{
+    position:absolute; right: var(--edge); top: calc(244 * var(--mu));
+    align-items:flex-end; text-align:right;
+  }
+  .mm-stamp{
+    position:absolute; left: calc(18 * var(--mu)); top: calc(281 * var(--mu));
+    width: calc(130 * var(--mu));            /* 244:485, was 95x165 bottom-right */
+  }
+  .mm-stamp img{ width:100%; height:auto; display:block; }
+  .mm-secondary{
+    position:absolute; right: var(--edge); top: calc(387 * var(--mu));
+    align-items:flex-end; text-align:right; max-width:none;
+  }
+  .mm-newsletter{
+    position:absolute; left: var(--edge); top: calc(543 * var(--mu));
+    width: calc(370 * var(--mu)); margin-top:0;
+  }
   /* the download button is OUTLINED here, not the filled white one the
      footer uses -- 242:177 draws it as a bordered box on orange */
-  .mm-accent{
-    background:transparent; color: var(--white);
-    border:1px solid var(--white);
-  }
+  .mm-accent{ background:transparent; color: var(--white); border:1px solid var(--white); }
   .mm-accent:hover{ background: var(--white); color: var(--orange); }
-  /* 244:485's big mark at the bottom is gone -- Eliza: "on the hamburger we
-     don't need the additional stamp, we can remove the one down here at the
-     bottom", Figma to follow. */
 }
 
 /* UNDESIGNED RANGE: roughly 520 to 1152. Figma only has 402-wide mobile

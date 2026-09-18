@@ -43,37 +43,35 @@
      own component: it needs open/close state, a scroll lock and its own
      form id, and the download button here is outlined rather than filled. -->
 <div class="mobile-menu" id="mobileMenu" hidden>
-  <nav class="mm-links" aria-label="Primary">
-    <div class="footer-col">
-      <a href="custom.html">Custom</a>
-      <a href="catalogue.html">Catalogue</a>
-      <a href="showroom.html">Showroom</a>
+  <div class="mm-inner">
+    <nav class="mm-links" aria-label="Primary">
+      <div class="footer-col mm-col-a">
+        <a href="custom.html">Custom</a>
+        <a href="catalogue.html">Catalogue</a>
+        <a href="showroom.html">Showroom</a>
+      </div>
+      <div class="footer-col mm-col-b">
+        <a href="trade.html">Trade</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+    <div class="mm-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
+    <div class="footer-col footer-col-wide mm-secondary">
+      <a href="faq.html">Frequently Asked Questions</a>
+      <a href="#warranty">Lifetime Warranty</a>
+      <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+      <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
     </div>
-    <div class="footer-col mm-col-right">
-      <a href="trade.html">Trade</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+    <div class="newsletter mm-newsletter">
+      <label for="mm-email">Sign Up for Newsletter</label>
+      <form onsubmit="return false;">
+        <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+        <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+      </form>
+      <a class="accent mm-accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
     </div>
-  </nav>
-  <div class="mm-fleuron" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
-  <div class="footer-col footer-col-wide mm-secondary">
-    <a href="faq.html">Frequently Asked Questions</a>
-    <a href="#warranty">Lifetime Warranty</a>
-    <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
-    <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
   </div>
-  <div class="newsletter mm-newsletter">
-    <label for="mm-email">Sign Up for Newsletter</label>
-    <form onsubmit="return false;">
-      <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
-      <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
-    </form>
-    <a class="accent mm-accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
-  </div>
-</div>
-
-<div class="stamp" aria-hidden="true">
-  <img src="images/logos/stamp/stamp-white.svg" alt="">
 </div>
 
 <main>

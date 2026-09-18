@@ -301,8 +301,27 @@
       track.scrollLeft = l;
     }
 
+    /* The drift accumulates its own sub-pixel remainder instead of doing
+       scrollLeft = scrollLeft + speed each frame.
+
+       That older form stopped moving entirely once mobile went to 0.14
+       px/frame ("the carousel auto-scrolling is gone now? for both
+       carousels"). Reading scrollLeft back gives a value the engine may have
+       rounded, so adding a fraction and writing it lands on the same pixel,
+       and the next frame reads that same pixel again -- the remainder is
+       thrown away every frame and nothing ever accumulates. It survived 0.4
+       by luck, not by design; any speed below ~0.5 was going to die.
+
+       Keeping the remainder in JS and only writing whole pixels makes any
+       speed work, however slow. At 0.14 that is a 1px step about every 7
+       frames, which at this pace reads as continuous. */
+    var carry = 0;
     function autoStep() {
-      if (!paused && !dragging && !reduce) setLeft(track.scrollLeft + speed());
+      if (!paused && !dragging && !reduce) {
+        carry += speed();
+        var step = Math.floor(carry);
+        if (step) { carry -= step; setLeft(track.scrollLeft + step); }
+      }
       requestAnimationFrame(autoStep);
     }
     requestAnimationFrame(autoStep);
