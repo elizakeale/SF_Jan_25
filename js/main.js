@@ -356,8 +356,19 @@
   var pane = wrap && wrap.querySelector('.scroll-hijack-sticky');
   if (wrap && pane && hijacked.length) {
     var target = hijacked[0];
-    var GAIN = 2.5;        // px of carousel travel per px of scroll
-    var RUNWAY_MIN = 600;  // px -- see sizeRunway()
+    /* Two numbers, one complaint each (2026-09-18, round 3).
+       "a bit slower... feels too jerky" -> GAIN. At 2.5 a single 100px
+       scroll event moved the carousel 250px in one frame, and amplifying
+       the browser's already-lumpy scroll deltas is what read as jerk.
+       Near 1:1 the pieces travel at the same rate the page would, which is
+       the calmest mapping there is. Deliberately NOT fixed by easing
+       toward a target: that puts a second clock next to the scroll, which
+       is the exact thing that made the header jiggle.
+       "like i miss it at a normal rate of scrolling" -> RUNWAY_MIN. The
+       pinned stretch was 600px, about one unhurried flick; at 1000 it
+       lasts long enough to register as a held moment. */
+    var GAIN = 1.1;         // px of carousel travel per px of scroll
+    var RUNWAY_MIN = 1000;  // px -- see sizeRunway()
     var lastY = window.scrollY;
     var idleTimer = null;
     var lastTop = -1, lastVH = -1, dirty = true;
