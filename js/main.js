@@ -356,29 +356,52 @@
   var pane = wrap && wrap.querySelector('.scroll-hijack-sticky');
   if (wrap && pane && hijacked.length) {
     var target = hijacked[0];
-    var GAIN = 2.5;   // px of carousel travel per px of scroll
+    var GAIN = 2.5;        // px of carousel travel per px of scroll
+    var RUNWAY_MIN = 600;  // px -- see sizeRunway()
     var lastY = window.scrollY;
     var idleTimer = null;
-    var lastTop = -1, lastPaneH = -1, lastVH = -1;
+    var lastTop = -1, lastVH = -1, dirty = true;
 
     // The sticky offset resolves from --hdr-h, which the header publishes
     // only once it docks -- so this is read live rather than cached at
     // load, when it is still 0.
     function stickyTop() { return parseFloat(getComputedStyle(pane).top) || 0; }
 
+    /* 2026-09-18, round 2. v1 sized the runway to exactly the space left
+       under the pinned band (viewport - bar - pane) so the footer would sit
+       precisely at the fold and no strip of empty orange could open up.
+       On Eliza's laptop that arithmetic came to NINETY-THREE PIXELS: the
+       band pinned and released inside a single trackpad flick ("it almost
+       stops too quickly"), and a fast scroll whose one event jumped the
+       whole 93px never sampled as pinned at all, so nothing drove the
+       carousel ("it glitches out"). It only worked scrolling very slowly.
+
+       What I was protecting against was worth almost nothing: that strip is
+       at most (viewport - bar - pane) TALL however long the runway is --
+       93px here -- and it is orange, on an orange page, above an orange
+       footer. Lengthening the runway doesn't make it bigger, only
+       longer-lived.
+
+       So: the runway is the larger of that strip and a floor big enough to
+       survive a normal flick. On a short window the floor wins and costs a
+       ~90px orange strip nobody can see; on a tall iMac the strip is the
+       bigger number and wins on its own, putting the footer right at the
+       fold as intended. One expression, right at both ends. */
     function sizeRunway() {
       var top = stickyTop();
-      var paneH = pane.offsetHeight;
       var vh = window.innerHeight;
-      if (top === lastTop && paneH === lastPaneH && vh === lastVH) return;
-      lastTop = top; lastPaneH = paneH; lastVH = vh;
-      // Fraction of a measured quantity, never a hardcoded pixel count.
-      var runway = Math.max(0, vh - top - paneH);
-      wrap.style.height = (paneH + runway) + 'px';
+      // cheap early-out: skips the layout-forcing offsetHeight read on the
+      // ~every scroll event where nothing relevant has moved
+      if (!dirty && top === lastTop && vh === lastVH) return;
+      dirty = false; lastTop = top; lastVH = vh;
+      var paneH = pane.offsetHeight;
+      var strip = vh - top - paneH;
+      wrap.style.height = (paneH + Math.max(strip, RUNWAY_MIN)) + 'px';
     }
-    sizeRunway();
-    window.addEventListener('resize', sizeRunway);
-    window.addEventListener('load', sizeRunway);
+    function remeasure() { dirty = true; sizeRunway(); }
+    remeasure();
+    window.addEventListener('resize', remeasure);
+    window.addEventListener('load', remeasure);
 
     // Pinned == the pane has reached its sticky offset AND the wrapper
     // still has runway left below it. Both edges matter: the first is the
