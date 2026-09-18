@@ -105,6 +105,7 @@
     var NAV_GAP_U = 33; // wordmark bottom -> nav top inside the bar, in FIGMA px. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
     var UNDOCK_MARGIN = 2; // float-safety only; the dock is zero-pixel, so it needs no real hysteresis
     var MOBILE_BG_FADE = 0.12; // fraction of viewport height; ~100px at 843
+    var lastMobileA = -1, lastMobileH = -1;
     var BG_FADE = 0.18; // fraction of dockDepth over which the orange ramps in.
       // Eliza: "should we do a fade in for the orange nav -- it does feel
       // drastic." It's a fade, but NOT a CSS transition: opacity is a
@@ -203,11 +204,24 @@
         setRows(false, false);
         if (heroIntro) heroIntro.style.opacity = '';
         if (pinned) undock();
+        /* Only write when something actually changed. This used to set
+           --hdr-bg-a, toggle a class and read header.offsetHeight on EVERY
+           scroll event -- a style write followed by a layout read, sixty
+           times a second, which is the classic layout-thrash recipe. Past
+           the ramp all three values are constant, so the common case is now
+           no DOM work at all. */
         var mFade = window.innerHeight * MOBILE_BG_FADE;
-        header.style.setProperty('--hdr-bg-a', clamp(y / mFade, 0, 1));
-        header.classList.toggle('is-collapsed', y > 0);
-        // the sticky pre-footer band reads this to know where to stop
-        document.documentElement.style.setProperty('--hdr-h', header.offsetHeight + 'px');
+        var mA = clamp(y / mFade, 0, 1);
+        if (mA !== lastMobileA) {
+          lastMobileA = mA;
+          header.style.setProperty('--hdr-bg-a', mA);
+          header.classList.toggle('is-collapsed', mA > 0);
+        }
+        var mh = header.offsetHeight;
+        if (mh !== lastMobileH) {
+          lastMobileH = mh;
+          document.documentElement.style.setProperty('--hdr-h', mh + 'px');
+        }
         return;
       }
 
@@ -279,7 +293,7 @@
     /* Continuous drift, px per frame. Mobile runs 30% slower per Eliza --
        the tiles there are a third the height, so the same absolute speed
        reads much faster against them. Desktop's is untouched. */
-    var SPEED = 0.4, SPEED_M = 0.14;   // mobile: -30%, then -50% again
+    var SPEED = 0.4, SPEED_M = 0.16;   // mobile: -30%, -50%, then +15%
     function speed() { return window.innerWidth <= 1152 ? SPEED_M : SPEED; }
     var paused = false;
     var dragging = false, dragStartX = 0, dragStartScroll = 0, dragMoved = false;
@@ -315,15 +329,31 @@
        Keeping the remainder in JS and only writing whole pixels makes any
        speed work, however slow. At 0.14 that is a 1px step about every 7
        frames, which at this pace reads as continuous. */
+    /* Sub-pixel drift, in two parts.
+
+       scrollLeft can only land on whole pixels at DPR 1, so the previous
+       version stepped 1px roughly every 7 frames -- about 9 steps a second,
+       which is exactly the "choppiness" Eliza saw. Slowing the carousel
+       down made it worse, because fewer steps per second is what choppy
+       IS. There is no speed below ~0.3 that looks smooth through scrollLeft
+       alone.
+
+       So scrollLeft carries the whole pixels and a translateX carries the
+       remainder, which is a compositor property and genuinely continuous.
+       The two always sum to the true position, and the transform never
+       exceeds 1px, so drag and the desktop runway can keep writing
+       scrollLeft without knowing this exists. */
     var carry = 0;
     function autoStep() {
       if (!paused && !dragging && !reduce) {
         carry += speed();
         var step = Math.floor(carry);
         if (step) { carry -= step; setLeft(track.scrollLeft + step); }
+        track.style.transform = 'translateX(' + (-carry) + 'px)';
       }
       requestAnimationFrame(autoStep);
     }
+    track.style.willChange = 'transform';
     requestAnimationFrame(autoStep);
 
     // drag-to-scroll (mouse + touch, via pointer events)
