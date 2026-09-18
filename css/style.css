@@ -909,29 +909,56 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   body.menu-open .wordmark-header{ --hdr-bg-a: 1 !important; }
   body.menu-open .wm-right span{ color: var(--white); }
 
-  .mm-links{ display:contents; }             /* the two columns position themselves */
-  .mm-col-a{ position:absolute; left: calc(17 * var(--mu)); top: calc(146 * var(--mu)); }
-  .mm-col-b{
+  /* Every rule below is scoped under .mobile-menu on purpose.
+
+     The overlay used to borrow .footer-col / .footer-col-wide / .accent so
+     it could reuse their styling, and that kept losing silently: the footer
+     rules are written as .footer-col:nth-child(2) and .footer-col.footer-col-wide
+     and .newsletter .accent, all of which outrank a bare .mm-* class. So
+     .footer-col:nth-child(1){left:0} pinned the left column to the edge,
+     :nth-child(2){right:auto} pushed the right column off the screen, and
+     .newsletter .accent kept the download button white-filled -- which is
+     why its white arrow was invisible, not missing.
+
+     Sharing classes across two layouts that disagree is the whole problem,
+     so the columns have their own class now and everything here is scoped
+     deep enough to win outright. */
+  .mm-links{ display:contents; }
+  .mobile-menu .mm-col{ display:flex; flex-direction:column; }
+  .mobile-menu .mm-col a{
+    text-decoration:none; font-family: var(--font-body); font-weight:200;
+    letter-spacing:.05em; text-transform:uppercase; color: var(--white);
+    white-space:nowrap; font-size: calc(21 * var(--mu)); line-height:1.667;
+  }
+  .mobile-menu .mm-col a:hover{ color: var(--orange-light); }
+
+  .mobile-menu .mm-col-a{
+    position:absolute; left: calc(17 * var(--mu)); top: calc(146 * var(--mu));
+    gap: calc(2 * var(--mu));
+  }
+  .mobile-menu .mm-col-b{
     position:absolute; right: var(--edge); top: calc(244 * var(--mu));
-    align-items:flex-end; text-align:right;
+    gap: calc(2 * var(--mu)); align-items:flex-end; text-align:right;
   }
-  .mm-stamp{
+  .mobile-menu .mm-stamp{
     position:absolute; left: calc(18 * var(--mu)); top: calc(281 * var(--mu));
-    width: calc(130 * var(--mu));            /* 244:485, was 95x165 bottom-right */
+    width: calc(130 * var(--mu));            /* 244:485 */
   }
-  .mm-stamp img{ width:100%; height:auto; display:block; }
-  .mm-secondary{
+  .mobile-menu .mm-stamp img{ width:100%; height:auto; display:block; }
+  .mobile-menu .mm-secondary{
     position:absolute; right: var(--edge); top: calc(387 * var(--mu));
-    align-items:flex-end; text-align:right; max-width:none;
+    gap: calc(15 * var(--mu)); align-items:flex-end; text-align:right;
   }
-  .mm-newsletter{
+  .mobile-menu .mm-secondary a{ font-size: calc(14 * var(--mu)); line-height:1.5; color: var(--cream); }
+  .mobile-menu .mm-newsletter{
     position:absolute; left: var(--edge); top: calc(543 * var(--mu));
     width: calc(370 * var(--mu)); margin-top:0;
   }
-  /* the download button is OUTLINED here, not the filled white one the
-     footer uses -- 242:177 draws it as a bordered box on orange */
-  .mm-accent{ background:transparent; color: var(--white); border:1px solid var(--white); }
-  .mm-accent:hover{ background: var(--white); color: var(--orange); }
+  /* Outlined here, not the footer's filled white box -- 242:177 draws it as
+     a bordered box on orange. Hover tints rather than fills, so the white
+     arrow stays legible; the site's hover rule is light orange anyway. */
+  .mobile-menu .mm-accent{ background:transparent; color: var(--white); border:1px solid var(--white); }
+  .mobile-menu .mm-accent:hover{ background:transparent; color: var(--orange-light); border-color: var(--orange-light); }
 }
 
 /* UNDESIGNED RANGE: roughly 520 to 1152. Figma only has 402-wide mobile
