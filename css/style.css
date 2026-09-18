@@ -571,7 +571,11 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .footer-copyright{
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.05em; text-transform:uppercase; color: var(--white); line-height:1.5; margin:0;
-  text-align:center;
+  /* Flush left on desktop -- that was deliberate in the mockup, not an
+     oversight. Mobile centres it; see the mobile block. align-self here
+     because .footer-bottom centres its children for the back-to-top's
+     sake, which would otherwise shrink-wrap this and centre it too. */
+  align-self:stretch; text-align:left;
 }
 /* The two halves are one line on desktop and two on mobile, so the comma and
    the break take turns -- rather than two copies of the string that can
@@ -814,7 +818,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
     width: calc(83 * var(--mu)); margin: calc(8 * var(--mu)) auto 0;   /* 404:776, centred at x=160+41.5 = 201.5 = 402/2 */
   }
   .footer-bottom{ order:5; margin-top: calc(40 * var(--mu)); }
-  .footer-copyright{ font-size: calc(14 * var(--mu)); }
+  .footer-copyright{ font-size: calc(14 * var(--mu)); text-align:center; }
   .footer-copyright br{ display:inline; }   /* two lines here */
   .fc-sep{ display:none; }                  /* ...so the comma steps aside */
   .back-to-top{
