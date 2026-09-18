@@ -571,7 +571,30 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .footer-copyright{
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.05em; text-transform:uppercase; color: var(--white); line-height:1.5; margin:0;
-} /* Figma's own text content (442:1989) is already ALL CAPS -- mixed-case
+  text-align:center;
+}
+/* The two halves are one line on desktop and two on mobile, so the comma and
+   the break take turns -- rather than two copies of the string that can
+   drift apart. */
+.footer-copyright br{ display:none; }
+.footer-bottom{ display:flex; flex-direction:column; align-items:center; }
+
+/* Back to top. The whole thing is one anchor, so the rule and the label are
+   both clickable -- and the hit area spans the gap between them, which is
+   the part that would otherwise feel broken. The rule reprises the hero's
+   scroll cue (88u, a real 1px -- hairlines don't scale) at the other end of
+   the page: one invites you down, one brings you back. */
+.back-to-top{
+  display:flex; flex-direction:column; align-items:center;
+  gap: calc(24 * var(--u)); margin-top: calc(24 * var(--u));
+  text-decoration:none; color: var(--white);
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: color .18s ease;
+}
+.btt-line{ display:block; width:1px; height: calc(88 * var(--u)); background: var(--white); transition: background .18s ease; }
+.back-to-top:hover{ color: var(--orange-light); }
+.back-to-top:hover .btt-line{ background: var(--orange-light); } /* Figma's own text content (442:1989) is already ALL CAPS -- mixed-case
      read as a mismatched typeface next to the rest of the all-caps footer
      ("copyright in wrong typeface"); text-transform matches how every
      other footer/nav label on the site is written (source in normal case,
@@ -790,7 +813,15 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
     order:4; position:static; transform:none;
     width: calc(83 * var(--mu)); margin: calc(8 * var(--mu)) auto 0;   /* 404:776, centred at x=160+41.5 = 201.5 = 402/2 */
   }
-  .footer-copyright{ order:5; margin-top: calc(40 * var(--mu)); font-size: calc(14 * var(--mu)); }
+  .footer-bottom{ order:5; margin-top: calc(40 * var(--mu)); }
+  .footer-copyright{ font-size: calc(14 * var(--mu)); }
+  .footer-copyright br{ display:inline; }   /* two lines here */
+  .fc-sep{ display:none; }                  /* ...so the comma steps aside */
+  .back-to-top{
+    gap: calc(16 * var(--mu)); margin-top: calc(24 * var(--mu));
+    font-size: calc(14 * var(--mu));
+  }
+  .btt-line{ height: calc(48 * var(--mu)); }
 
   .footer-links{
     position:static; min-height:0;
