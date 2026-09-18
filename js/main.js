@@ -21,13 +21,10 @@
 
     function render() {
       ticking = false;
-      // Mobile parks the stamp in the hero with CSS (Figma 244:483 -- it
-      // scrolls with the page rather than staying pinned to the viewport),
-      // so clear anything this pinning pass left inline and stay out of it.
-      if (window.innerWidth <= 1152) {
-        if (resting) { resting = false; stamp.style.position = ''; stamp.style.top = ''; }
-        return;
-      }
+      // Runs on mobile too now: Eliza wants the stamp static and persisting
+      // as you scroll, same as desktop, so it needs the same park-above-the-
+      // footer pass. Its CSS top stays 60.7%, which is what pinnedTop below
+      // assumes.
       var stampH = stamp.getBoundingClientRect().height;
       var pinnedTop = window.innerHeight * 0.607; // matches .stamp's CSS top:60.7%
       var releaseY = target.offsetTop + target.offsetHeight - window.innerHeight;
@@ -282,7 +279,7 @@
     /* Continuous drift, px per frame. Mobile runs 30% slower per Eliza --
        the tiles there are a third the height, so the same absolute speed
        reads much faster against them. Desktop's is untouched. */
-    var SPEED = 0.4, SPEED_M = 0.28;
+    var SPEED = 0.4, SPEED_M = 0.14;   // mobile: -30%, then -50% again
     function speed() { return window.innerWidth <= 1152 ? SPEED_M : SPEED; }
     var paused = false;
     var dragging = false, dragStartX = 0, dragStartScroll = 0, dragMoved = false;
@@ -396,19 +393,24 @@
        103 Figma px rather than 389, so one full set of four tiles is only
        ~500px wide instead of ~1600 -- desktop's travel would spin it more
        than two whole loops. These keep it to roughly one. */
-    /* RUNWAY_MIN_M was 700, which is what produced the long gap Eliza hit
-       on the fourth scroll: on a 400x621 window the space under the pinned
-       band is ~428, so a 700 runway held the band for ~272px before the
-       footer even began rising. The floor exists for the opposite problem
-       -- on her LAPTOP that space was only 93px and needed propping up.
-       Mobile's band is short relative to the viewport, so the space is
-       naturally big enough to be the whole runway and the floor should
-       never engage. At 0 the footer sits at the fold from the moment the
-       band pins and no gap can open at all. */
-    var GAIN_M = 0.7, RUNWAY_MIN_M = 0;
+    /* NOT RUN ON MOBILE. Two rounds of tuning couldn't fix the gap there
+       because the geometry is inverted, not mistuned:
+
+         desktop  670 viewport - 197 bar - 424 band  =  49 left over
+         mobile   621 viewport -  68 bar - 123 band  = 430 left over
+
+       Desktop's band nearly fills the screen under the bar, so pinning it
+       costs ~49px of orange nobody sees. Mobile's fills a fifth of it, so
+       pinning it MUST leave ~430px empty -- something has to occupy the
+       space the footer hasn't climbed into yet. RUNWAY_MIN 700 made that
+       worse; setting it to 0 removed the excess but not the 430, because
+       the 430 isn't excess, it's the shape of the viewport. No constant
+       fixes it.
+
+       So on mobile the pre-footer carousel behaves like the top one: it
+       drifts, it drags, it scrolls past normally. Eliza suggested exactly
+       this a round before I worked out why she was right. */
     function mobile() { return window.innerWidth <= 1152; }
-    function gain() { return mobile() ? GAIN_M : GAIN; }
-    function runwayMin() { return mobile() ? RUNWAY_MIN_M : RUNWAY_MIN; }
     var lastY = window.scrollY;
     var idleTimer = null;
     var lastTop = -1, lastVH = -1, dirty = true;
@@ -439,6 +441,11 @@
        bigger number and wins on its own, putting the footer right at the
        fold as intended. One expression, right at both ends. */
     function sizeRunway() {
+      if (mobile()) {                  // no runway: let the band sit in flow
+        if (wrap.style.height) wrap.style.height = '';
+        lastTop = -1; lastVH = -1;     // force a real measure on the way back
+        return;
+      }
       var top = stickyTop();
       var vh = window.innerHeight;
       // cheap early-out: skips the layout-forcing offsetHeight read on the
@@ -447,7 +454,7 @@
       dirty = false; lastTop = top; lastVH = vh;
       var paneH = pane.offsetHeight;
       var strip = vh - top - paneH;
-      wrap.style.height = (paneH + Math.max(strip, runwayMin())) + 'px';
+      wrap.style.height = (paneH + Math.max(strip, RUNWAY_MIN)) + 'px';
     }
     function remeasure() { dirty = true; sizeRunway(); }
     remeasure();
@@ -468,9 +475,9 @@
       sizeRunway();
       var y = window.scrollY, dy = y - lastY;
       lastY = y;
-      if (!dy || !pinned()) return;
+      if (mobile() || !dy || !pinned()) return;
       target.setPaused(true);
-      target.setLeft(target.track.scrollLeft + dy * gain());
+      target.setLeft(target.track.scrollLeft + dy * GAIN);
       clearTimeout(idleTimer);
       // drift picks back up shortly after the scroll stops, so the
       // carousel is never sitting dead
