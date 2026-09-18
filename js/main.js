@@ -279,7 +279,11 @@
     var track = el.querySelector('.carousel-track');
     if (!track) return;
     var isHijacked = el.hasAttribute('data-hijacked');
-    var speed = 0.4; // px per frame, continuous drift
+    /* Continuous drift, px per frame. Mobile runs 30% slower per Eliza --
+       the tiles there are a third the height, so the same absolute speed
+       reads much faster against them. Desktop's is untouched. */
+    var SPEED = 0.4, SPEED_M = 0.28;
+    function speed() { return window.innerWidth <= 1152 ? SPEED_M : SPEED; }
     var paused = false;
     var dragging = false, dragStartX = 0, dragStartScroll = 0, dragMoved = false;
 
@@ -301,7 +305,7 @@
     }
 
     function autoStep() {
-      if (!paused && !dragging && !reduce) setLeft(track.scrollLeft + speed);
+      if (!paused && !dragging && !reduce) setLeft(track.scrollLeft + speed());
       requestAnimationFrame(autoStep);
     }
     requestAnimationFrame(autoStep);
@@ -392,7 +396,16 @@
        103 Figma px rather than 389, so one full set of four tiles is only
        ~500px wide instead of ~1600 -- desktop's travel would spin it more
        than two whole loops. These keep it to roughly one. */
-    var GAIN_M = 0.7, RUNWAY_MIN_M = 700;
+    /* RUNWAY_MIN_M was 700, which is what produced the long gap Eliza hit
+       on the fourth scroll: on a 400x621 window the space under the pinned
+       band is ~428, so a 700 runway held the band for ~272px before the
+       footer even began rising. The floor exists for the opposite problem
+       -- on her LAPTOP that space was only 93px and needed propping up.
+       Mobile's band is short relative to the viewport, so the space is
+       naturally big enough to be the whole runway and the floor should
+       never engage. At 0 the footer sits at the fold from the moment the
+       band pins and no gap can open at all. */
+    var GAIN_M = 0.7, RUNWAY_MIN_M = 0;
     function mobile() { return window.innerWidth <= 1152; }
     function gain() { return mobile() ? GAIN_M : GAIN; }
     function runwayMin() { return mobile() ? RUNWAY_MIN_M : RUNWAY_MIN; }

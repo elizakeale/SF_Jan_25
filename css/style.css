@@ -673,8 +673,13 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   .wm-row-2, .wm-row-3{ display:none; }
   .wordmark-header{
     height: calc(68 * var(--mu));          /* Figma 278:1232: band starts y=68 */
-    padding: 0 var(--edge);
-    align-items:center;
+    padding: calc(4 * var(--mu)) var(--edge) 0;
+    align-items:flex-start;
+    /* was align-items:center, which put the 40mu line box at 14..54 -- the
+       hamburger starts at 52, so the icon sat under FRITZ with 2mu between
+       them ("too close to Fritz"). Figma top-aligns the wordmark at y=4;
+       doing the same drops the glyphs to 4..44 and opens the gap without
+       moving anything else. */
   }
   .wordmark-header.is-collapsed{ padding-bottom:0; }  /* nothing docks in here */
   .wm-col span{ font-size: calc(40 * var(--mu)); }    /* 342:75 STUDIO 144 wide / 342:76 FRITZ 142 -> 40 both ways */
@@ -682,7 +687,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 
   .nav-toggle{
     display:flex; flex-direction:column; justify-content:space-between;
-    position:absolute; right: var(--edge); top: calc(52 * var(--mu));
+    position:absolute; right: var(--edge); top: calc(54 * var(--mu));
     width: calc(19 * var(--mu)); height: calc(11 * var(--mu));
     padding:0; border:0; background:none; cursor:pointer; color: var(--white);
   }
@@ -702,7 +707,11 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   .hero{
     min-height:0; height: calc(468 * var(--mu));
     overflow:visible;
-    margin-bottom: calc(147 * var(--mu));   /* 468 -> carousel at 615 */
+    margin-bottom: calc(180 * var(--mu));
+    /* Figma's 147 assumed 205:69 was 74 tall -- that hand-resized box
+       again. At 4 lines x 27.2 the paragraph actually runs to 591, so the
+       real gap to the carousel was 24mu, not the 58 I thought I was
+       setting. 180 puts ~56 of air under it. */
   }
   .hero::after{ background: linear-gradient(0deg, rgba(20,10,25,.75) 0%, rgba(20,10,25,.05) 55%, transparent 78%); }
   .hero-content{
@@ -736,9 +745,15 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 
   .catalogue-band{
     padding: calc(16 * var(--mu)) calc(20 * var(--mu)) calc(10 * var(--mu));
-    font-size: calc(21 * var(--mu)); gap: calc(8 * var(--mu));
+    font-size: calc(16 * var(--mu)); gap: calc(8 * var(--mu));
+    /* Figma has these at 21 (278:1320 is 115 wide, same as the footer's
+       CATALOGUE), but on a 402 frame that makes them the largest type on
+       the page after the wordmark, sitting on an otherwise empty band --
+       they read as headlines while doing a nav link's job. Dropped to the
+       hero body size. Desktop keeps its 25: there the link sits alone on a
+       1440 canvas with air around it and 16 would disappear. */
   }
-  .catalogue-band img{ width: calc(13 * var(--mu)); height: calc(13 * var(--mu)); }  /* 278:1321 Group 2 */
+  .catalogue-band img{ width: calc(11 * var(--mu)); height: calc(11 * var(--mu)); }
   /* 404:798 / 404:831: ABOUT sits flush between the band and the footer
      wordmark (band ends 1152, text 1153, footer 1188). */
   .band-about{ display:flex; padding: calc(1 * var(--mu)) calc(20 * var(--mu)) 0; }
