@@ -954,11 +954,10 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
     position:absolute; left: var(--edge); top: calc(543 * var(--mu));
     width: calc(370 * var(--mu)); margin-top:0;
   }
-  /* Outlined here, not the footer's filled white box -- 242:177 draws it as
-     a bordered box on orange. Hover tints rather than fills, so the white
-     arrow stays legible; the site's hover rule is light orange anyway. */
-  .mobile-menu .mm-accent{ background:transparent; color: var(--white); border:1px solid var(--white); }
-  .mobile-menu .mm-accent:hover{ background:transparent; color: var(--orange-light); border-color: var(--orange-light); }
+  /* The download button is the SAME filled white box as the footer's -- I
+     had read 242:177's white fill as a border at screenshot scale and built
+     an outlined variant. It isn't one, so the overrides are gone and it
+     inherits .newsletter .accent, orange arrow included. */
 }
 
 /* UNDESIGNED RANGE: roughly 520 to 1152. Figma only has 402-wide mobile
