@@ -446,16 +446,21 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 }
 
 /* pre-footer carousel: scroll-hijacked (vertical scroll -> horizontal, 1:1) */
-.scroll-hijack{ position:relative; }
+.scroll-hijack{ position:relative; background: var(--orange); }
+/* Height is set by js/main.js: pane height + a runway sized to
+   (viewport - collapsed bar - pane), so the pane pins flush under the
+   bar and holds while the footer rises into the space below it. The
+   background matters for the frame or two after a resize, before the
+   runway is re-measured -- that strip must never flash cream. */
 .scroll-hijack-sticky{
   position:sticky; top: var(--hdr-h, 0px); height:auto; overflow:hidden; background: var(--orange);
 } /* round 10 v3: flex-end (v2) just relocated the dead space from below the
      carousel to above it -- still one large, clearly-visible blank block,
      now sitting right under the hero, per Eliza's "big padding gaps are
-     still on homepage" follow-up. The 100vh height here is load-bearing
-     for js/main.js's scroll-hijack progress math (wrap.offsetHeight -
-     window.innerHeight must equal the runway) so it can't shrink, and
-     tile-media's height (420px cap) is shared with every other carousel
+     still on homepage" follow-up. (Superseded 2026-09-18: the pane is no
+     longer viewport-tall at all -- it hugs the 389 band, and the runway
+     that used to come from its height is now set explicitly on the
+     wrapper by js/main.js.) tile-media's height is shared with every other carousel
      on the site so it shouldn't change just for this section -- so
      instead of anchoring the leftover space to one edge, split it evenly
      top/bottom by centering. Same total empty space, but it reads as

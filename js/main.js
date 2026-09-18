@@ -323,53 +323,84 @@
     });
   });
 
-  /* ---------------- scroll takeover at the foot of the page ----------
-     Eliza: "the scroll down eventually stops when i can see full footer,
-     and then if i try to keep scrolling, it'll just takeover the scroll of
-     the carousel."
+  /* ---------------- pre-footer carousel: scroll runway ----------------
+     Eliza: "could we set the rule so that forced scroll happens once the
+     top of the carousel is flush with the nav bar? ... goal is 1. it feels
+     cool 2. you're scrolling and able to fully see the carousel as you
+     scroll."
 
-     So this is NOT the old mid-page hijack, where the carousel pinned and
-     you scrolled through a tall runway to get past it. That runway is gone
-     -- the section is now just a band in normal flow, and the page scrolls
-     to its natural bottom with the footer fully in view. Only THEN does
-     further downward scroll get captured and turned into horizontal
-     movement.
+     Her rule and the OLD rule (fire at the document bottom) cannot both
+     hold. Below the fold there is 197 of collapsed bar + 424 of band and
+     captions + 594 of footer = 1215px of content against a ~900 viewport,
+     so "band flush under the bar" happens ~315px BEFORE the page runs out
+     of scroll. That 315 is exactly how much of the band was being eaten
+     before the old takeover fired. Shortening the footer can't close it --
+     ours already renders ~508 against Figma's 554.
 
-     Which means it can't be driven by scroll POSITION the way the old one
-     was: at the bottom there is no scroll range left to read. It reads the
-     wheel delta directly and preventDefault()s it, so the page stays put
-     and the input goes to the carousel instead. Scrolling up is never
-     captured, so leaving is instant and the page is never trapped.
+     So: give the section a runway. The pane pins flush under the bar and
+     HOLDS while the runway is consumed, the footer rising into the space
+     underneath it, and the scroll drives the carousel sideways the whole
+     way. Runway spent -> pane releases -> page finishes normally.
 
-     The drift pauses while the takeover is actively being driven and picks
-     up again shortly after the input stops, so the carousel is still
-     always alive. Drag still works at any time. ---------------- */
-  var wrappers = Array.prototype.slice.call(document.querySelectorAll('.scroll-hijack'));
-  if (wrappers.length && hijacked.length) {
+     Driven by scroll POSITION, not by intercepting wheel events. Same
+     lesson as the header: no preventDefault, so the page is never held
+     hostage, scrolling up reverses it exactly, momentum behaves, and
+     there's no timer running on its own clock next to the scroll.
+
+     RUNWAY is sized so the footer sits exactly at the fold when the pane
+     pins -- any longer and you'd see a band of empty orange under the
+     carousel waiting for the footer, which is the dead space round 10 was
+     spent removing. Carousel travel is decoupled from that by GAIN, so how
+     far the pieces move doesn't depend on how tall the window is. -------- */
+  var wrap = document.querySelector('.scroll-hijack');
+  var pane = wrap && wrap.querySelector('.scroll-hijack-sticky');
+  if (wrap && pane && hijacked.length) {
     var target = hijacked[0];
+    var GAIN = 2.5;   // px of carousel travel per px of scroll
+    var lastY = window.scrollY;
+    var idleTimer = null;
+    var lastTop = -1, lastPaneH = -1, lastVH = -1;
 
-    // Drop the runway height the old mechanism sized onto the wrapper; the
-    // band is in flow now and sizes to its own content.
-    function unsizeWrappers() {
-      wrappers.forEach(function (wrap) { if (wrap.style.height) wrap.style.height = ''; });
+    // The sticky offset resolves from --hdr-h, which the header publishes
+    // only once it docks -- so this is read live rather than cached at
+    // load, when it is still 0.
+    function stickyTop() { return parseFloat(getComputedStyle(pane).top) || 0; }
+
+    function sizeRunway() {
+      var top = stickyTop();
+      var paneH = pane.offsetHeight;
+      var vh = window.innerHeight;
+      if (top === lastTop && paneH === lastPaneH && vh === lastVH) return;
+      lastTop = top; lastPaneH = paneH; lastVH = vh;
+      // Fraction of a measured quantity, never a hardcoded pixel count.
+      var runway = Math.max(0, vh - top - paneH);
+      wrap.style.height = (paneH + runway) + 'px';
     }
-    unsizeWrappers();
-    window.addEventListener('resize', unsizeWrappers);
+    sizeRunway();
+    window.addEventListener('resize', sizeRunway);
+    window.addEventListener('load', sizeRunway);
 
-    function atBottom() {
-      var doc = document.documentElement;
-      return (window.innerHeight + window.scrollY) >= (doc.scrollHeight - 2);
+    // Pinned == the pane has reached its sticky offset AND the wrapper
+    // still has runway left below it. Both edges matter: the first is the
+    // "flush with the nav bar" moment Eliza asked for, the second is what
+    // hands the page back instead of trapping it.
+    function pinned() {
+      var r = pane.getBoundingClientRect();
+      return r.top <= lastTop + 1 &&
+             wrap.getBoundingClientRect().bottom > r.bottom + 1;
     }
 
-    var resumeTimer = null;
-    window.addEventListener('wheel', function (e) {
-      // only downward input, only once the page has nothing left to give
-      if (e.deltaY <= 0 || !atBottom()) return;
-      e.preventDefault();
+    window.addEventListener('scroll', function () {
+      sizeRunway();
+      var y = window.scrollY, dy = y - lastY;
+      lastY = y;
+      if (!dy || !pinned()) return;
       target.setPaused(true);
-      target.setLeft(target.track.scrollLeft + e.deltaY);
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(function () { target.setPaused(false); }, 400);
-    }, { passive: false }); // non-passive is required: we preventDefault
+      target.setLeft(target.track.scrollLeft + dy * GAIN);
+      clearTimeout(idleTimer);
+      // drift picks back up shortly after the scroll stops, so the
+      // carousel is never sitting dead
+      idleTimer = setTimeout(function () { target.setPaused(false); }, 250);
+    }, { passive: true });
   }
 })();
