@@ -666,6 +666,154 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 
 
 /* ============================================================
+   ABOUT PAGE — Figma 175:1147 (desktop, 1440) / 338:3 (mobile, 402)
+
+   White page, unlike everything else on the site. Figma 175:1274 is
+   literally bg-white, not cream — checked rather than inferred, because
+   cream and white are hard to tell apart in a render and STUDIO is set in
+   cream here, which only reads at all against white.
+
+   Header and footer are the homepage's, verbatim. Where the About frames
+   disagree with them the homepage wins: those frames are older in three
+   visible ways (hamburger at 52 rather than 56, "JOIN NEWSLETTER" rather
+   than "SIGN UP FOR NEWSLETTER", and a mobile footer whose nav rows
+   overlap each other). One canonical header and footer beats a faithful
+   copy of a stale frame.
+
+   Layout is positioned rather than flowed, like the footer: Figma places
+   every element on an absolute coordinate and the composition overlaps
+   (the stamp sits across the hands photo's column). The section heights
+   come from Figma's own landmarks.
+
+   NOT trusted: Figma's text-box heights. 175:1201 claims 611 tall for
+   copy that sets in about 13 lines, and 175:1202 claims 812. Same trap as
+   the homepage hero. Text flows to its natural height here and the
+   sections carry enough room for it.
+   ============================================================ */
+body.page-about{ background: var(--white); color: var(--ink); }
+
+/* Static bar: no hero to dock out of, and Eliza asked for no animations
+   here yet. The nav sits where the homepage's docked nav sits (43.4% is
+   625/1440, CUSTOM's own x), so the two pages agree once the homepage has
+   collapsed. */
+.wordmark-header.is-static{
+  /* Absolute, not relative: Figma's y-coordinates for this page are
+     page-absolute (the label is at 266), so <main> has to start at page 0.
+     Absolute rather than fixed because there is no collapse behaviour here
+     yet — the bar scrolls away with the page. */
+  position:absolute; top:0; left:0; right:0; z-index:50;
+  display:block; padding: var(--sp-8) var(--edge) calc(24 * var(--u));
+}
+.wordmark-header.is-static .wm-link{ display:inline-block; }
+/* Figma 316:255/256 put the pair on the RIGHT — STUDIO at x=621, FRITZ
+   ending at 1403 — rather than the homepage's STUDIO-left / mark-centre /
+   FRITZ-right. Deliberate as far as the file shows: it lines the bar up
+   with the right-hand content columns and leaves the left for the label
+   and portrait. Flagged for Eliza; one rule to undo. */
+.wordmark-header.is-static .wm-row-1{ font-size: calc(100 * var(--u)); }
+.about-wordmarks{ display:flex; justify-content:flex-end; gap: calc(70 * var(--u)); }
+.wordmark-header.is-static .hero-links.is-static-nav{
+  /* --para-gap is normally inherited from .hero-content, which this page
+     has no equivalent of. Without it the column-2 anchor
+     (right: calc(50% + var(--para-gap)/2)) is invalid and columns 1 and 2
+     collapse onto each other. Same value: this nav spans 625..1400, the
+     hero block spans 777 — the same width to within 2px. */
+  --para-gap: 9.396%;
+  position:absolute; left:43.4%; right: var(--edge);
+  top: calc(131 * var(--u)); height: calc(54 * var(--u)); margin:0;
+}
+.wordmark-header.is-static .hero-links a{ color: var(--ink); }
+.wordmark-header.is-static .hero-links a:hover{ color: var(--orange); }
+.wordmark-header.is-static .wm-left span{ color: var(--cream); }
+.wordmark-header.is-static .wm-right span{ color: var(--orange); }
+
+/* Figma 316:357 runs x=304 from y=42 to 2433, with two short horizontals
+   at 42 and 63 (316:358/359) bracketing its top. One element: the rule is
+   the border, the bracket is drawn with ::before / ::after. */
+.about-rule{
+  position:absolute; left: calc(304 * var(--u)); top: calc(42 * var(--u));
+  width:1px; height: calc(2391 * var(--u)); background: var(--orange);
+  pointer-events:none;
+}
+.about-rule::before, .about-rule::after{
+  content:''; position:absolute; height:1px; background: var(--orange);
+}
+.about-rule::before{ left: calc(-20 * var(--u)); top:0;  width: calc(163 * var(--u)); }
+.about-rule::after{  left:0;                     top: calc(21 * var(--u)); width: calc(125 * var(--u)); }
+
+main{ position:relative; }        /* .about-rule anchors to the page, not the viewport */
+
+.about-block{ position:relative; }
+.about-maker{ height: calc(1403 * var(--u)); }   /* to where ABOUT THE STUDIO starts */
+.about-studio{ height: calc(892 * var(--u)); }   /* 1403 -> carousel band at 2295 */
+
+.about-label{
+  position:absolute; margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-headline);
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+/* 265:757 is 189 wide for 15 characters and 265:759 is 198 for 16 — the
+   same 12.5px per character, so the same size despite their boxes
+   reporting 25 and 35. */
+.about-label-maker{  left: var(--edge);            top: calc(266 * var(--u)); }
+.about-label-studio{ left: calc(321 * var(--u));   top: 0; }
+
+.about-col{ position:absolute; }
+.about-col p{
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase;
+  text-align:justify; color: var(--ink); margin:0;
+}
+.about-col p + p{ margin-top: 1.7em; }
+.about-col-a1{ left: calc(464 * var(--u)); top: calc(266 * var(--u));  width: calc(399 * var(--u)); }
+.about-col-b1{ left: calc(991 * var(--u)); top: calc(266 * var(--u));  width: calc(412 * var(--u)); }
+.about-col-a2{ left: calc(321 * var(--u)); top: calc(53 * var(--u));   width: calc(399 * var(--u)); }
+.about-col-b2{ left: calc(961 * var(--u)); top: calc(53 * var(--u));   width: calc(412 * var(--u)); }
+
+.about-fig{ position:absolute; margin:0; }
+.about-fig img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* aspect-ratio holds the box while the photos are still being exported, so
+   the composition is reviewable before the assets land */
+.about-portrait{ left: calc(22 * var(--u));   top: calc(311 * var(--u));  width: calc(386 * var(--u)); aspect-ratio: 386 / 622; }
+.about-hands{    left: calc(1048 * var(--u)); top: calc(841 * var(--u));  width: calc(371 * var(--u)); aspect-ratio: 371 / 454; }
+.about-stools{   left: calc(797 * var(--u));  top: calc(485 * var(--u));  width: calc(427 * var(--u)); aspect-ratio: 427 / 292; }
+.about-portrait, .about-hands, .about-stools{ background: var(--cream); }
+
+/* 244:467 — the soft orange mark, with its caption to the LEFT of it
+   (244:454 at x=694 against the mark at x=888). */
+.about-stamp-fig{
+  left: calc(888 * var(--u)); top: calc(1028 * var(--u));
+  width: calc(185 * var(--u)); aspect-ratio: 185 / 323;
+}
+.about-stamp-fig img{ height:auto; object-fit:contain; }
+.about-stamp-fig figcaption{
+  position:absolute; left: calc(-194 * var(--u)); top: calc(198 * var(--u));
+  width: calc(169 * var(--u));
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+
+/* Group 9: a filled orange bar, label left, arrow right — the inverse of
+   the footer's white-filled download button. */
+.about-cta{
+  position:absolute; left: calc(461 * var(--u)); top: calc(791 * var(--u));
+  width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
+  background: var(--orange); color: var(--white); text-decoration:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.about-cta:hover{ background: var(--orange-light); }
+.about-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
+
+/* The band link under the carousel stays mobile-only on About too: 338:15
+   carries a CATALOGUE link under the mobile carousel, the desktop frame
+   (175:1147) has only the four captions and no link. Same as the homepage,
+   so no rule needed here — the mobile block switches it on. */
+
+/* ============================================================
    MOBILE — built from Figma's 402-wide frames:
      160:104   HOMEPAGE - Mobile            (base)
      278:1285  HOMEPAGE - Mobile - Scroll
@@ -958,6 +1106,85 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      had read 242:177's white fill as a border at screenshot scale and built
      an outlined variant. It isn't one, so the overrides are gone and it
      inherits .newsletter .accent, orange arrow included. */
+
+  /* ---------- About page (Figma 338:3) ----------
+     Everything the desktop composition overlaps, mobile stacks: one text
+     column instead of two, full-bleed photos, labels right-aligned above
+     their block. So this is flow, not coordinates — the only positioned
+     things are the stamp and its caption, which genuinely sit side by side.
+
+     The header goes back into flow here: the desktop page pulls it out so
+     Figma's page-absolute y-coordinates line up, and mobile has none of
+     those. */
+  .wordmark-header.is-static{
+    position:fixed; padding: calc(4 * var(--mu)) var(--edge) 0;
+    height: calc(81 * var(--mu)); display:flex; align-items:flex-start;
+  }
+  .wordmark-header.is-static .about-wordmarks{
+    flex:1; display:flex; justify-content:space-between; gap:0;
+  }
+  .wordmark-header.is-static .wm-row-1{ font-size: calc(40 * var(--mu)); }
+  .wordmark-header.is-static .hero-links.is-static-nav{ display:none; }  /* hamburger instead */
+  .wordmark-header.is-static .wm-left span{ color: var(--cream); }
+  .wordmark-header.is-static .wm-right span{ color: var(--orange); }
+  .about-rule{ display:none; }                                           /* not in the mobile frame */
+
+  body.page-about main{ padding-top: calc(81 * var(--mu)); }
+  .about-block{ height:auto; }
+  .about-maker, .about-studio{ height:auto; }
+
+  .about-label{
+    position:static; display:block;
+    text-align:right; padding: 0 var(--edge);
+    font-size: calc(16 * var(--mu));
+  }
+  .about-label-maker{  margin: calc(40 * var(--mu)) 0 calc(49 * var(--mu)); }  /* portrait ends 716, label 756, copy 805 */
+  .about-label-studio{ margin: calc(53 * var(--mu)) 0 calc(71 * var(--mu)); }  /* 2661 after the rule at 2608; copy at 2732 */
+
+  .about-col{
+    position:static; width:auto; padding: 0 calc(15 * var(--mu));
+  }
+  .about-col p{ font-size: calc(16 * var(--mu)); }
+  /* Desktop splits each section into two columns; mobile runs them as one.
+     The second column follows the first with the same paragraph rhythm
+     rather than a section break. */
+  .about-col-b1, .about-col-b2{ margin-top: 1.7em; }
+
+  .about-fig{ position:static; width:auto; }
+  /* 338:58 and 338:80 are full-bleed at 402 wide; 338:88 is 427 wide on a
+     402 frame, i.e. deliberately overflowing to the right. */
+  .about-portrait{ aspect-ratio: 402 / 648; }
+  .about-hands{ aspect-ratio: 402 / 492; margin-top: calc(96 * var(--mu)); }
+  .about-stools{ aspect-ratio: 427 / 292; margin-top: calc(92 * var(--mu)); width: calc(427 * var(--mu)); }
+
+  /* 342:721: a full-width rule under the hands photo, at y=2275 */
+  .about-hands::after{
+    content:''; position:absolute; left:0; right:0; bottom: calc(-8 * var(--mu));
+    height:1px; background: var(--orange);
+  }
+  .about-hands{ position:relative; }
+
+  /* The one piece that stays positioned: 338:83's mark at x=210 with
+     338:82's caption at x=16, side by side rather than stacked. */
+  .about-stamp-fig{
+    position:relative; left:auto; top:auto;
+    width: calc(185 * var(--mu)); margin: calc(8 * var(--mu)) 0 0 calc(210 * var(--mu));
+  }
+  .about-stamp-fig figcaption{
+    left: calc(-194 * var(--mu)); top: calc(198 * var(--mu));
+    width: calc(169 * var(--mu)); font-size: calc(14 * var(--mu));
+  }
+
+  .about-cta{
+    position:static; width:auto; margin: calc(79 * var(--mu)) var(--edge) 0;
+    min-height: calc(28 * var(--mu)); font-size: calc(14 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+  }
+  .about-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
+
+  /* the band link matches the homepage's mobile one again */
+  .page-about .band-about{ padding: 0 var(--edge) calc(12 * var(--mu)); font-size: calc(16 * var(--mu)); }
+  .page-about .band-about img{ width: calc(11 * var(--mu)); height: calc(11 * var(--mu)); }
 }
 
 /* UNDESIGNED RANGE: roughly 520 to 1152. Figma only has 402-wide mobile

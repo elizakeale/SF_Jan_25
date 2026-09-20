@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Studio Fritz</title>
+<meta name="description" content="Studio Fritz is a contemporary fine furniture maker from Bainbridge Island, WA, founded by craftsman Lucas Fritz Weyand and his wife Eliza, an illustrator.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Estedad:wght@200..900&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/svg+xml" href="images/logos/logomark/logomark-orange.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="images/logos/logomark/logomark-orange.png">
+<link rel="apple-touch-icon" href="images/logos/logomark/logomark-orange@2x.png">
+</head>
+<body class="page-about">
+
+<!-- Header, hamburger and footer are copied verbatim from index.html. This is
+     a static site with no templating, so they are duplicated by necessity --
+     index.html stays the canonical copy; changes go there first, then here. -->
+<header class="wordmark-header is-static" id="wmHeader">
+  <div class="about-wordmarks">
+    <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+      <div class="wm-col wm-left"><span class="wm-row-1">STUDIO</span></div>
+    </a>
+    <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+      <div class="wm-col wm-right"><span class="wm-row-1">FRITZ</span></div>
+    </a>
+  </div>
+  <nav class="hero-links is-static-nav" aria-label="Primary">
+    <a href="custom.html">Custom</a>
+    <a href="showroom.html">Showroom</a>
+    <a href="about.html" aria-current="page">About</a>
+    <a href="catalogue.html">Catalogue</a>
+    <a href="trade.html">Trade</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" type="button"
+          aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <div class="mm-inner">
+    <nav class="mm-links" aria-label="Primary">
+      <div class="mm-col mm-col-a">
+        <a href="custom.html">Custom</a>
+        <a href="catalogue.html">Catalogue</a>
+        <a href="showroom.html">Showroom</a>
+      </div>
+      <div class="mm-col mm-col-b">
+        <a href="trade.html">Trade</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+    <div class="mm-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
+    <div class="mm-col mm-secondary">
+      <a href="faq.html">Frequently Asked Questions</a>
+      <a href="#warranty">Lifetime Warranty</a>
+      <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+      <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+    </div>
+    <div class="newsletter mm-newsletter">
+      <label for="mm-email">Sign Up for Newsletter</label>
+      <form onsubmit="return false;">
+        <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+        <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+      </form>
+      <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-orange.svg" alt=""></a>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+
+  <!-- The long vertical rule at x=304 with its bracket (Figma 316:357/358/359).
+       Purely decorative, so it is one element rather than three. -->
+  <div class="about-rule" aria-hidden="true"></div>
+
+  <section class="about-block about-maker">
+    <h1 class="about-label about-label-maker">About the Maker</h1>
+
+    <figure class="about-fig about-portrait">
+      <img src="images/about/maker-portrait.jpg" alt="Lucas Fritz Weyand in the Studio Fritz workshop">
+    </figure>
+
+    <div class="about-col about-col-a1">
+      <p>Lucas Fritz Weyand is a furniture craftsman and co-owner of Studio Fritz.</p>
+      <p>Born in Pittsburgh, PA and raised on Bainbridge Island, WA, Lucas drew his early inspirations from both East Coast, Pennsylvania modernism (from Kentuck Knob to Nakashima&rsquo;s Conoid chair) and West Coast organic design that responds to the rainy climate and tree dense environment.</p>
+      <p>Raised in a family of architects, spatial designers, furniture makers, and metal sculptors, Lucas developed an eye for tasteful, enduring design that informs his modern perspective on the built environment.</p>
+    </div>
+
+    <div class="about-col about-col-b1">
+      <p>Lucas introduces these various crafts into his work &mdash; his style is undoubtedly focused on quality wood materials, but with provocations in materials such as metals, cord under tension, and tinted colour. His designs are researched with strong consideration and respect for architectural and interior design coherence.</p>
+      <p>The Studio Fritz name is an homage to this family history.</p>
+      <p>Founded in 2021 by wood craftsman Lucas Fritz Weyand and his wife Eliza, an illustrator, Studio Fritz is an ongoing partnership in design.</p>
+    </div>
+
+    <a class="about-cta" href="contact.html">
+      <span>Collaborate</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+    </a>
+
+    <figure class="about-fig about-hands">
+      <img src="images/about/workshop-hands.jpg" alt="Hand-finishing a solid wood joint in the workshop">
+    </figure>
+
+    <figure class="about-fig about-stamp-fig">
+      <img src="images/logos/stamp/stamp-orange.svg" alt="">
+      <figcaption>Original Fritz architecture stamp from 1930&ndash;1960s</figcaption>
+    </figure>
+  </section>
+
+  <section class="about-block about-studio">
+    <h2 class="about-label about-label-studio">About the Studio</h2>
+
+    <div class="about-col about-col-a2">
+      <p>Studio Fritz is a contemporary fine furniture maker from Bainbridge Island, WA. The studio experiments primarily with Pennsylvania modernism, West Coast organic design, and brutalism.</p>
+      <p>Now based out of Seattle&rsquo;s industrial district, Studio Fritz handcrafts objects with a singular demeanor. That character emerges through an emphasis on form, restraint, and a modest yet distinct presence.</p>
+      <p>The studio builds exclusively with solid wood and traditional joinery techniques, intentionally rejecting more efficient methods such as nails, screws, or CNC machinery. Techniques are deliberately slow, allowing for adjustment based on wood and structural behaviour as it evolves during the process.</p>
+    </div>
+
+    <div class="about-col about-col-b2">
+      <p>Silhouettes and profiles utilize B&eacute;zier curves, creating organic, non-uniform lines. Material (from brushed metals to rattan weaves), tinted colour, and texture are treated as secondary elements, carefully selected to accent the qualities of the form.</p>
+      <p>Traditional Danish and Japanese joinery techniques and hardwoods ensure timeless design relevance and generational durability.</p>
+      <p>Founded by craftsman Lucas Fritz Weyand and his wife Eliza, an illustrator, Studio Fritz is an ongoing partnership in design.</p>
+    </div>
+
+    <figure class="about-fig about-stools">
+      <img src="images/about/studio-stools.jpg" alt="Solid wood stools in the Studio Fritz workshop">
+    </figure>
+  </section>
+
+  <!-- Same mechanism as the homepage's bottom carousel: drifts continuously,
+       and on desktop pins under the bar and takes the scroll (js/main.js).
+       Same four pieces as that carousel, per Figma 175:1153-1161. -->
+  <div class="scroll-hijack">
+    <div class="scroll-hijack-sticky">
+      <div class="carousel" data-carousel data-hijacked aria-label="Selected work">
+        <div class="carousel-track">
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.391"><img src="images/home/bluff-table.webp" alt="Bluff Table"></div>
+            <figcaption>Bluff Table</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.208"><img src="images/home/point-grey-stools.webp" alt="Point Grey Stools"></div>
+            <figcaption>Point Grey Stools</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.0"><img src="images/home/westlake-table.webp" alt="Westlake Table, with Interior Architects"></div>
+            <figcaption>W/ Interior Architects</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.249"><img src="images/home/shoal-coffee-table.webp" alt="Shoal Coffee Table"></div>
+            <figcaption>Shoal Coffee Table</figcaption>
+          </figure>
+        </div>
+      </div>
+      <a class="catalogue-band band-about" href="catalogue.html">
+        <span>Catalogue</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+      </a>
+    </div>
+  </div>
+
+  <footer class="site-footer" id="about">
+    <div class="footer-top">
+      <div class="footer-wm"><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><div class="footer-wm-mark" aria-hidden="true"><img src="images/logos/logomark/logomark-white.svg" alt=""></div><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <a href="custom.html">Custom</a>
+          <a href="catalogue.html">Catalogue</a>
+          <a href="showroom.html">Showroom</a>
+        </div>
+        <div class="footer-col">
+          <a href="trade.html">Trade</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-col footer-col-wide">
+          <a href="faq.html">Frequently Asked Questions</a>
+          <a href="#warranty">Lifetime Warranty</a>
+          <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+          <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+        </div>
+        <div class="newsletter">
+          <label for="nl-email">Sign Up for Newsletter</label>
+          <form onsubmit="return false;">
+            <input id="nl-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+            <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+          </form>
+          <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-orange.svg" alt=""></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">Studio Fritz LLC &copy; 2023 All Rights Reserved<span class="fc-sep">,</span><br>Seattle, WA, USA</p>
+        <a class="back-to-top" href="#top">
+          <span class="btt-line" aria-hidden="true"></span>
+          <span>Back to Top</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>
