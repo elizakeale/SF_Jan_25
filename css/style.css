@@ -59,7 +59,13 @@
 }
 
 *{ box-sizing: border-box; }
-html{ scroll-behavior: smooth; overscroll-behavior-y: none; } /* no rubber-band
+html{ scroll-behavior: smooth; overscroll-behavior: none; }
+/* Nothing on this site is meant to scroll sideways. `clip` rather than
+   `hidden` on purpose: `hidden` turns html into a scroll container, which
+   would break every position:sticky on the page (the header, the carousel
+   pane). `clip` trims the overflow without creating one. The carousels
+   still scroll, because they are descendants with their own overflow-x. */
+html, body{ overflow-x: clip; } /* no rubber-band
   at the page bottom: that bounce fights the carousel scroll-takeover down
   there, so the input reads as the page struggling rather than handing over */
 body{
@@ -1154,37 +1160,65 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   body.page-about main{ padding-top: calc(81 * var(--mu)); }
   .about-block{ height:auto; }
   .about-maker, .about-studio{ height:auto; }
+  /* Desktop absolutely positions everything, so the markup is in reading
+     order, not visual order: the label is written before the photo. In flow
+     that puts the label above it. Figma runs photo (68) then label (756), so
+     flex the section and pull the photo up. Everything else keeps DOM order. */
+  .about-maker{ display:flex; flex-direction:column; }
+  .about-portrait{ order:-1; }
 
+  /* 338:57 and 338:85 are both 25 tall, so pin the line box to 25 and the
+     margins below are true gaps rather than top-to-top distances. */
   .about-label{
     position:static; display:block;
     text-align:right; padding: 0 var(--edge);
-    font-size: calc(16 * var(--mu));
+    font-size: calc(16 * var(--mu)); line-height: 1.5625;
   }
-  .about-label-maker{  margin: calc(40 * var(--mu)) 0 calc(49 * var(--mu)); }  /* portrait ends 716, label 756, copy 805 */
-  .about-label-studio{ margin: calc(53 * var(--mu)) 0 calc(71 * var(--mu)); }  /* 2661 after the rule at 2608; copy at 2732 */
+  .about-label-maker{  margin: calc(40 * var(--mu)) 0 calc(24 * var(--mu)); }  /* portrait ends 716; label 756-781; copy 805 */
+  .about-label-studio{ margin: calc(55 * var(--mu)) 0 calc(46 * var(--mu)); }  /* stamp ends 2606; label 2661-2686; copy 2732 */
 
+  /* Flex column with a gap rather than p + p margins, so the reorder below
+     cannot collapse a gap: adjacency is DOM order, gap is visual order. */
   .about-col{
     position:static; width:auto; padding: 0 calc(15 * var(--mu));
+    display:flex; flex-direction:column; gap:1.7em;
   }
+  .about-col p + p{ margin-top:0; }
   .about-col p{ font-size: calc(16 * var(--mu)); }
   /* Desktop splits each section into two columns; mobile runs them as one.
      The second column follows the first with the same paragraph rhythm
      rather than a section break. */
   .about-col-b1, .about-col-b2{ margin-top: 1.7em; }
+  /* 338:61 runs the maker copy as one block and puts the family-history line
+     straight after "raised in a family of architects", ahead of "Lucas
+     introduces". Same six paragraphs as desktop, reordered by order: only
+     desktop holds the copy, so it cannot drift. */
+  .about-col-b1 > p:nth-child(1){ order:2; }
+  .about-col-b1 > p:nth-child(2){ order:1; }
+  .about-col-b1 > p:nth-child(3){ order:3; }
 
   .about-fig{ position:static; width:auto; }
   /* 338:58 and 338:80 are full-bleed at 402 wide; 338:88 is 427 wide on a
      402 frame, i.e. deliberately overflowing to the right. */
   .about-portrait{ aspect-ratio: 402 / 648; }
   .about-hands{ aspect-ratio: 402 / 492; margin-top: calc(96 * var(--mu)); }
-  .about-stools{ aspect-ratio: 427 / 292; margin-top: calc(92 * var(--mu)); width: calc(427 * var(--mu)); }
+  /* 338:88 is drawn 427 wide on a 402 frame, i.e. hanging 25px off the right
+     edge. Reproducing that literally is what pushed the page sideways. Full
+     bleed at Figma's height crops the same 6% off the right and keeps the
+     vertical rhythm exact. */
+  .about-stools{
+    width:auto; aspect-ratio:auto; height: calc(292 * var(--mu));
+    margin-top: calc(92 * var(--mu));
+  }
 
   /* 342:721: a full-width rule under the hands photo, at y=2275 */
   .about-hands::after{
-    content:''; position:absolute; left:0; right:0; bottom: calc(-8 * var(--mu));
+    content:''; position:absolute; left:0; right:0; bottom:0;
     height:1px; background: var(--orange);
   }
-  .about-hands{ position:relative; }
+  /* relative, not static, so the rule above can anchor to it -- which means
+     the desktop left/top would come back as an offset. Cancel them. */
+  .about-hands{ position:relative; left:auto; top:auto; }
 
   /* The one piece that stays positioned: 338:83's mark at x=210 with
      338:82's caption at x=16, side by side rather than stacked. */
