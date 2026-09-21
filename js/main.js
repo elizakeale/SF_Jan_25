@@ -534,6 +534,62 @@
     }, { passive: true });
   }
 })();
+/* ------------- white supporting pages: the bar turns orange on mobile -----
+   header() above owns the homepage's multiply/dock sequence and bails on
+   any page with no hero, so about.html and every other white page got no
+   scroll behaviour at all. On mobile they want exactly one piece of it:
+   the orange ramping in over the first 12% of a viewport height. Same
+   constant and same driver as the homepage -- once --hdr-bg-a moves,
+   FRITZ, the logomark and the hamburger cross-fade on it for free, with
+   no rule of their own and no CSS transition ticking on a second clock
+   beside the scroll. Desktop is untouched: the static bar stays white. */
+(function staticHeader() {
+  var header = document.querySelector('.wordmark-header.is-static');
+  if (!header) return;
+
+  var MOBILE_BG_FADE = 0.12;   // same number header() uses; keep them in step
+  var root = document.documentElement;
+  var lastA = -1, lastH = -1, wasMobile = null, ticking = false;
+
+  function render() {
+    ticking = false;
+
+    if (window.innerWidth > 1152) {
+      if (wasMobile !== false) {          // only on the crossing, not every frame
+        wasMobile = false;
+        header.style.removeProperty('--hdr-bg-a');
+        header.classList.remove('is-collapsed');
+        root.style.removeProperty('--hdr-h');
+        lastA = -1; lastH = -1;
+      }
+      return;
+    }
+    wasMobile = true;
+
+    var fade = window.innerHeight * MOBILE_BG_FADE;
+    var a = Math.max(0, Math.min(1, window.scrollY / fade));
+    /* Write only on change. Past the ramp the value is constant, so the
+       common case does no DOM work at all -- and the height is read only
+       after a reset, never paired with a style write on a scroll frame. */
+    if (a !== lastA) {
+      lastA = a;
+      header.style.setProperty('--hdr-bg-a', a);
+      header.classList.toggle('is-collapsed', a > 0);
+    }
+    if (lastH === -1) {
+      lastH = header.offsetHeight;
+      root.style.setProperty('--hdr-h', lastH + 'px');
+    }
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(render); }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', function () { lastA = -1; lastH = -1; onScroll(); });
+  render();
+})();
+
   /* ---------------- mobile menu (Figma 242:177) ----------------
      Click, Escape and any link inside all close it; so does crossing back
      over the breakpoint, so the panel can't be left open and invisible in a

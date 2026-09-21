@@ -1153,8 +1153,24 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   }
   .wordmark-header.is-static .wm-row-1{ font-size: calc(40 * var(--mu)); }
   .wordmark-header.is-static .hero-links.is-static-nav{ display:none; }  /* hamburger instead */
+  /* At rest: cream STUDIO (338:21 is #ffe7be -- faint on white by design),
+     orange FRITZ, orange hamburger. .nav-toggle's generic mobile rule is
+     white, which would be invisible here until the bar fills in. */
   .wordmark-header.is-static .wm-left span{ color: var(--cream); }
   .wordmark-header.is-static .wm-right span{ color: var(--orange); }
+  .wordmark-header.is-static .nav-toggle{ color: var(--orange); }
+  /* On scroll js/main.js ramps --hdr-bg-a 0 -> 1 over the first 12% of a
+     viewport height, exactly as on the homepage. ::before fades the orange
+     in and .wm-mark's two images cross-fade, both already keyed to that
+     variable; these are the two marks that would otherwise be left orange
+     on orange. STUDIO needs no rule -- cream reads at both ends.
+     (Plain rule first as the fallback where color-mix is missing.) */
+  .wordmark-header.is-static.is-collapsed .wm-right span,
+  .wordmark-header.is-static.is-collapsed .nav-toggle{ color: var(--white); }
+  .wordmark-header.is-static.is-collapsed .wm-right span,
+  .wordmark-header.is-static.is-collapsed .nav-toggle{
+    color: color-mix(in srgb, var(--white) calc(var(--hdr-bg-a, 0) * 100%), var(--orange));
+  }
   .about-rule{ display:none; }                                           /* not in the mobile frame */
 
   body.page-about main{ padding-top: calc(81 * var(--mu)); }
