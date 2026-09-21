@@ -258,10 +258,12 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    floating below it -- see .wordmark-header.is-collapsed's padding-bottom
    above, which is what makes room for it). left/right match .hero-content's
    own box so the nav's column x-positions land identically whether pinned
-   or not -- Figma 218:69's nav columns sit at 43.4%/60.8%/~edge-from-right,
-   the same 43.4% .hero-content already uses. */
+   or not -- and 460:1999 keeps the collapsed bar's nav on the same two axes
+   as the hero's (CUSTOM 678, SHOWROOM 1048, ABOUT ending 1400), so this
+   moves with .hero-content. If it didn't, the links would slide sideways at
+   the dock, which is the one thing this mechanism exists to avoid. */
 #heroNav.is-pinned{
-  position:fixed; left:43.4%; right:var(--edge); margin-top:0; height:3.2em; z-index:55;
+  position:fixed; left:47.1528%; right:var(--edge); margin-top:0; height:3.2em; z-index:55;
   transition: none; /* Eliza: "it comes down and shoots all the way down and
     then comes back up... can we just have it just show up because it's just
     adding thrash." Animating `top` here is what produced that -- the nav is
@@ -309,9 +311,18 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   /* --para-gap lives here (not on .hero-intro) so its sibling .hero-links
      can read the same value for its column-2 anchor -- custom properties
      only cascade to descendants, and hero-intro/hero-links are siblings. */
-  --para-gap: 9.396%; /* Figma: 73px gap / 777px hero-content width, node 175:1004 */
+  /* 2026-09-20 realignment. Figma moved the whole right-hand block onto the
+     logomark's left edge: 411:1269 sits at x=679, and 316:267 (the intro
+     paragraph), 316:269 CUSTOM and 316:270 CATALOGUE are all at 679 now too.
+     679/1440 = 47.1528%. Was 43.4% (625), which lined up with nothing.
+
+     The gap closed with it: columns are 679..1029 and 1048..1402, so 19
+     between them rather than 73. 19/721 = 2.635% of the block's width, and
+     at 1fr 1fr that puts them at 679..1030 and 1049..1400 -- Figma to within
+     2px. */
+  --para-gap: 2.635%;
   position:absolute; z-index:2;
-  left: 43.4%; right: var(--edge); top: 60.1%;
+  left: 47.1528%; right: var(--edge); top: 60.1%;
 }
 /* z-index:2 above makes .hero-content its own stacking context, which
    traps #heroNav's z-index:55 inside it -- so once docked, the nav could
@@ -348,10 +359,15 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   letter-spacing:.05em; text-transform:uppercase; text-decoration:none; color: var(--white);
 }
 .hero-links a:nth-child(1){ top:0; left:0; text-align:left; }
-.hero-links a:nth-child(2){ top:0; right: calc(50% + var(--para-gap) / 2); text-align:right; }
+/* Column 2 is LEFT-aligned on the FOUNDED paragraph's own left edge now
+   (316:271 SHOWROOM and 316:274 TRADE both moved to 1048, where they used to
+   sit at 876 and 923 sharing a right edge of 975). Same expression as
+   before, since the paragraph grid's second column starts at exactly
+   (width + gap) / 2 -- only the side it anchors from changed. */
+.hero-links a:nth-child(2){ top:0; left: calc(50% + var(--para-gap) / 2); text-align:left; }
 .hero-links a:nth-child(3){ top:0; right:0; text-align:right; }
 .hero-links a:nth-child(4){ top:1.625em; left:0; text-align:left; }
-.hero-links a:nth-child(5){ top:1.625em; right: calc(50% + var(--para-gap) / 2); text-align:right; }
+.hero-links a:nth-child(5){ top:1.625em; left: calc(50% + var(--para-gap) / 2); text-align:left; }
 .hero-links a:nth-child(6){ top:1.625em; right:0; text-align:right; }
 .hero-links a:hover{ color: var(--orange); }
 
@@ -692,46 +708,43 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    ============================================================ */
 body.page-about{ background: var(--white); color: var(--ink); }
 
-/* Static bar: no hero to dock out of, and Eliza asked for no animations
-   here yet. The nav sits where the homepage's docked nav sits (43.4% is
-   625/1440, CUSTOM's own x), so the two pages agree once the homepage has
-   collapsed. */
+/* Static bar: no hero to dock out of, and no animations here yet. Figma
+   502:5 / 502:69 / 502:6 moved this back to the homepage's own collapsed
+   layout -- STUDIO at 36, the orange logomark centred at 679, FRITZ ending
+   at 1402 -- and added the logomark, which it previously didn't have. So
+   this is now structurally the homepage bar, just never animated: same
+   markup, same axes, one static variant on top. */
 .wordmark-header.is-static{
   /* Absolute, not relative: Figma's y-coordinates for this page are
      page-absolute (the label is at 266), so <main> has to start at page 0.
-     Absolute rather than fixed because there is no collapse behaviour here
-     yet — the bar scrolls away with the page. */
+     Absolute rather than fixed because the bar scrolls away here. */
   position:absolute; top:0; left:0; right:0; z-index:50;
-  display:block; padding: var(--sp-8) var(--edge) calc(24 * var(--u));
+  padding: var(--sp-8) var(--edge) calc(24 * var(--u));
 }
-.wordmark-header.is-static .wm-link{ display:inline-block; }
-/* Figma 316:255/256 put the pair on the RIGHT — STUDIO at x=621, FRITZ
-   ending at 1403 — rather than the homepage's STUDIO-left / mark-centre /
-   FRITZ-right. Deliberate as far as the file shows: it lines the bar up
-   with the right-hand content columns and leaves the left for the label
-   and portrait. Flagged for Eliza; one rule to undo. */
 .wordmark-header.is-static .wm-row-1{ font-size: calc(100 * var(--u)); }
-.about-wordmarks{ display:flex; justify-content:flex-end; gap: calc(70 * var(--u)); }
+/* 316:278-283: the same two axes as the homepage — 679 and 1048, column 3
+   right-aligned. Expressed the same way so the pages can't drift apart. */
 .wordmark-header.is-static .hero-links.is-static-nav{
-  /* --para-gap is normally inherited from .hero-content, which this page
-     has no equivalent of. Without it the column-2 anchor
-     (right: calc(50% + var(--para-gap)/2)) is invalid and columns 1 and 2
-     collapse onto each other. Same value: this nav spans 625..1400, the
-     hero block spans 777 — the same width to within 2px. */
-  --para-gap: 9.396%;
-  position:absolute; left:43.4%; right: var(--edge);
+  /* --para-gap is normally inherited from .hero-content, which this page has
+     no equivalent of. Without it the column-2 anchor is invalid and columns
+     1 and 2 collapse onto each other. */
+  --para-gap: 2.635%;
+  position:absolute; left:47.1528%; right: var(--edge);
   top: calc(131 * var(--u)); height: calc(54 * var(--u)); margin:0;
 }
 .wordmark-header.is-static .hero-links a{ color: var(--ink); }
 .wordmark-header.is-static .hero-links a:hover{ color: var(--orange); }
+.wordmark-header.is-static .hero-links a[aria-current="page"]{ color: var(--orange); }
 .wordmark-header.is-static .wm-left span{ color: var(--cream); }
 .wordmark-header.is-static .wm-right span{ color: var(--orange); }
 
 /* Figma 316:357 runs x=304 from y=42 to 2433, with two short horizontals
    at 42 and 63 (316:358/359) bracketing its top. One element: the rule is
    the border, the bracket is drawn with ::before / ::after. */
+/* 316:357 now runs x=305 from y=215 (was x=304 from y=42) -- it starts
+   below the nav rather than beside it, since the bar gained a logomark. */
 .about-rule{
-  position:absolute; left: calc(304 * var(--u)); top: calc(42 * var(--u));
+  position:absolute; left: calc(305 * var(--u)); top: calc(215 * var(--u));
   width:1px; height: calc(2391 * var(--u)); background: var(--orange);
   pointer-events:none;
 }
@@ -1116,12 +1129,11 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
      The header goes back into flow here: the desktop page pulls it out so
      Figma's page-absolute y-coordinates line up, and mobile has none of
      those. */
+  /* Same bar as the homepage's on mobile: flex row, logomark centred. */
   .wordmark-header.is-static{
     position:fixed; padding: calc(4 * var(--mu)) var(--edge) 0;
     height: calc(81 * var(--mu)); display:flex; align-items:flex-start;
-  }
-  .wordmark-header.is-static .about-wordmarks{
-    flex:1; display:flex; justify-content:space-between; gap:0;
+    justify-content:space-between;
   }
   .wordmark-header.is-static .wm-row-1{ font-size: calc(40 * var(--mu)); }
   .wordmark-header.is-static .hero-links.is-static-nav{ display:none; }  /* hamburger instead */
