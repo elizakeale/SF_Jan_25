@@ -236,7 +236,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    tall the header gets during multiply. */
 .wm-mark{
   position:absolute; left:50%; top: calc(22 * var(--u)); transform: translateX(-50%);
-  width: calc(83 * var(--u)); z-index:1; pointer-events:none;
+  width: calc(83 * var(--u)); z-index:1; display:block;
   /* Figma 460:2063 puts the mark at x=679 w=83 (centred on the 1440 frame),
      y=40 -- and taking that 40 literally is what left it sitting low.
      Figma's wordmark TEXT BOX is 131 tall for a 100px face; ours renders in
@@ -263,7 +263,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    moves with .hero-content. If it didn't, the links would slide sideways at
    the dock, which is the one thing this mechanism exists to avoid. */
 #heroNav.is-pinned{
-  position:fixed; left:47.1528%; right:var(--edge); margin-top:0; height:3.2em; z-index:55;
+  position:fixed; left: calc(50% - 41.5 * var(--u)); right:var(--edge); margin-top:0; height:3.2em; z-index:55;
   transition: none; /* Eliza: "it comes down and shoots all the way down and
     then comes back up... can we just have it just show up because it's just
     adding thrash." Animating `top` here is what produced that -- the nav is
@@ -322,7 +322,13 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      2px. */
   --para-gap: 2.635%;
   position:absolute; z-index:2;
-  left: 47.1528%; right: var(--edge); top: 60.1%;
+  /* The logomark's own left edge, not a percentage that merely equals it at
+     1440. .wm-mark is centred and 83u wide, so its left edge is always
+     50% - 41.5u. 47.1528% matches that at exactly 1440 and nowhere else:
+     --u is clamped, so past ~2000px the mark stops moving outward from the
+     centre while a raw percentage keeps tracking the viewport, and CUSTOM
+     drifts left of it. Same failure the footer's column 3 had, same fix. */
+  left: calc(50% - 41.5 * var(--u)); right: var(--edge); top: 60.1%;
 }
 /* z-index:2 above makes .hero-content its own stacking context, which
    traps #heroNav's z-index:55 inside it -- so once docked, the nav could
@@ -544,7 +550,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .footer-wm{ position:relative; display:flex; justify-content:space-between; align-items:flex-start; }
 .footer-wm-mark{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  width: calc(83 * var(--u)); pointer-events:none; /* Figma 404:488 */
+  width: calc(83 * var(--u)); display:block; /* Figma 404:488 */
 }
 .footer-wm-mark img{ width:100%; display:block; }
 .footer-wm span{
@@ -729,7 +735,7 @@ body.page-about{ background: var(--white); color: var(--ink); }
      no equivalent of. Without it the column-2 anchor is invalid and columns
      1 and 2 collapse onto each other. */
   --para-gap: 2.635%;
-  position:absolute; left:47.1528%; right: var(--edge);
+  position:absolute; left: calc(50% - 41.5 * var(--u)); right: var(--edge);
   top: calc(131 * var(--u)); height: calc(54 * var(--u)); margin:0;
 }
 .wordmark-header.is-static .hero-links a{ color: var(--ink); }
@@ -745,11 +751,15 @@ body.page-about{ background: var(--white); color: var(--ink); }
    below the nav rather than beside it, since the bar gained a logomark. */
 .about-rule{
   position:absolute; left: calc(305 * var(--u)); top: calc(215 * var(--u));
-  width:1px; height: calc(2391 * var(--u)); background: var(--orange);
-  pointer-events:none;
+  /* 2u, not 1px. 316:357 carries a 2px stroke (its export is inset by 2),
+     and at 1px this read as too thin. It scales, unlike the site's
+     hairlines: those stay 1px because a sub-pixel border renders fuzzy,
+     but 2u never falls below 1.6 so it has the room. */
+  width: calc(2 * var(--u)); height: calc(2391 * var(--u));
+  background: var(--orange); pointer-events:none;
 }
 .about-rule::before, .about-rule::after{
-  content:''; position:absolute; height:1px; background: var(--orange);
+  content:''; position:absolute; height: calc(2 * var(--u)); background: var(--orange);
 }
 .about-rule::before{ left: calc(-20 * var(--u)); top:0;  width: calc(163 * var(--u)); }
 .about-rule::after{  left:0;                     top: calc(21 * var(--u)); width: calc(125 * var(--u)); }
