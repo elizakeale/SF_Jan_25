@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trade — Studio Fritz</title>
+<meta name="description" content="Apply for a Studio Fritz trade account. Discounts vary depending on product and collaboration.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Estedad:wght@200..900&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/svg+xml" href="images/logos/logomark/logomark-orange.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="images/logos/logomark/logomark-orange.png">
+<link rel="apple-touch-icon" href="images/logos/logomark/logomark-orange@2x.png">
+</head>
+<body class="page-light page-trade">
+
+<!-- Header, hamburger and footer are copied verbatim from index.html. This is
+     a static site with no templating, so they are duplicated by necessity --
+     index.html stays the canonical copy; changes go there first, then here. -->
+<header class="wordmark-header is-static" id="wmHeader">
+  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+    <div class="wm-col wm-left"><span class="wm-row-1">STUDIO</span></div>
+  </a>
+  <a class="wm-mark" href="index.html" aria-label="Studio Fritz — home">
+    <img class="wm-mark-orange" src="images/logos/logomark/logomark-orange.svg" alt="">
+    <img class="wm-mark-white" src="images/logos/logomark/logomark-white.svg" alt="">
+  </a>
+  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+    <div class="wm-col wm-right"><span class="wm-row-1">FRITZ</span></div>
+  </a>
+  <nav class="hero-links is-static-nav" aria-label="Primary">
+    <a href="custom.html">Custom</a>
+    <a href="about.html">About</a>
+    <a href="showroom.html">Showroom</a>
+    <a href="catalogue.html">Catalogue</a>
+    <a href="contact.html">Contact</a>
+    <a href="trade.html" aria-current="page">Trade</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" type="button"
+          aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <div class="mm-inner">
+    <nav class="mm-links" aria-label="Primary">
+      <div class="mm-col mm-col-a">
+        <a href="custom.html">Custom</a>
+        <a href="catalogue.html">Catalogue</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="mm-col mm-col-b">
+        <a href="contact.html">Contact</a>
+        <a href="trade.html">Trade</a>
+        <a href="showroom.html">Showroom</a>
+      </div>
+    </nav>
+    <div class="mm-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
+    <div class="mm-col mm-secondary">
+      <a href="faq.html">Frequently Asked Questions</a>
+      <a href="#warranty">Lifetime Warranty</a>
+      <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+      <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+    </div>
+    <div class="newsletter mm-newsletter">
+      <label for="mm-email">Sign Up for Newsletter</label>
+      <form onsubmit="return false;">
+        <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+        <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+      </form>
+      <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-orange.svg" alt=""></a>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+
+  <div class="page-rule" aria-hidden="true"></div>
+
+  <section class="page-section">
+    <h1 class="page-label">Trade</h1>
+    <p class="page-lede">Apply for a trade account. Discounts vary depending on product and collaboration.</p>
+    <figure class="page-stamp"><img src="images/logos/stamp/stamp-orange.svg" alt=""></figure>
+
+    <!-- Endpoint lives in ONE place: data-endpoint below. Set it to a
+         Formspree/Basin/Netlify URL and js/main.js posts there; until then
+         it blocks the submit and says so rather than failing silently. -->
+    <form class="sf-form" method="POST" data-endpoint="TODO"
+          data-email="contact@studiofritz.co" novalidate>
+      <input type="hidden" name="_subject" value="Website enquiry - Trade account application">
+      <input type="hidden" name="_next" value="thank-you.html">
+      <div class="sf-col-a">
+        <p class="sf-field">
+          <label for="name">Your Name*</label>
+          <input id="name" name="name" type="text" required>
+        </p>
+        <p class="sf-field">
+          <label for="email">Your Email*</label>
+          <input id="email" name="email" type="email" required>
+        </p>
+        <p class="sf-field">
+          <label for="company">Your Company*</label>
+          <input id="company" name="company" type="text" required>
+        </p>
+      </div>
+      <div class="sf-col-b">
+        <p class="sf-field">
+          <label for="project">Tell us briefly about your project (if applicable)</label>
+          <textarea id="project" name="project"></textarea>
+        </p>
+      </div>
+      <div class="sf-actions">
+        <p class="sf-note">Note: if approved, you&rsquo;ll be asked for a reseller permit.</p>
+        <button class="sf-submit" type="submit">
+          <span>Submit</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <div class="scroll-hijack">
+    <div class="scroll-hijack-sticky">
+      <div class="carousel" data-carousel data-hijacked aria-label="Selected work">
+        <div class="carousel-track">
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.391"><img src="images/home/bluff-table.webp" alt="Bluff Table"></div>
+            <figcaption>Bluff Table</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.208"><img src="images/home/point-grey-stools.webp" alt="Point Grey Stools"></div>
+            <figcaption>Point Grey Stools</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.0"><img src="images/home/westlake-table.webp" alt="Westlake Table, with Interior Architects"></div>
+            <figcaption>W/ Interior Architects</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.249"><img src="images/home/shoal-coffee-table.webp" alt="Shoal Coffee Table"></div>
+            <figcaption>Shoal Coffee Table</figcaption>
+          </figure>
+        </div>
+      </div>
+      <a class="catalogue-band band-about" href="catalogue.html">
+        <span>Catalogue</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+      </a>
+    </div>
+  </div>
+
+  <footer class="site-footer" id="about">
+    <div class="footer-top">
+      <div class="footer-wm"><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><a class="footer-wm-mark" href="index.html" aria-label="Studio Fritz — home"><img src="images/logos/logomark/logomark-white.svg" alt=""></a><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <a href="custom.html">Custom</a>
+          <a href="catalogue.html">Catalogue</a>
+          <a href="about.html">About</a>
+        </div>
+        <div class="footer-col">
+          <a href="contact.html">Contact</a>
+          <a href="trade.html">Trade</a>
+          <a href="showroom.html">Showroom</a>
+        </div>
+        <div class="footer-col footer-col-wide">
+          <a href="faq.html">Frequently Asked Questions</a>
+          <a href="#warranty">Lifetime Warranty</a>
+          <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+          <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+        </div>
+        <div class="newsletter">
+          <label for="nl-email">Sign Up for Newsletter</label>
+          <form onsubmit="return false;">
+            <input id="nl-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+            <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+          </form>
+          <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-orange.svg" alt=""></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">Studio Fritz LLC &copy; 2023 All Rights Reserved<span class="fc-sep">,</span><br>Seattle, WA, USA</p>
+        <a class="back-to-top" href="#top">
+          <span class="btt-line" aria-hidden="true"></span>
+          <span>Back to Top</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>

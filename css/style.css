@@ -718,7 +718,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    the homepage hero. Text flows to its natural height here and the
    sections carry enough room for it.
    ============================================================ */
-body.page-about{ background: var(--white); color: var(--ink); }
+body.page-about, body.page-light{ background: var(--white); color: var(--ink); }
 
 /* Static bar: no hero to dock out of, and no animations here yet. Figma
    502:5 / 502:69 / 502:6 moved this back to the homepage's own collapsed
@@ -755,20 +755,33 @@ body.page-about{ background: var(--white); color: var(--ink); }
    the border, the bracket is drawn with ::before / ::after. */
 /* 316:357 now runs x=305 from y=215 (was x=304 from y=42) -- it starts
    below the nav rather than beside it, since the bar gained a logomark. */
-.about-rule{
-  position:absolute; left: calc(305 * var(--u)); top: calc(215 * var(--u));
+.about-rule, .page-rule{
+  position:absolute; left: calc(305 * var(--u));
+  top: var(--rule-top, calc(215 * var(--u)));
   /* 2u, not 1px. 316:357 carries a 2px stroke (its export is inset by 2),
      and at 1px this read as too thin. It scales, unlike the site's
      hairlines: those stay 1px because a sub-pixel border renders fuzzy,
      but 2u never falls below 1.6 so it has the room. */
-  width: calc(2 * var(--u)); height: calc(2391 * var(--u));
+  width: calc(2 * var(--u)); height: var(--rule-h, calc(2391 * var(--u)));
   background: var(--orange); pointer-events:none;
 }
-.about-rule::before, .about-rule::after{
+/* Every white page draws the same bracket at a different depth, so the two
+   numbers that differ are variables and the motif is written once. The
+   defaults are About's, so About renders exactly as before.
+   Contact (321:665) and Trade (321:718) still have the rule at the OLD
+   y=42, from before the bar gained its logomark -- the same edit the
+   comment above records for About was never carried across. They use
+   About's 215, and run to the white/carousel seam at 1025. */
+body.page-contact, body.page-trade, body.page-thanks{
+  --rule-top: calc(215 * var(--u));
+  --rule-h: calc(810 * var(--u));
+}
+.about-rule::before, .about-rule::after,
+.page-rule::before, .page-rule::after{
   content:''; position:absolute; height: calc(2 * var(--u)); background: var(--orange);
 }
-.about-rule::before{ left: calc(-20 * var(--u)); top:0;  width: calc(163 * var(--u)); }
-.about-rule::after{  left:0;                     top: calc(21 * var(--u)); width: calc(125 * var(--u)); }
+.about-rule::before, .page-rule::before{ left: calc(-20 * var(--u)); top:0;                     width: calc(163 * var(--u)); }
+.about-rule::after,  .page-rule::after{  left:0;                     top: calc(21 * var(--u)); width: calc(125 * var(--u)); }
 
 main{ position:relative; }        /* .about-rule anchors to the page, not the viewport */
 
@@ -841,6 +854,136 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
    carries a CATALOGUE link under the mobile carousel, the desktop frame
    (175:1147) has only the four captions and no link. Same as the homepage,
    so no rule needed here — the mobile block switches it on. */
+
+/* ============================================================
+   WHITE SUPPORTING PAGES -- shared shell
+   Contact 278:961 / 370:115, Trade 297:29 / 370:284, success 297:95
+   ------------------------------------------------------------
+   Contact and Trade are the same page with different labels: Figma gives
+   them identical x/y for the stamp, the rule, every field and the submit.
+   One component; the pages differ only in markup.
+
+   Departures from Figma, all of them drift rather than design:
+   - the lede sits at x=319 on both while every field starts at 328.
+     Normalised to 328, so the block has one left edge.
+   - the textarea and submit end at 1417 -- a 23 right margin, where the
+     header and footer both use 40. Normalised to --edge.
+   - off one identical form, the carousel starts at 1025 on Contact and
+     993 on Trade. Normalised to 1025, the looser of the two, since Trade
+     also carries a note under its textarea.
+   - Trade's footer reads JOIN NEWSLETTER where every other page says SIGN
+     UP FOR NEWSLETTER. Normalised to the latter.
+   - captions drift up to 56px off their tiles (Contact's ABOUT THE MAKER,
+     Trade's BLUFF TABLE). They ride .tile figcaption instead, which is
+     flush with its tile on every page already.
+   ============================================================ */
+.page-section{ position:relative; height: calc(1025 * var(--u)); }
+
+.page-label{
+  position:absolute; left: var(--edge); top: calc(266 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-headline);
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.page-lede{
+  position:absolute; left: calc(328 * var(--u)); top: calc(313 * var(--u));
+  width: calc(442 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.page-lede a{ color:inherit; text-decoration:underline; text-underline-offset:.2em; }
+.page-lede a:hover{ color: var(--orange); }
+
+/* 292:18 / 297:88 -- the soft mark About carries, here with no caption. */
+.page-stamp{
+  position:absolute; left: calc(22 * var(--u)); top: calc(597 * var(--u));
+  width: calc(185 * var(--u)); margin:0; pointer-events:none;
+}
+.page-stamp img{ width:100%; height:auto; display:block; }
+
+/* ---------- the form ----------
+   Three short fields left, the long one right. Both columns come out the
+   same height on their own -- 3 x (label + 15 + 50) + 2 x 29 against
+   label + 15 + 288 -- which is why Figma has them both ending on 815.
+   Nothing is positioned to make that happen, so the rhythm survives a
+   field being added or a label wrapping onto two lines. */
+.sf-form{
+  position:absolute; left: calc(328 * var(--u)); right: var(--edge);
+  top: calc(487 * var(--u));
+  display:grid; grid-template-columns: calc(330 * var(--u)) 1fr;
+  column-gap: calc(37 * var(--u));
+}
+.sf-col-a{ grid-column:1; }
+.sf-col-b{ grid-column:2; }
+
+.sf-field{ margin: 0 0 calc(29 * var(--u)); }
+.sf-field:last-child{ margin-bottom:0; }
+.sf-field label{
+  display:block; margin-bottom: calc(15 * var(--u));
+  font-family: var(--font-body); font-weight:300; font-size: calc(16 * var(--u));
+  line-height: 1.6875;                        /* 278:1033: 16px on a 27px line */
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.sf-field input, .sf-field textarea{
+  display:block; width:100%; border-radius:0;
+  background: rgba(255,255,255,.44);          /* 278:1049 */
+  border: 1px solid var(--cream);
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
+  color: var(--ink);
+  height: calc(50 * var(--u)); padding: 0 calc(13 * var(--u));
+}
+.sf-field textarea{
+  height: calc(288 * var(--u)); padding: calc(13 * var(--u));
+  resize:vertical; line-height:1.7;
+}
+.sf-field input::placeholder, .sf-field textarea::placeholder{ color: var(--ink); opacity:.45; }
+.sf-field input:focus, .sf-field textarea:focus{ outline:none; border-color: var(--orange); }
+/* Only after a submit attempt, so nothing is flagged on arrival. */
+.sf-form.is-validated input:invalid,
+.sf-form.is-validated textarea:invalid{ border-color: var(--orange); }
+
+/* 297:90's note and the submit share one band: note left, button right. */
+.sf-actions{
+  grid-column: 1 / -1; display:flex; align-items:flex-start;
+  justify-content:space-between; gap: var(--sp-24);
+  margin-top: calc(31 * var(--u));
+}
+.sf-note{
+  margin:0; max-width: calc(481 * var(--u));
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.sf-submit{
+  flex:0 0 auto; margin-left:auto;
+  width: calc(204 * var(--u)); min-height: calc(33 * var(--u));
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 calc(11 * var(--u)) 0 calc(17 * var(--u));
+  background: var(--orange); color: var(--white); border:0; cursor:pointer;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.sf-submit:hover{ background: var(--orange-light); }
+.sf-submit img{ width: calc(10 * var(--u)); height: calc(10 * var(--u)); }
+
+/* Shown by js/main.js only while no endpoint is wired up, so the form
+   says what it is doing instead of silently doing nothing. */
+.sf-unwired{
+  grid-column: 1 / -1; margin: var(--sp-12) 0 0;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--orange);
+}
+
+/* ---------- form success (297:95) ---------- */
+.page-thanks-msg{
+  position:absolute; left: calc(328 * var(--u)); top: calc(487 * var(--u));
+  width: calc(722 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-headline);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.page-thanks-back{
+  position:absolute; left: calc(328 * var(--u)); top: calc(620 * var(--u));
+  width: calc(204 * var(--u));
+}
 
 /* ============================================================
    MOBILE — built from Figma's 402-wide frames:
@@ -1254,10 +1397,69 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   }
   .about-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
 
+  /* ---------- white supporting pages, mobile ----------
+     370:115 / 370:284 drop the rule and the stamp and run the form as one
+     column. Same +13 offset About carries: the bar is 81 here against
+     Figma's 68, so everything below it sits 13 lower by design. */
+  .page-section{ height:auto; padding-top: calc(81 * var(--mu)); }
+  .page-rule, .page-stamp{ display:none; }
+
+  .page-label{
+    position:static; display:block; text-align:right; padding: 0 var(--edge);
+    margin: calc(33 * var(--mu)) 0 0;          /* bar ends 68, label 101 */
+    font-size: calc(16 * var(--mu)); line-height:1.5625;
+  }
+  .page-lede{
+    position:static; width:auto; padding: 0 calc(15 * var(--mu));
+    margin: calc(23 * var(--mu)) 0 0;          /* label ends 126, lede 149 */
+    font-size: calc(16 * var(--mu));
+  }
+
+  .sf-form{
+    position:static; display:block;
+    padding: 0 calc(16 * var(--mu));
+    margin: calc(40 * var(--mu)) 0 calc(46 * var(--mu));  /* submit ends 1092, carousel 1138 */
+  }
+  .sf-field{ margin-bottom: calc(29 * var(--mu)); }
+  /* Stacked, the two columns become one run of fields, so the last field in
+     column A must not drop its bottom margin against the first in column B
+     (370:268 ends 633, 370:265 starts 662 -- the same 29 as every other). */
+  .sf-col-b{ margin-top: calc(29 * var(--mu)); }
+  .sf-field label{
+    margin-bottom: calc(15 * var(--mu)); font-size: calc(16 * var(--mu));
+  }
+  .sf-field input, .sf-field textarea{
+    height: calc(50 * var(--mu)); padding: 0 calc(13 * var(--mu));
+    font-size: calc(16 * var(--mu));
+  }
+  .sf-field textarea{ height: calc(288 * var(--mu)); padding: calc(13 * var(--mu)); }
+  /* Figma stacks the note above a full-width button, rather than setting
+     them side by side as the desktop band does. */
+  .sf-actions{
+    display:block; margin-top: calc(69 * var(--mu));     /* textarea ends 990, submit 1059 */
+  }
+  .sf-note{ max-width:none; font-size: calc(14 * var(--mu)); margin-bottom: calc(16 * var(--mu)); }
+  .sf-submit{
+    width:100%; min-height: calc(33 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+    font-size: calc(14 * var(--mu));
+  }
+  .sf-submit img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
+  .sf-unwired{ font-size: calc(14 * var(--mu)); }
+
+  .page-thanks-msg{
+    position:static; width:auto; padding: 0 calc(16 * var(--mu));
+    margin: calc(40 * var(--mu)) 0 0; font-size: calc(18 * var(--mu));
+  }
+  .page-thanks-back{
+    position:static; width:auto; margin: calc(40 * var(--mu)) calc(16 * var(--mu)) calc(46 * var(--mu));
+  }
+
   /* the band link matches the homepage's mobile one again */
   .page-about .band-about{ padding: 0 var(--edge) calc(12 * var(--mu)); font-size: calc(16 * var(--mu)); }
   .page-about .band-about img{ width: calc(11 * var(--mu)); height: calc(11 * var(--mu)); }
 }
+
 
 /* UNDESIGNED RANGE: roughly 520 to 1152. Figma only has 402-wide mobile
    frames and a 1440 desktop frame, so above ~520 this is the phone

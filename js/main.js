@@ -534,6 +534,56 @@
     }, { passive: true });
   }
 })();
+/* ---------------- contact / trade forms ----------------------------------
+   The site is static, so a form needs a third party to deliver it. That
+   endpoint lives in exactly ONE place per page -- data-endpoint on the
+   form -- and wiring it up is editing that one string.
+
+   Until it is set, the submit is blocked and the form SAYS so. A form that
+   silently swallows an enquiry is worse than no form: the visitor believes
+   they have been in touch and nobody has. The mailto fallback offered in
+   the notice is a real address, not a dead end.
+
+   Validation is native (required, type=email); novalidate on the form only
+   defers the browser's own bubbles so the first submit attempt can turn on
+   .is-validated and let CSS mark the offending fields. */
+(function contactForms() {
+  var forms = document.querySelectorAll('form[data-endpoint]');
+  if (!forms.length) return;
+
+  Array.prototype.forEach.call(forms, function (form) {
+    var endpoint = (form.getAttribute('data-endpoint') || '').trim();
+    var wired = endpoint && endpoint !== 'TODO';
+    if (wired) form.setAttribute('action', endpoint);
+
+    form.addEventListener('submit', function (e) {
+      form.classList.add('is-validated');
+
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        var bad = form.querySelector(':invalid');
+        if (bad) { bad.focus(); if (bad.reportValidity) bad.reportValidity(); }
+        return;
+      }
+
+      if (!wired) {
+        e.preventDefault();
+        var notice = form.querySelector('.sf-unwired');
+        if (!notice) {
+          var email = form.getAttribute('data-email') || 'contact@studiofritz.co';
+          notice = document.createElement('p');
+          notice.className = 'sf-unwired';
+          notice.setAttribute('role', 'status');
+          notice.innerHTML = 'This form is not connected yet \u2014 please email ' +
+            '<a href="mailto:' + email + '">' + email + '</a> in the meantime.';
+          form.appendChild(notice);
+        }
+        notice.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  });
+})();
+
 /* ------------- white supporting pages: the bar turns orange on mobile -----
    header() above owns the homepage's multiply/dock sequence and bails on
    any page with no hero, so about.html and every other white page got no
