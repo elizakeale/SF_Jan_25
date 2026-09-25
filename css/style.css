@@ -1007,6 +1007,96 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 }
 
 /* ============================================================
+   SHOWROOM (278:1574 desktop / 370:462 mobile)
+   White section runs 0-1719 (278:1575) -- same seam as Contact/Trade below.
+   Its rule (321:704) is still at the old y=42 bar position, never carried
+   forward the way About's 316:357 was, so it gets the same treatment as
+   Contact/Trade: run from 215 to the white/carousel seam.
+   ------------------------------------------------------------
+   Departures from Figma, all of them drift rather than design:
+   - the Furnish Bainbridge logo (298:182) is a real third-party
+     trademark -- a Bainbridge Island furniture shop Studio Fritz's
+     showroom partners with -- and Figma's asset host returns 403 to this
+     build environment (confirmed from both the cloud container and this
+     device), so it can't be downloaded, and hand-redrawing someone
+     else's mark isn't appropriate either. Held as a plain text credit in
+     its slot, same box the real file will fill, so dropping it in later
+     is a one-line swap -- same pattern as the About photos before they
+     landed.
+   - image15 (298:185), the small accent between the two blurbs, is two
+     plain rules meeting at a corner, not a photo or a third-party mark --
+     reproduced directly instead of held back.
+   - the four-tile grid's Figma layer names (Geary/Pangyo/Westlake/Shoal)
+     don't match their own captions (BLUFF TABLE/POINT GREY STOOLS/W
+     INTERIOR ARCHITECTS/SHOAL COFFEE TABLE) -- the same caption drift
+     already documented above for Contact/Trade. Tiles use the codebase's
+     own product photography, matched to the caption text instead of the
+     Figma layer's filename.
+   ============================================================ */
+body.page-showroom{
+  --rule-top: calc(215 * var(--u));
+  --rule-h: calc(1504 * var(--u));   /* 215 -> the white/carousel seam at 1719 */
+}
+.showroom-section{ position:relative; height: calc(1719 * var(--u)); }
+
+.showroom-col{
+  position:absolute; left: calc(319 * var(--u)); width: calc(442 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+  text-align:justify;
+}
+.showroom-col p{ margin:0; }
+.showroom-col p + p{ margin-top: 1.7em; }
+.showroom-partner{ top: calc(317 * var(--u)); }
+.showroom-location{ top: calc(982 * var(--u)); }
+
+/* 298:182 -- see the drift note above. */
+.showroom-logo-credit{
+  position:absolute; left: calc(309 * var(--u)); top: calc(538 * var(--u));
+  width: calc(162 * var(--u)); height: calc(119 * var(--u));
+  display:flex; flex-direction:column; justify-content:center;
+  font-family: var(--font-body); font-weight:300; font-size: calc(16 * var(--u));
+  line-height:1.3; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+
+/* 298:185 -- a plain corner-rule accent; see the drift note above. */
+.showroom-accent{
+  position:absolute; left: calc(319 * var(--u)); top: calc(846 * var(--u));
+  width: calc(97 * var(--u)); height: calc(97 * var(--u)); pointer-events:none;
+}
+.showroom-accent::before, .showroom-accent::after{ content:''; position:absolute; background: var(--cream); }
+.showroom-accent::before{ left:0; top:0; width:1px; height:100%; }
+.showroom-accent::after{ left:0; top: calc(32 * var(--u)); width:100%; height:1px; }
+
+.showroom-portrait{
+  position:absolute; left: calc(824 * var(--u)); top: calc(279 * var(--u));
+  width: calc(254 * var(--u)); aspect-ratio: 254 / 381; margin:0; background: var(--cream);
+}
+.showroom-interior{
+  position:absolute; left: calc(1137 * var(--u)); top: calc(943 * var(--u));
+  width: calc(247 * var(--u)); aspect-ratio: 247 / 297; margin:0; background: var(--cream);
+}
+.showroom-portrait img, .showroom-interior img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.showroom-cta{
+  position:absolute; left: calc(319 * var(--u)); top: calc(1127 * var(--u));
+  width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
+  background: var(--orange); color: var(--white); text-decoration:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.showroom-cta:hover{ background: var(--orange-light); }
+.showroom-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
+
+/* the four-tile strip (278:1576-1583) bleeds past the frame at 1887 wide
+   on a 1440 canvas -- the same draggable overflow every other carousel on
+   the site uses, just here on white instead of orange. */
+body.page-showroom .carousel{ background: var(--white); }
+
+/* ============================================================
    MOBILE — built from Figma's 402-wide frames:
      160:104   HOMEPAGE - Mobile            (base)
      278:1285  HOMEPAGE - Mobile - Scroll
@@ -1479,6 +1569,50 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   /* the band link matches the homepage's mobile one again */
   .page-about .band-about{ padding: 0 var(--edge) calc(12 * var(--mu)); font-size: calc(16 * var(--mu)); }
   .page-about .band-about img{ width: calc(11 * var(--mu)); height: calc(11 * var(--mu)); }
+  /* ---------- Showroom, mobile (370:462) ----------
+     No rule and no second (interior/DSC_1318) photo in this frame --
+     Figma drops both on mobile the way it drops the rule on every white
+     page here. Gaps below are true gaps between each element's Figma box
+     and the next, same convention as the rest of this block. */
+  .showroom-section{ height:auto; }
+  body.page-showroom .page-rule{ display:none; }
+
+  .showroom-logo-credit{
+    position:static; width: calc(162 * var(--mu)); height: calc(119 * var(--mu));
+    margin: calc(49 * var(--mu)) 0 0 var(--edge);
+    font-size: calc(14 * var(--mu));
+  }
+  .showroom-col{
+    position:static; width:auto; padding: 0 var(--edge);
+    font-size: calc(16 * var(--mu));
+  }
+  .showroom-partner{ margin-top: calc(34 * var(--mu)); }
+  .showroom-location{ margin-top: calc(54 * var(--mu)); }
+  /* 254x381 at left:0 in the mobile frame -- a deliberate partial-width
+     bleed, not the full-width stretch every other mobile photo gets. */
+  .showroom-portrait{
+    position:static; left:auto; top:auto;
+    width: calc(254 * var(--mu)); aspect-ratio: 254 / 381; margin: calc(194 * var(--mu)) 0 0;
+  }
+  .showroom-interior{ display:none; }
+  .showroom-accent{
+    position:static; width: calc(97 * var(--mu)); height: calc(97 * var(--mu));
+    margin: calc(49 * var(--mu)) 0 0 var(--edge);
+  }
+  .showroom-accent::after{ top: calc(32 * var(--mu)); }
+  .showroom-cta{
+    position:static; width:auto; margin: calc(76 * var(--mu)) var(--edge) 0;
+    min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+  }
+  .showroom-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
+  /* 397:213 -- unlike Contact/Trade, Showroom's mobile frame keeps the
+     stamp, just relocated (right-aligned, no caption). */
+  body.page-showroom .page-stamp{
+    display:block; position:static; width: calc(185 * var(--mu));
+    margin: calc(39 * var(--mu)) 0 0 calc(210 * var(--mu));
+  }
+  body.page-showroom .carousel{ margin-top: calc(30 * var(--mu)); }
 }
 
 
