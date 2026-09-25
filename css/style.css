@@ -403,21 +403,42 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 }
 
 /* scroll cue: thin vertical line, pulses once on load to invite scrolling
-   (Figma node 321:508 -- x:720/1440=50%, y:755/865(hero)=~87.3%, height:88px) */
+   (Figma node 321:508: x=720, y=755, height=88, in the 1440x865 hero.)
+
+   2026-09-23: was position:absolute against .hero itself (left:50%,
+   top:87.3%), i.e. two values with no relationship to the nav block it
+   sits under -- Eliza: "the vertical line looks cramped." At the
+   reference width the numbers land right (720/1440 is exactly 50%, and
+   755/865 is 87.3%), but that's the same coincidence the footer and the
+   old hero-content alignment already hit: 720 is close to hero-content's
+   own left edge (679) only because both happen to be near the page's
+   centre at 1440. hero-content's OWN height is content-flow (however many
+   lines the two paragraphs wrap to), while the cue's 87.3% is a fixed
+   fraction of the hero regardless of that flow -- two independently
+   driven values, the exact pattern this file already treats as a bug
+   elsewhere. Widen the window and the gap between them isn't fixed: it
+   shrinks, and at wide-enough viewports the two rows overlap outright.
+
+   Fixed by moving the cue INTO .hero-content as the third flow child,
+   right after the nav -- so its position is a function of wherever the
+   nav actually ends, not a guess at where it should be. margin-top is the
+   Figma gap (755 - 706, where 706 is CATALOGUE's own bottom edge) and
+   margin-left is the cue's offset from the column's own left edge (720 -
+   679), both in --u so they track the same scale as everything else. */
 .scroll-cue{
-  position:absolute; left:50%; top:87.3%; z-index:2;
+  margin: calc(49 * var(--u)) 0 0 calc(41 * var(--u));
   width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.55); /* width stays a real 1px -- hairlines don't scale */
-  transform: translateX(-50%); transform-origin: top center;
   pointer-events:none; animation: scrollCuePulse 5s ease-out .6s infinite both;
+  transform-origin: top center;
 }
 @keyframes scrollCuePulse{
   /* round 10: repeat every 5s instead of once on load -- pulse shape/timing
      unchanged (was 0%/40%/100% over a 1.8s duration), just rescaled into
      the front slice of a 5s cycle so it pulses then holds at rest. */
-  0%    { opacity:.55; transform: translateX(-50%) scaleY(1); }
-  14.4% { opacity:1;   transform: translateX(-50%) scaleY(1.25); }
-  36%   { opacity:.55; transform: translateX(-50%) scaleY(1); }
-  100%  { opacity:.55; transform: translateX(-50%) scaleY(1); }
+  0%    { opacity:.55; transform: scaleY(1); }
+  14.4% { opacity:1;   transform: scaleY(1.25); }
+  36%   { opacity:.55; transform: scaleY(1); }
+  100%  { opacity:.55; transform: scaleY(1); }
 }
 @media (max-width: 1152px){
   .scroll-cue{ display:none; }
