@@ -1258,6 +1258,138 @@ body.page-custom{
 body.page-custom .carousel{ background: var(--white); }
 
 /* ============================================================
+   PRODUCT — COVE TABLE (232:400 desktop / 342:858 mobile)
+   The only product-detail page in this batch (Eliza: "just do it for cove
+   table for now"). White section runs 0-1628 (vs Custom/Showroom/FAQ's
+   single rule bar, Figma gives this page its own small bracket accent
+   next to the title -- a short horizontal tick, a long vertical stem down
+   to the first divider, and a second short horizontal tick -- built
+   literally rather than forced into the shared .page-rule pattern).
+   ------------------------------------------------------------
+   Asset-library gap: Figma's gallery shows four Cove Table photos (a
+   hero + three thumbnails/angles) but the Drive asset library has only
+   one finished Cove Table photograph (Images/06. Catalogue/Web_Optimized/
+   Cove_WebOptimized.jpg -- also the one used site-wide, e.g. the homepage
+   carousel tile). Rather than fabricate three fake "other angles," every
+   gallery slot below reuses that one real photo (object-fit:cover with a
+   different object-position per slot for some framing variety). Flag for
+   Eliza: more Cove Table angles would let each slot show something
+   different.
+   Same gap for the three wood-species swatches (walnut / euro beech /
+   cherry) -- no swatch photography exists, so these are flat CSS
+   gradients sampled from Figma's own swatch colors, not photographed
+   grain. Swap for real macro photos when Eliza has them.
+   ------------------------------------------------------------
+   Other departures from Figma, drift rather than design:
+   - the small gallery nav arrows (244:311/244:316) are decorative ticks
+     with no evident click behavior in Figma (no linked frame) -- built
+     as a static SVG accent, not a working prev/next control.
+   - "studio-mark-FFA000-soft" is just the standard orange stamp at low
+     opacity, not a distinct asset -- reused stamp-orange.svg + opacity.
+   - the wood-swatch labels are Figma right-aligned at tight, overlap-
+     prone offsets; centered under each swatch instead, same non-overlap
+     goal, no odd ragged edge.
+   - mobile's own frame swaps the shared "pieces in the wild" carousel
+     for a different, uncaptioned 4-tile strip (pareuko/cove/bluff/union
+     sq crops) that doesn't exist in code or asset form anywhere else on
+     the site. Every other page -- including this one's own desktop
+     frame -- uses the single shared carousel component, so mobile reuses
+     it too rather than one-off building a second, inconsistent gallery.
+   ============================================================ */
+.product-section{ position:relative; height: calc(1628 * var(--u)); }
+
+.product-accent{ position:absolute; background: var(--orange); pointer-events:none; }
+.product-accent-h1{ left: calc(285 * var(--u)); top: calc(215 * var(--u)); width: calc(163 * var(--u)); height: calc(2 * var(--u)); }
+.product-accent-v { left: calc(307 * var(--u)); top: calc(215 * var(--u)); width: calc(2 * var(--u));   height: calc(608 * var(--u)); }
+.product-accent-h2{ left: calc(305 * var(--u)); top: calc(236 * var(--u)); width: calc(125 * var(--u)); height: calc(2 * var(--u)); }
+
+.product-title{
+  position:absolute; left: calc(40 * var(--u)); top: calc(274 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: calc(25 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+
+.product-photo{ position:relative; margin:0; background: var(--cream); overflow:hidden; }
+.product-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.product-hero{  position:absolute; left: calc(474 * var(--u)); top: calc(232 * var(--u)); width: calc(492 * var(--u)); aspect-ratio: 492/591; }
+.product-hero img{ object-position: center 18%; }
+.product-thumb-5{     position:absolute; left: calc(46 * var(--u));  top: calc(552 * var(--u)); width: calc(162 * var(--u)); aspect-ratio: 162/271; }
+.product-thumb-5 img{ object-position: left center; }
+.product-thumb-cove2{ position:absolute; left: calc(233 * var(--u)); top: calc(671 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; }
+.product-thumb-cove2 img{ object-position: center 70%; }
+.product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(633 * var(--u)); width: calc(285 * var(--u)); aspect-ratio: 285/190; }
+.product-thumb-cove3 img{ object-position: right 60%; }
+
+.product-nav-arrows{
+  position:absolute; left: calc(1011 * var(--u)); top: calc(607 * var(--u));
+  width: calc(29 * var(--u)); height: calc(17 * var(--u));
+  display:flex; align-items:center; gap: calc(3 * var(--u)); pointer-events:none;
+}
+.product-nav-arrows svg{ width: calc(13 * var(--u)); height: calc(14 * var(--u)); display:block; }
+.product-nav-arrows svg:first-child{ transform: scaleX(-1); }
+
+.product-stamp-soft{
+  position:absolute; left: calc(1301 * var(--u)); top: calc(594 * var(--u));
+  width: calc(126 * var(--u)); margin:0; opacity:.3; pointer-events:none;
+}
+.product-stamp-soft img{ width:100%; height:auto; display:block; }
+
+.product-divider{ position:absolute; left:0; width:100%; height:1px; margin:0; border:0; background: rgba(28,17,35,.14); }
+.product-divider-1{ top: calc(823 * var(--u)); }
+.product-divider-2{ top: calc(1219 * var(--u)); }
+
+.product-desc{
+  position:absolute; left: calc(528 * var(--u)); top: calc(880 * var(--u));
+  width: calc(399 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+  text-align:justify;
+}
+.product-desc p{ margin:0; }
+.product-desc p + p{ margin-top: 1.7em; }
+
+.product-dims, .product-price, .product-config{
+  position:absolute; top: calc(1280 * var(--u)); width: calc(399 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.product-dims p, .product-price p{ margin:0; }
+.product-dims p + p{ margin-top: 1.7em; }
+.product-dims{ left: calc(40 * var(--u)); }
+.product-price{ left: calc(528 * var(--u)); }
+.product-config{ left: calc(1006 * var(--u)); }
+.product-config ul{ margin: 1.7em 0 0; padding-left: 1.3em; }
+.product-config li + li{ margin-top:.3em; }
+
+.product-cta{
+  position:absolute; left: calc(528 * var(--u)); width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
+  background: var(--orange); color: var(--white); text-decoration:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.product-cta:hover{ background: var(--orange-light); }
+.product-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
+.product-cta-inquire{ top: calc(1325 * var(--u)); }
+.product-cta-spec{ top: calc(1391 * var(--u)); }
+
+.product-swatches{ position:absolute; left: calc(1006 * var(--u)); top: calc(1450 * var(--u)); display:flex; gap: calc(27 * var(--u)); }
+.product-swatch{ width: calc(73 * var(--u)); text-align:center; }
+.product-swatch-chip{ display:block; width:100%; aspect-ratio:1; border-radius: calc(4 * var(--u)); }
+.product-swatch-beech .product-swatch-chip{ background: linear-gradient(135deg,#e9d2a8,#cfab7c); }
+.product-swatch-cherry .product-swatch-chip{ background: linear-gradient(135deg,#986339,#6c4023); }
+.product-swatch-walnut .product-swatch-chip{ background: linear-gradient(135deg,#61564d,#3b322b); }
+.product-swatch p{
+  margin: calc(8 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200;
+  font-size: calc(13 * var(--u)); line-height:1.4; letter-spacing:.05em;
+  text-transform:uppercase; color: var(--ink);
+}
+
+body.page-product .carousel{ background: var(--white); }
+
+/* ============================================================
    MOBILE — built from Figma's 402-wide frames:
      160:104   HOMEPAGE - Mobile            (base)
      278:1285  HOMEPAGE - Mobile - Scroll
@@ -1860,6 +1992,59 @@ body.page-custom .carousel{ background: var(--white); }
   }
 
   body.page-custom .carousel{ margin-top: 0; }
+
+  /* ---------- Product / Cove Table, mobile (342:858) ----------
+     No accent bracket and no divider lines in Figma's mobile frame --
+     both hidden. The gallery-nav ticks are desktop-only decoration too. */
+  .product-section{ height:auto; padding-top: calc(81 * var(--mu)); }
+  .product-accent{ display:none; }
+  .product-nav-arrows{ display:none; }
+  .product-divider{ display:none; }
+
+  .product-top{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    padding: calc(23 * var(--mu)) var(--edge) 0;
+  }
+  .product-stamp-soft{
+    position:static; width: calc(70 * var(--mu)); margin:0;
+  }
+  .product-title{
+    position:static; left:auto; top:auto; margin:0;
+    font-size: calc(20 * var(--mu));
+  }
+
+  .product-photo{ position:relative; width:auto; aspect-ratio:auto; }
+  .product-hero{      position:relative; left:auto; top:auto; height: calc(311 * var(--mu)); margin: calc(24 * var(--mu)) 0 0; }
+  .product-thumb-cove2{ position:relative; left:auto; top:auto; height: calc(172 * var(--mu)); margin:0; }
+  .product-thumb-cove3{ position:relative; left:auto; top:auto; height: calc(172 * var(--mu)); margin:0; }
+  .product-thumb-5{     position:relative; left:auto; top:auto; height: calc(431 * var(--mu)); margin:0; }
+
+  .product-desc{
+    position:static; left:auto; top:auto; width:auto; padding:0 var(--edge);
+    margin: calc(40 * var(--mu)) 0 0; font-size: calc(15 * var(--mu));
+  }
+
+  .product-dims, .product-price, .product-config{
+    position:static; left:auto; top:auto; width:auto; padding:0 var(--edge);
+    font-size: calc(15 * var(--mu));
+  }
+  .product-price{ margin: calc(32 * var(--mu)) 0 0; }
+  .product-dims{ margin: calc(32 * var(--mu)) 0 0; }
+  .product-config{ margin: calc(32 * var(--mu)) 0 0; }
+
+  .product-cta{
+    position:static; left:auto; width:auto; margin: calc(20 * var(--mu)) var(--edge) 0;
+    min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+  }
+  .product-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
+  .product-cta-inquire{ top:auto; }
+  .product-cta-spec{ top:auto; margin-top: calc(12 * var(--mu)); }
+
+  .product-swatches{ position:static; left:auto; top:auto; padding: 0 var(--edge); margin: calc(32 * var(--mu)) 0 0; gap: calc(18 * var(--mu)); }
+  .product-swatch p{ font-size: calc(12 * var(--mu)); margin-top: calc(6 * var(--mu)); }
+
+  body.page-product .carousel{ margin-top: calc(32 * var(--mu)); }
 }
 
 
