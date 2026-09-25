@@ -1161,6 +1161,103 @@ body.page-faq .page-stamp{ left: calc(1218 * var(--u)); top: calc(266 * var(--u)
 body.page-faq .carousel{ background: var(--white); }
 
 /* ============================================================
+   CUSTOM (265:787 desktop / 404:689 mobile)
+   The largest white page on the site -- an intro, a two-photo strip, two
+   project-feature essays (client testimonial + photo band each), and the
+   standard four-tile carousel. White section runs 0-3978. Its rule
+   (321:652) is at the old y=42 bar position, same Contact/Trade/Showroom/
+   FAQ treatment: 215 to the seam.
+   ------------------------------------------------------------
+   Desktop positions every block at its own exact Figma coordinate, same
+   as every other white page. Mobile reorders real content, not just a
+   reflow: the intro pairs with INT-6+IMG_0274 first and DSC_1055 moves to
+   a standalone band near the end, instead of DSC_1055 sitting beside the
+   intro copy the way it does on desktop. Rather than force one shared DOM
+   order to serve two genuinely different layouts, the markup follows
+   MOBILE's reading order (mobile is flow-positioned, so DOM order IS its
+   layout) and desktop repositions every block with its own absolute
+   coordinate, which works regardless of where a block sits in the DOM.
+   ------------------------------------------------------------
+   Other departures from Figma, drift rather than design:
+   - the carousel's Figma layer names don't match their captions -- same
+     drift as Showroom/FAQ, same fix.
+   - the two photo captions ("Union Square, San Francisco" / "South Lake
+     Union, Seattle") sit inside whichever photo they're closest to,
+     rather than each frame's own literal pixel position -- Figma's own
+     mobile frame anchors "Union Square" to the wrong photo (INT-6's
+     bottom edge, not IMG_0274's, where desktop and the caption's own
+     subject both put it), so both breakpoints anchor it to the same
+     photo, at a consistent bottom-left inset.
+   ============================================================ */
+body.page-custom{
+  --rule-top: calc(215 * var(--u));
+  --rule-h: calc(3763 * var(--u));   /* 215 -> the white/carousel seam at 3978 */
+}
+.custom-section{ position:relative; height: calc(3978 * var(--u)); }
+
+.custom-intro{
+  position:absolute; left: calc(319 * var(--u)); top: calc(312 * var(--u));
+  width: calc(442 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+  text-align:justify;
+}
+.custom-intro p{ margin:0; }
+.custom-intro p + p{ margin-top: 1.7em; }
+
+.custom-cta{
+  position:absolute; left: calc(319 * var(--u)); top: calc(540 * var(--u));
+  width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
+  background: var(--orange); color: var(--white); text-decoration:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.custom-cta:hover{ background: var(--orange-light); }
+.custom-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
+
+/* second stamp -- Custom is the one white page long enough to carry two */
+.custom-stamp-2{
+  position:absolute; left: calc(22 * var(--u)); top: calc(1204 * var(--u));
+  width: calc(185 * var(--u)); margin:0; pointer-events:none;
+}
+.custom-stamp-2 img{ width:100%; height:auto; display:block; }
+
+.custom-photo{ position:relative; margin:0; background: var(--cream); overflow:hidden; }
+.custom-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.custom-photo-hero{     position:absolute; left: calc(798 * var(--u));  top: calc(319 * var(--u));  width: calc(621 * var(--u)); aspect-ratio: 621/480; }
+.custom-photo-int6{     position:absolute; left:0;                      top: calc(928 * var(--u));  width: calc(743 * var(--u)); aspect-ratio: 743/928; }
+.custom-photo-img0274{  position:absolute; left: calc(743 * var(--u));  top: calc(928 * var(--u));  width: calc(697 * var(--u)); aspect-ratio: 697/928; }
+.custom-photo-westlake3{position:absolute; left:0;                      top: calc(2628 * var(--u)); width: calc(475 * var(--u)); aspect-ratio: 475/695; }
+.custom-photo-westlake2{position:absolute; left: calc(475 * var(--u));  top: calc(2628 * var(--u)); width: calc(965 * var(--u)); aspect-ratio: 965/695; }
+
+.custom-caption{
+  position:absolute; left: calc(16 * var(--u)); bottom: calc(20 * var(--u)); margin:0;
+  color: var(--white); pointer-events:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(20 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+}
+
+.custom-feature-label{
+  position:absolute; left: calc(22 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: calc(20 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink); line-height:1.4;
+}
+.custom-feature-copy, .custom-feature-quote, .custom-feature-attr{
+  position:absolute; margin:0;
+  font-family: var(--font-body); font-weight:200; line-height:1.7;
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink); text-align:justify;
+}
+.custom-feature-copy p, .custom-feature-quote p{ margin:0; }
+.custom-feature-copy p + p, .custom-feature-quote p + p{ margin-top: 1.7em; }
+.custom-feature-copy{ left: calc(328 * var(--u)); width: calc(442 * var(--u)); font-size: var(--fs-body); }
+.custom-feature-divider{ display:none; }
+
+body.page-custom .carousel{ background: var(--white); }
+
+/* ============================================================
    MOBILE — built from Figma's 402-wide frames:
      160:104   HOMEPAGE - Mobile            (base)
      278:1285  HOMEPAGE - Mobile - Scroll
@@ -1711,6 +1808,58 @@ body.page-faq .carousel{ background: var(--white); }
   }
   .faq-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
   body.page-faq .carousel{ margin-top: calc(30 * var(--mu)); }
+  /* ---------- Custom, mobile (404:689) ----------
+     Real reading order, not a reflow of the desktop DOM -- see the note
+     above the desktop block. Gaps around the two testimonial quotes are
+     normalized to the spacing scale rather than Figma's exact numbers:
+     quote text reflows differently in a live browser than in Figma's own
+     layout, so a gap measured against Figma's text would drift out of
+     sync with the real render; the margins around the fixed-size photos,
+     the CTA and the short two-line attributions use Figma's real numbers
+     since those don't reflow. */
+  .custom-section{ height:auto; padding-top: calc(81 * var(--mu)); }
+  body.page-custom .page-rule{ display:none; }
+  body.page-custom .page-stamp, .custom-stamp-2{ display:none; }   /* not in this frame */
+
+  .custom-intro{
+    position:static; width:auto; padding:0 var(--edge);
+    margin: calc(23 * var(--mu)) 0 0; font-size: calc(15 * var(--mu));
+  }
+  .custom-cta{
+    position:static; width:auto; margin: calc(24 * var(--mu)) var(--edge) 0;
+    min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+  }
+  .custom-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
+
+  .custom-photo{ position:relative; width:auto; aspect-ratio:auto; }
+  .custom-photo-hero{      position:relative; left:auto; top:auto; height: calc(311 * var(--mu)); margin: calc(54 * var(--mu)) 0 0; }
+  .custom-photo-int6{      position:relative; left:auto; top:auto; height: calc(502 * var(--mu)); margin: calc(77 * var(--mu)) 0 0; }
+  .custom-photo-img0274{   position:relative; left:auto; top:auto; height: calc(535 * var(--mu)); margin:0; }
+  .custom-photo-westlake3{ position:relative; left:auto; top:auto; height: calc(588 * var(--mu)); margin: calc(88 * var(--mu)) 0 0; }
+  .custom-photo-westlake2{ position:relative; left:auto; top:auto; height: calc(290 * var(--mu)); margin:0; }
+
+  .custom-caption{
+    left: calc(16 * var(--mu)); bottom: calc(16 * var(--mu));
+    font-size: calc(16 * var(--mu));
+  }
+
+  .custom-feature-label{
+    position:static; padding:0 var(--edge); margin: calc(112 * var(--mu)) 0 0;
+    font-size: calc(16 * var(--mu));
+  }
+  .custom-feature-copy, .custom-feature-quote, .custom-feature-attr{
+    position:static; width:auto; padding:0 var(--edge);
+  }
+  .custom-feature-copy{ margin: calc(40 * var(--mu)) 0 0; font-size: calc(15 * var(--mu)); }
+  .custom-feature-quote{ margin: calc(32 * var(--mu)) 0 0; font-size: calc(15 * var(--mu)); }
+  .custom-feature-attr{ margin: calc(48 * var(--mu)) 0 0; font-size: calc(15 * var(--mu)); }
+  .custom-feature-divider{
+    display:block; height:1px; background: var(--orange); border:0;
+    margin: calc(32 * var(--mu)) var(--edge) 0;
+  }
+
+  body.page-custom .carousel{ margin-top: 0; }
 }
 
 

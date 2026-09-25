@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom — Studio Fritz</title>
+<meta name="description" content="Custom fine furniture and built-in mill work for residential and commercial clients along the West Coast.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Estedad:wght@200..900&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/svg+xml" href="images/logos/logomark/logomark-orange.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="images/logos/logomark/logomark-orange.png">
+<link rel="apple-touch-icon" href="images/logos/logomark/logomark-orange@2x.png">
+</head>
+<body class="page-light page-custom">
+
+<!-- Header, hamburger and footer are copied verbatim from index.html. This is
+     a static site with no templating, so they are duplicated by necessity --
+     index.html stays the canonical copy; changes go there first, then here. -->
+<header class="wordmark-header is-static" id="wmHeader">
+  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+    <div class="wm-col wm-left"><span class="wm-row-1">STUDIO</span></div>
+  </a>
+  <a class="wm-mark" href="index.html" aria-label="Studio Fritz — home">
+    <img class="wm-mark-orange" src="images/logos/logomark/logomark-orange.svg" alt="">
+    <img class="wm-mark-white" src="images/logos/logomark/logomark-white.svg" alt="">
+  </a>
+  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+    <div class="wm-col wm-right"><span class="wm-row-1">FRITZ</span></div>
+  </a>
+  <nav class="hero-links is-static-nav" aria-label="Primary">
+    <a href="custom.html" aria-current="page">Custom</a>
+    <a href="about.html">About</a>
+    <a href="showroom.html">Showroom</a>
+    <a href="catalogue.html">Catalogue</a>
+    <a href="contact.html">Contact</a>
+    <a href="trade.html">Trade</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" type="button"
+          aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <div class="mm-inner">
+    <nav class="mm-links" aria-label="Primary">
+      <div class="mm-col mm-col-a">
+        <a href="custom.html" aria-current="page">Custom</a>
+        <a href="catalogue.html">Catalogue</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="mm-col mm-col-b">
+        <a href="contact.html">Contact</a>
+        <a href="trade.html">Trade</a>
+        <a href="showroom.html">Showroom</a>
+      </div>
+    </nav>
+    <div class="mm-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
+    <div class="mm-col mm-secondary">
+      <a href="faq.html">Frequently Asked Questions</a>
+      <a href="#warranty">Lifetime Warranty</a>
+      <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+      <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+    </div>
+    <div class="newsletter mm-newsletter">
+      <label for="mm-email">Sign Up for Newsletter</label>
+      <form onsubmit="return false;">
+        <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+        <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+      </form>
+      <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-orange.svg" alt=""></a>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+
+  <div class="page-rule" aria-hidden="true"></div>
+
+  <section class="custom-section">
+    <h1 class="page-label">Custom</h1>
+
+    <div class="custom-intro">
+      <p>We collaborate with residential and commercial clients on custom fine furniture and built-in mill work, mostly along West Coast USA and Canada.</p>
+      <p>Collaborations are some of our favourite projects and give us an opportunity to design for your particular space.</p>
+    </div>
+
+    <a class="custom-cta" href="contact.html">
+      <span>Get in Touch</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+    </a>
+
+    <figure class="page-stamp"><img src="images/logos/stamp/stamp-orange.svg" alt=""></figure>
+    <figure class="custom-stamp-2"><img src="images/logos/stamp/stamp-orange.svg" alt=""></figure>
+
+    <figure class="custom-photo custom-photo-hero">
+      <img src="images/custom/dsc-1055.webp" alt="A Studio Fritz custom walnut table in progress">
+    </figure>
+
+    <figure class="custom-photo custom-photo-int6">
+      <img src="images/showroom/int-6.webp" alt="Studio Fritz furniture installed at a client project">
+    </figure>
+    <figure class="custom-photo custom-photo-img0274">
+      <img src="images/custom/img-0274.webp" alt="Studio Fritz furniture at Union Square, San Francisco">
+      <figcaption class="custom-caption">Union Square, San Francisco</figcaption>
+    </figure>
+
+    <!-- 278:885/278:886: the .WORLD project feature -->
+    <p class="custom-feature-label" style="top:calc(1969 * var(--u))">Project Feature<br>.World</p>
+    <div class="custom-feature-copy" style="top:calc(1971 * var(--u))">
+      <p>Collaboration with Sam Altman&rsquo;s World project (<a href="https://world.org">world.org</a>) on bent wood community tables and seating.</p>
+      <p>Designed to bring people together at global flagships in San Francisco, Munich + Barcelona.</p>
+    </div>
+    <hr class="custom-feature-divider">
+    <div class="custom-feature-quote" style="left:calc(955 * var(--u));top:calc(1971 * var(--u));width:calc(442 * var(--u))">
+      <p>&ldquo;Working with Studio Fritz on our custom furniture felt like a natural fit. Lucas brought exceptional craft and care to every stage, from design and material selection to the final build. Whether refining his wood-bending technique or introducing stainless-steel details, he made each piece feel distinctive and full of savoir-faire.</p>
+      <p>His designs balance mid-century influences with a contemporary sensibility. Lucas&rsquo; deep understanding of wood, materials, and process, combined with his creativity and willingness to experiment, made all the difference. The result is a beautiful collection that people are drawn to gather around every day.&rdquo;</p>
+    </div>
+    <p class="custom-feature-attr" style="left:calc(993 * var(--u));top:calc(2463 * var(--u));width:calc(445 * var(--u))">&ndash; Constanzia Delort-Laval, Client Architect</p>
+
+    <figure class="custom-photo custom-photo-westlake3">
+      <img src="images/custom/westlake-3.webp" alt="South Lake Union, Seattle installation">
+    </figure>
+    <figure class="custom-photo custom-photo-westlake2">
+      <img src="images/custom/westlake-2.webp" alt="South Lake Union, Seattle installation">
+      <figcaption class="custom-caption">South Lake Union, Seattle</figcaption>
+    </figure>
+
+    <!-- 265:868 etc: the Interior Architects project feature -->
+    <p class="custom-feature-label" style="top:calc(3445 * var(--u))">Project Feature<br>.Interior Architects</p>
+    <div class="custom-feature-copy" style="top:calc(3448 * var(--u));font-size:calc(15 * var(--u))">
+      <p>Large, 200 lb walnut table with dove joints designed for architects and interior designers to spread out concepts for clients.</p>
+      <p>Made in collaboration with global architecture firm Interior Architects (<a href="https://interiorarchitects.com">interiorarchitects.com</a>).</p>
+      <p>Located in historic Firestone Tire Building, 400 Westlake in downtown Seattle.</p>
+    </div>
+    <hr class="custom-feature-divider">
+    <div class="custom-feature-quote" style="left:calc(976 * var(--u));top:calc(3450 * var(--u));width:calc(439 * var(--u));font-size:calc(15 * var(--u))">
+      <p>&ldquo;Working with Studio Fritz reminded me why I got into this industry in the first place&mdash;to be part of creating spaces filled with the work of talented artists and craftsmen.</p>
+      <p>The quality, craftsmanship, and story behind the custom furniture they created for our space elevated the entire design and gave it a sense of character that simply couldn&rsquo;t be achieved any other way.&rdquo;</p>
+    </div>
+    <p class="custom-feature-attr" style="left:calc(1048 * var(--u));top:calc(3783 * var(--u));width:calc(399 * var(--u));font-size:calc(15 * var(--u))">&ndash; Abigail Metcalfe, Client Interior Designer</p>
+  </section>
+
+  <!-- 265:791-798: same four-tile grid and caption drift as Showroom/FAQ --
+       see Showroom's stylesheet comment. -->
+  <div class="carousel" data-carousel aria-label="Studio Fritz pieces in the wild">
+    <div class="carousel-track">
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:1.390"><img src="images/home/bluff-table.webp" alt="Bluff Table"></div>
+        <figcaption>Bluff Table</figcaption>
+      </figure>
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:1.208"><img src="images/home/point-grey-stools.webp" alt="Point Grey Stools"></div>
+        <figcaption>Point Grey Stools</figcaption>
+      </figure>
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:1.000"><img src="images/home/westlake-table.webp" alt="Westlake Table, with Interior Architects"></div>
+        <figcaption>W/ Interior Architects</figcaption>
+      </figure>
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:1.249"><img src="images/home/shoal-coffee-table.webp" alt="Shoal Coffee Table"></div>
+        <figcaption>Shoal Coffee Table</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer" id="about">
+    <div class="footer-top">
+      <div class="footer-wm"><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><a class="footer-wm-mark" href="index.html" aria-label="Studio Fritz — home"><img src="images/logos/logomark/logomark-white.svg" alt=""></a><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <a href="custom.html" aria-current="page">Custom</a>
+          <a href="catalogue.html">Catalogue</a>
+          <a href="about.html">About</a>
+        </div>
+        <div class="footer-col">
+          <a href="contact.html">Contact</a>
+          <a href="trade.html">Trade</a>
+          <a href="showroom.html">Showroom</a>
+        </div>
+        <div class="footer-col footer-col-wide">
+          <a href="faq.html">Frequently Asked Questions</a>
+          <a href="#warranty">Lifetime Warranty</a>
+          <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+          <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+        </div>
+        <div class="newsletter">
+          <label for="nl-email">Sign Up for Newsletter</label>
+          <form onsubmit="return false;">
+            <input id="nl-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+            <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+          </form>
+          <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-orange.svg" alt=""></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">Studio Fritz LLC &copy; 2023 All Rights Reserved<span class="fc-sep">,</span><br>Seattle, WA, USA</p>
+        <a class="back-to-top" href="#top">
+          <span class="btt-line" aria-hidden="true"></span>
+          <span>Back to Top</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>
