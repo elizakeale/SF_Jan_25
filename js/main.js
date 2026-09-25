@@ -544,25 +544,75 @@
    they have been in touch and nobody has. The mailto fallback offered in
    the notice is a real address, not a dead end.
 
-   Validation is native (required, type=email); novalidate on the form only
-   defers the browser's own bubbles so the first submit attempt can turn on
-   .is-validated and let CSS mark the offending fields. */
+   Validation is native (required, type=email) for the RULES, but not for
+   the UI: novalidate on the form suppresses the browser's own floating
+   bubble entirely (that bubble can't be restyled -- it's OS chrome, not
+   DOM), and .sf-field-error below reproduces it as a plain in-page line --
+   the browser's own validationMessage text, in the site's ink colour and
+   caps, sitting under the field instead of floating over it. Only appears
+   after a first submit attempt (.is-validated), then live-updates per
+   field as the visitor fixes things. */
 (function contactForms() {
   var forms = document.querySelectorAll('form[data-endpoint]');
   if (!forms.length) return;
+
+  function fieldErrorEl(field) {
+    var wrap = field.closest('.sf-field') || field.parentElement;
+    var msg = wrap.querySelector('.sf-field-error');
+    if (!msg) {
+      msg = document.createElement('span');
+      msg.className = 'sf-field-error';
+      msg.setAttribute('role', 'alert');
+      msg.hidden = true;
+      wrap.appendChild(msg);
+      if (field.id) {
+        msg.id = field.id + '-error';
+        field.setAttribute('aria-describedby', msg.id);
+      }
+    }
+    return msg;
+  }
+
+  function showFieldError(field) {
+    var msg = fieldErrorEl(field);
+    msg.textContent = field.validationMessage;
+    msg.hidden = false;
+    field.setAttribute('aria-invalid', 'true');
+  }
+
+  function clearFieldError(field) {
+    var wrap = field.closest('.sf-field') || field.parentElement;
+    var msg = wrap.querySelector('.sf-field-error');
+    if (msg) { msg.hidden = true; msg.textContent = ''; }
+    field.removeAttribute('aria-invalid');
+  }
 
   Array.prototype.forEach.call(forms, function (form) {
     var endpoint = (form.getAttribute('data-endpoint') || '').trim();
     var wired = endpoint && endpoint !== 'TODO';
     if (wired) form.setAttribute('action', endpoint);
 
+    var fields = form.querySelectorAll('input, textarea');
+    Array.prototype.forEach.call(fields, function (field) {
+      field.addEventListener('input', function () {
+        if (!form.classList.contains('is-validated')) return;
+        if (field.validity.valid) clearFieldError(field);
+        else showFieldError(field);
+      });
+    });
+
     form.addEventListener('submit', function (e) {
       form.classList.add('is-validated');
 
       if (!form.checkValidity()) {
         e.preventDefault();
-        var bad = form.querySelector(':invalid');
-        if (bad) { bad.focus(); if (bad.reportValidity) bad.reportValidity(); }
+        var first = null;
+        Array.prototype.forEach.call(fields, function (field) {
+          if (field.validity.valid) { clearFieldError(field); return; }
+          showFieldError(field);
+          if (!first) first = field;
+        });
+        if (first) first.focus();
         return;
       }
 

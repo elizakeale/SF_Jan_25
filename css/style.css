@@ -962,6 +962,17 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 .sf-form.is-validated input:invalid,
 .sf-form.is-validated textarea:invalid{ border-color: var(--orange); }
 
+/* Replaces the browser's own floating validation bubble (js/main.js
+   suppresses it entirely -- it can't be restyled, it's OS chrome) with a
+   plain line under the field, in the site's own ink colour and caps
+   instead of dark-on-white system UI with a pointer and a drop shadow. */
+.sf-field-error{
+  display:block; margin-top: calc(6 * var(--u));
+  font-family: var(--font-body); font-weight:200; font-size: calc(12 * var(--u));
+  line-height:1.4; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.sf-field-error[hidden]{ display:none; }
+
 /* 297:90's note and the submit share one band: note left, button right. */
 .sf-actions{
   grid-column: 1 / -1; display:flex; align-items:flex-start;
@@ -1388,6 +1399,18 @@ body.page-custom .carousel{ background: var(--white); }
 }
 
 body.page-product .carousel{ background: var(--white); }
+
+/* Every carousel-background override above turns the tile background white --
+   but .tile figcaption is hardcoded white text (correct on the orange
+   carousels elsewhere), so on these four it goes invisible while still
+   reserving its own height: a blank white band between the images and
+   whatever follows (reported live on Custom, but the same shared rule hits
+   Showroom/FAQ/Product too). Same fix mobile already applies everywhere --
+   no per-tile captions on a white carousel. */
+body.page-showroom .carousel .tile figcaption,
+body.page-faq .carousel .tile figcaption,
+body.page-custom .carousel .tile figcaption,
+body.page-product .carousel .tile figcaption{ display:none; }
 
 /* ============================================================
    MOBILE — built from Figma's 402-wide frames:
@@ -1850,6 +1873,7 @@ body.page-product .carousel{ background: var(--white); }
   }
   .sf-submit img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
   .sf-unwired{ font-size: calc(14 * var(--mu)); }
+  .sf-field-error{ margin-top: calc(6 * var(--mu)); font-size: calc(12 * var(--mu)); }
 
   .page-thanks-msg{
     position:static; width:auto; padding: 0 calc(16 * var(--mu));
