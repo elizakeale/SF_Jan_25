@@ -1097,6 +1097,70 @@ body.page-showroom{
 body.page-showroom .carousel{ background: var(--white); }
 
 /* ============================================================
+   FAQ (278:1707 desktop / 370:543 mobile)
+   White section runs 0-2909 -- same seam pattern as the other white
+   pages. Its rule (299:197) is still at the old y=42 bar position, so it
+   gets the Contact/Trade/Showroom treatment: 215 to the seam.
+   ------------------------------------------------------------
+   Departures from Figma, drift rather than design:
+   - the desktop grid's Figma layer names (Geary/Pangyo/Westlake/Shoal)
+     don't match their captions -- the same drift as Showroom's grid,
+     same fix: codebase photography matched to the caption text.
+   - the mobile frame repeats "HOW MUCH DOES SHIPPING COST?" a second
+     time near the bottom -- an authoring duplicate, not an eleventh
+     question. Both frames answer the same ten questions, so it's built
+     once.
+   - the mobile frame shortens the heading to "FAQs"; every footer and
+     menu link elsewhere on the site spells out "Frequently Asked
+     Questions", so the full title is kept on both breakpoints.
+   - desktop positions each question/answer at its own exact Figma
+     coordinate; mobile's per-item gaps are a function of how long each
+     answer happens to run rather than a deliberate rhythm, so mobile
+     runs the list in flow with one consistent gap instead of
+     reproducing ten different ones.
+   ============================================================ */
+body.page-faq{
+  --rule-top: calc(215 * var(--u));
+  --rule-h: calc(2694 * var(--u));   /* 215 -> the white/carousel seam at 2909 */
+}
+.faq-section{ position:relative; height: calc(2909 * var(--u)); }
+body.page-faq .page-label{ width: calc(230 * var(--u)); white-space:normal; line-height:1.35; }
+body.page-faq .page-stamp{ left: calc(1218 * var(--u)); top: calc(266 * var(--u)); }
+
+.faq-q{
+  position:absolute; left: calc(319 * var(--u)); width: calc(589 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: calc(20 * var(--u));
+  line-height:1.35; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.faq-a{
+  position:absolute; left: calc(547 * var(--u)); width: calc(402 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+  text-align:justify;
+}
+.faq-still{
+  position:absolute; left: calc(547 * var(--u)); top: calc(2693 * var(--u)); margin:0;
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+}
+.faq-cta{
+  position:absolute; left: calc(547 * var(--u)); top: calc(2745 * var(--u));
+  width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
+  background: var(--orange); color: var(--white); text-decoration:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.faq-cta:hover{ background: var(--orange-light); }
+.faq-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
+
+/* the four-tile strip bleeds past the frame, same as Showroom's -- see
+   that page's own comment for the caption-matching note. */
+body.page-faq .carousel{ background: var(--white); }
+
+/* ============================================================
    MOBILE — built from Figma's 402-wide frames:
      160:104   HOMEPAGE - Mobile            (base)
      278:1285  HOMEPAGE - Mobile - Scroll
@@ -1574,7 +1638,7 @@ body.page-showroom .carousel{ background: var(--white); }
      Figma drops both on mobile the way it drops the rule on every white
      page here. Gaps below are true gaps between each element's Figma box
      and the next, same convention as the rest of this block. */
-  .showroom-section{ height:auto; }
+  .showroom-section{ height:auto; padding-top: calc(81 * var(--mu)); }
   body.page-showroom .page-rule{ display:none; }
 
   .showroom-logo-credit{
@@ -1613,6 +1677,40 @@ body.page-showroom .carousel{ background: var(--white); }
     margin: calc(39 * var(--mu)) 0 0 calc(210 * var(--mu));
   }
   body.page-showroom .carousel{ margin-top: calc(30 * var(--mu)); }
+  /* ---------- FAQ, mobile (370:543) ----------
+     Flow, one consistent gap between items -- see the drift note above. */
+  .faq-section{ height:auto; padding-top: calc(81 * var(--mu)); }
+  body.page-faq .page-rule{ display:none; }
+  body.page-faq .page-label{ width:auto; }
+  /* 411:978 -- unlike Contact/Trade, FAQ's mobile frame keeps the stamp,
+     just relocated (right-aligned, no caption), same treatment as
+     Showroom's mobile stamp. */
+  body.page-faq .page-stamp{
+    display:block; position:static; width: calc(185 * var(--mu));
+    margin: calc(40 * var(--mu)) 0 0 calc(210 * var(--mu));
+  }
+
+  .faq-list{ padding: 0 var(--edge); margin: calc(40 * var(--mu)) 0 0; }
+  .faq-item + .faq-item{ margin-top: calc(40 * var(--mu)); }
+  .faq-q{
+    position:static; width:auto; margin:0 0 calc(13 * var(--mu));
+    font-size: calc(20 * var(--mu));
+  }
+  .faq-a{
+    position:static; width:auto; margin:0;
+    font-size: calc(16 * var(--mu));
+  }
+  .faq-still{
+    position:static; margin: calc(40 * var(--mu)) var(--edge) 0;
+    font-size: calc(16 * var(--mu));
+  }
+  .faq-cta{
+    position:static; width:auto; margin: calc(20 * var(--mu)) var(--edge) 0;
+    min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+  }
+  .faq-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
+  body.page-faq .carousel{ margin-top: calc(30 * var(--mu)); }
 }
 
 
