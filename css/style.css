@@ -2080,6 +2080,110 @@ body.page-product .carousel .tile figcaption{ display:none; }
    it. It holds together, but it is an extrapolation, not a design -- a
    tablet frame in Figma is what would settle it. */
 
+
+/* ============================================================
+   SITE INTRO (index.html only) -- full-screen orange loader that
+   plays once per tab session before the homepage, per Figma's
+   "intro" / "intro - end state" frames.
+
+   The historic stamp's own art (images/logos/stamp/*) turned out to
+   be a scanned illustration auto-traced into 600+ tiny fragment
+   paths with no separable components (no distinct oval/numbers/
+   cross layers to draw in sequence) -- so rather than animate that
+   flattened source, this is a clean hand-redrawn approximation of
+   the same oval + date-numeral + cross composition, built as real
+   separate SVG pieces so they CAN be sequenced: the oval draws in,
+   then the "28 9 / 4 7" numerals fade in, then the abstract F+R
+   cross (Fritz Reichl's overlapped-monogram signature) draws in
+   last. The modern F logomark -- which already IS three clean
+   lines in the shipped asset -- then draws in over the same spot,
+   right to left, top bar then lower bar then the vertical stroke
+   top-down, continuing past its own box into the .intro-f-tail bar
+   so it visibly bleeds off the bottom of the screen. The whole
+   orange screen then fades out. Timing/sequencing lives in
+   js/main.js (search "SITE INTRO"); reduced-motion collapses this
+   to a quick fade via the *{ transition-duration } rule below.
+   Click/tap or Escape skips straight to the end. ============================================================ */
+.site-intro{
+  position:fixed; inset:0; z-index:200; background: var(--orange);
+  cursor:pointer; transition: opacity .45s ease;
+}
+.site-intro.is-done{ opacity:0; pointer-events:none; }
+.site-intro.is-removed{ display:none; }
+body.intro-active{ overflow:hidden; }
+
+.intro-stamp{
+  position:absolute; top:20vh; left:50%; transform:translateX(-50%);
+  width:min(24vw, 230px); overflow:visible;
+  transition: opacity .3s ease .1s;
+}
+.intro-stamp.is-hidden{ opacity:0; }
+/* Centred on the F glyph's own vertical stroke (at x=117.5 of its 612-wide
+   viewBox), not the box -- the F is a left-weighted letterform, not a
+   symmetric mark, so centring the box would centre empty space instead of
+   the stroke that's meant to land on the stamp's own vertical cross-bar.
+   top is tuned so the two marks' crossbars roughly coincide (see the
+   sizing comment in js/main.js's SITE INTRO section for the numbers). */
+.intro-f-wrap{
+  position:absolute; top:32vh; left:50%; transform: translateX(calc(-117.5 / 612 * 100%));
+  width:min(30vw, 300px); opacity:0; transition: opacity .35s ease;
+}
+.intro-f-wrap.is-visible{ opacity:1; }
+.intro-f{ display:block; width:100%; overflow:visible; }
+
+.intro-stamp-oval{
+  fill:none; stroke: var(--cream); stroke-width: calc(2 * var(--u));
+  vector-effect:non-scaling-stroke;
+  stroke-dasharray:790; stroke-dashoffset:790;
+  transition: stroke-dashoffset 1.1s cubic-bezier(.65,0,.35,1);
+}
+.intro-stamp-oval.is-drawn{ stroke-dashoffset:0; }
+
+.intro-stamp-numbers text{
+  fill: var(--cream); font-family: var(--font-body); font-weight:200;
+  font-size:34px; text-anchor:middle; opacity:0; transition: opacity .4s ease;
+}
+.intro-stamp-numbers.is-visible text{ opacity:1; }
+
+.intro-stamp-cross line{
+  fill:none; stroke: var(--cream); vector-effect:non-scaling-stroke;
+  stroke-width: calc(3 * var(--u));
+}
+.intro-cross-top { stroke-dasharray:60;  stroke-dashoffset:60;  transition: stroke-dashoffset .3s ease; }
+.intro-cross-mid { stroke-dasharray:110; stroke-dashoffset:110; transition: stroke-dashoffset .35s ease .1s; }
+.intro-cross-vert{ stroke-dasharray:190; stroke-dashoffset:190; transition: stroke-dashoffset .5s ease .25s; }
+.intro-stamp-cross.is-drawn .intro-cross-top,
+.intro-stamp-cross.is-drawn .intro-cross-mid,
+.intro-stamp-cross.is-drawn .intro-cross-vert{ stroke-dashoffset:0; }
+
+.intro-f line{
+  fill:none; stroke: var(--white); stroke-width: calc(9 * var(--u));
+  vector-effect:non-scaling-stroke;
+}
+.intro-f-top { stroke-dasharray:517; stroke-dashoffset:517; transition: stroke-dashoffset .45s ease; }
+.intro-f-mid { stroke-dasharray:395; stroke-dashoffset:395; transition: stroke-dashoffset .45s ease .18s; }
+.intro-f-vert{ stroke-dasharray:554; stroke-dashoffset:554; transition: stroke-dashoffset .55s ease .38s; }
+.intro-f-wrap.is-drawn .intro-f-top,
+.intro-f-wrap.is-drawn .intro-f-mid,
+.intro-f-wrap.is-drawn .intro-f-vert{ stroke-dashoffset:0; }
+
+/* Continues the F's vertical stroke past its own box so it reads as
+   bleeding off the bottom of the screen, rather than stopping at a
+   visible box edge. Height animates in sync with .intro-f-vert. */
+.intro-f-tail{
+  position:absolute; top:100%; left:calc(117.5 / 612 * 100%);
+  width: calc(9 * var(--u)); height:0; background: var(--white);
+  transition: height .5s ease .38s;
+}
+.intro-f-wrap.is-drawn .intro-f-tail{ height:60vh; }
+
+@media (max-width: 1152px){
+  .intro-stamp{ top:16vh; }
+  .intro-f-wrap{ top:26vh; }
+  .intro-stamp{ width:min(38vw, 150px); }
+  .intro-f-wrap{ width:min(46vw, 190px); }
+}
+
 @media (prefers-reduced-motion: reduce){
   *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }
 }
