@@ -230,27 +230,25 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .wm-row-2, .wm-row-3{ overflow:hidden; max-height:0; transition: max-height var(--wm-row-dur, .7875s) ease; } /* round 10: a further 50% slower on top of round 8's own 50% slowdown per "multiplication effect could be more gradual, 50% less fast" (.35s -> .525s -> .7875s) */
 .wm-row-2.is-on, .wm-row-3.is-on{ max-height: calc(140 * var(--u)); }
 
-/* small orange logomark badge -- round 10: "looks too low in the center
-   of page, should be top aligned to STUDIO FRITZ" -- was vertically
-   CENTERED on the wordmark line (translate(-50%,-50%) around a computed
-   midpoint); switched to top-aligned. Round 10 follow-up: pure --sp-8
-   (the header's own padding-top / the line-box's top edge) read as too
-   high -- the display font's line-box has extra leading above the glyphs'
-   visual cap-height, so aligning to the padding edge sits above the
-   actual top of the "S"/"F". Nudged down to split the difference. Fixed
-   px top (not tied to header height) so it stays correct no matter how
-   tall the header gets during multiply. */
+/* small orange logomark badge -- round 10 had switched this to top-aligned
+   ("looks too low in the center of page, should be top aligned to STUDIO
+   FRITZ"), but Eliza has since reversed that decision back to vertically
+   CENTERED on the STUDIO/FRITZ wordmark line, matching how the footer
+   treats its own logomark (.footer-wm-mark, translate(-50%,-50%)).
+   Porting the pre-round-10 fixed px straight from Figma's raw coordinates
+   (y=40-123, centre 81.5) reproduced the exact same "too low" problem
+   round 10 was fighting -- Figma's y-values don't match our rendering
+   (documented above: Figma's text box is 131 tall for a 100px face, ours
+   renders a 90px line box), so a literal port lands the mark on the
+   glyph's lower half, not its centre. Measured empirically instead: 53.5u
+   is the vertical centre of the actual rendered "STUDIO"/"FRITZ" glyphs
+   (cap-top to baseline, no descenders in this wordmark) at 100u font-size,
+   confirmed by pixel-sampling a screenshot. Fixed px top (not tied to
+   header height) so it stays centred no matter how tall the header gets
+   during multiply. */
 .wm-mark{
-  position:absolute; left:50%; top: calc(22 * var(--u)); transform: translateX(-50%);
+  position:absolute; left:50%; top: calc(53.5 * var(--u)); transform: translate(-50%,-50%);
   width: calc(83 * var(--u)); z-index:1; display:block;
-  /* Figma 460:2063 puts the mark at x=679 w=83 (centred on the 1440 frame),
-     y=40 -- and taking that 40 literally is what left it sitting low.
-     Figma's wordmark TEXT BOX is 131 tall for a 100px face; ours renders in
-     a 90px line box (line-height .9), so the glyphs sit at a different
-     offset inside it and the same 40px lands well below the cap line.
-     What Figma actually shows is the mark's top flush with the wordmark's
-     cap height, which on our metrics is ~22. Aligning to the cap reproduces
-     the design; copying the raw y does not. */
 }
 .wm-mark img{ width:100%; display:block; }
 
@@ -426,19 +424,25 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    margin-left is the cue's offset from the column's own left edge (720 -
    679), both in --u so they track the same scale as everything else. */
 .scroll-cue{
-  margin: calc(49 * var(--u)) 0 0 calc(41 * var(--u));
-  width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.55); /* width stays a real 1px -- hairlines don't scale */
-  pointer-events:none; animation: scrollCuePulse 5s ease-out .6s infinite both;
+  /* Eliza: "too low and not pulsing... people don't know to scroll" --
+     margin-top brought way in from the nav (49u -> 18u) so it reads higher
+     on screen; base opacity raised (.55 -> .7) and a glow added on the
+     pulse beat so the animation is actually visible against the hero
+     video, not just a 1px hairline flickering slightly brighter. */
+  margin: calc(18 * var(--u)) 0 0 calc(41 * var(--u));
+  width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.7); /* width stays a real 1px -- hairlines don't scale */
+  pointer-events:none; animation: scrollCuePulse 2.5s ease-out .6s infinite both;
   transform-origin: top center;
 }
 @keyframes scrollCuePulse{
-  /* round 10: repeat every 5s instead of once on load -- pulse shape/timing
-     unchanged (was 0%/40%/100% over a 1.8s duration), just rescaled into
-     the front slice of a 5s cycle so it pulses then holds at rest. */
-  0%    { opacity:.55; transform: scaleY(1); }
-  14.4% { opacity:1;   transform: scaleY(1.25); }
-  36%   { opacity:.55; transform: scaleY(1); }
-  100%  { opacity:.55; transform: scaleY(1); }
+  /* Eliza: pulse should shrink to about half its size, not grow, and
+     happen 2x as often -- so scaleY goes 1 -> .5 (was 1 -> 1.25) and the
+     cycle is 2.5s (was 5s). A glow (box-shadow) rides the same beat so the
+     pulse itself is unmistakable, not just a subtle brightness shift. */
+  0%    { opacity:.7;  transform: scaleY(1);  box-shadow: none; }
+  14.4% { opacity:1;   transform: scaleY(.5); box-shadow: 0 0 calc(8 * var(--u)) rgba(255,255,255,.9); }
+  36%   { opacity:.7;  transform: scaleY(1);  box-shadow: none; }
+  100%  { opacity:.7;  transform: scaleY(1);  box-shadow: none; }
 }
 @media (max-width: 1152px){
   .scroll-cue{ display:none; }
@@ -678,28 +682,38 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 }
 .newsletter button img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); transition: opacity .15s ease; }
 .newsletter button:hover img{ opacity:.6; }
-/* Figma (404:401, "Rectangle 9"): a solid white box under the download
-   text (404:410, fill #ffa000) -- a filled button, not an underlined
-   link. Sized to match the email input above it. */
+/* Was a solid white box per Figma (404:401, "Rectangle 9") under an
+   orange label -- Eliza asked for the footer/mobile-menu download buttons
+   to match the homepage hero's own above-the-fold button (.btn-outline):
+   white outline, white text, transparent background, since they're above
+   the fold there same as the hero's. Sized to match the email input above
+   it, same as before. */
 .newsletter .accent{
   display:flex; align-items:center; justify-content:space-between; /* Figma
     404:410 label at x=1062 in a box starting x=1049, Group 30 arrow at
     x=1379 against a right edge of 1400: label left, arrow right -- it was
     centred */
-  text-decoration:none; background: var(--white); color: var(--orange);
+  text-decoration:none; background:transparent; color: var(--white);
+  border: 1px solid var(--white);
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
   /* Figma 404:401 "Rectangle 9" is 351x33 and the input above it is 351x35
      -- near-identical heights. Ours came out ~25 tall against a ~43 input,
      which is the "too thin" Eliza flagged. Height is set explicitly rather
      than derived from padding, so the proportion holds whatever the line
-     box does. */
+     box does. Border is 1px on top of that height, same box-sizing as
+     .btn-outline. */
+  box-sizing: border-box;
   min-height: calc(33 * var(--u));
   padding: 0 calc(11 * var(--u)) 0 calc(13 * var(--u)); text-align:left;
   margin-top: calc(31 * var(--u)); /* Figma: input bottom 2965 -> button top 2996 */
-  transition: background .18s ease, color .18s ease;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
 }
-.newsletter .accent:hover{ background: var(--orange-light); color: var(--white); }
+/* Orange-light tint on hover, not .btn-outline's white-invert -- keeps the
+   white arrow icon legible against the fill (a white icon on a white-invert
+   hover would disappear), and matches the site's general hover convention
+   of turning --orange-light rather than inverting. */
+.newsletter .accent:hover{ background: var(--orange-light); color: var(--white); border-color: var(--orange-light); }
 .newsletter .accent img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); } /* same 14x14 artboard as the input arrow; Figma draws them at equal size */
 
 @media (max-width: 1152px){
@@ -1469,13 +1483,14 @@ body.page-product .carousel .tile figcaption{ display:none; }
   }
   .wordmark-header.is-collapsed{ padding-bottom:0; }  /* nothing docks in here */
   .wm-col span{ font-size: calc(40 * var(--mu)); }    /* 342:75 STUDIO 144 wide / 342:76 FRITZ 142 -> 40 both ways */
-  .wm-mark{ top: calc(10 * var(--mu)); width: calc(36 * var(--mu)); }
-  /* Figma 411:981 says y=16, but that's the same trap as desktop's y=40:
-     the raw y sits below the cap line because Figma's text box is taller
-     than the glyphs. Desktop solves it by offsetting .14 of the face below
-     the line box top (22u for a 100u face, 8u of padding). Same ratio here:
-     4mu padding + .14 x 40 = ~10. Aligns the mark's top with STUDIO's cap,
-     which is what it does on desktop. */
+  /* Reversed along with desktop: centered on the wordmark line instead of
+     top-aligned, matching the footer's treatment. Figma's raw mark-box
+     coordinates don't survive porting (same problem as desktop -- see the
+     comment on the base .wm-mark rule), so this is measured empirically:
+     21.65mu is the vertical centre of the rendered STUDIO/FRITZ glyphs
+     (cap-top to baseline) at this breakpoint's font-size, confirmed by
+     pixel-sampling a screenshot. */
+  .wm-mark{ top: calc(21.65 * var(--mu)); width: calc(36 * var(--mu)); transform: translate(-50%,-50%); }
 
   .nav-toggle{
     display:flex; flex-direction:column; justify-content:space-between;
@@ -1702,10 +1717,8 @@ body.page-product .carousel .tile figcaption{ display:none; }
     position:absolute; left: var(--edge); top: calc(543 * var(--mu));
     width: calc(370 * var(--mu)); margin-top:0;
   }
-  /* The download button is the SAME filled white box as the footer's -- I
-     had read 242:177's white fill as a border at screenshot scale and built
-     an outlined variant. It isn't one, so the overrides are gone and it
-     inherits .newsletter .accent, orange arrow included. */
+  /* The download button is the SAME outline box as the footer's --
+     inherits .newsletter .accent, white arrow included. */
 
   /* ---------- About page (Figma 338:3) ----------
      Everything the desktop composition overlaps, mobile stacks: one text
@@ -2086,24 +2099,24 @@ body.page-product .carousel .tile figcaption{ display:none; }
    plays once per tab session before the homepage, per Figma's
    "intro" / "intro - end state" frames.
 
-   The historic stamp's own art (images/logos/stamp/*) turned out to
-   be a scanned illustration auto-traced into 600+ tiny fragment
-   paths with no separable components (no distinct oval/numbers/
-   cross layers to draw in sequence) -- so rather than animate that
-   flattened source, this is a clean hand-redrawn approximation of
-   the same oval + date-numeral + cross composition, built as real
-   separate SVG pieces so they CAN be sequenced: the oval draws in,
-   then the "28 9 / 4 7" numerals fade in, then the abstract F+R
-   cross (Fritz Reichl's overlapped-monogram signature) draws in
-   last. The modern F logomark -- which already IS three clean
-   lines in the shipped asset -- then draws in over the same spot,
-   right to left, top bar then lower bar then the vertical stroke
-   top-down, continuing past its own box into the .intro-f-tail bar
-   so it visibly bleeds off the bottom of the screen. The whole
-   orange screen then fades out. Timing/sequencing lives in
-   js/main.js (search "SITE INTRO"); reduced-motion collapses this
-   to a quick fade via the *{ transition-duration } rule below.
-   Click/tap or Escape skips straight to the end. ============================================================ */
+   The stamp's own art (images/logos/stamp/*) is a scanned
+   illustration auto-traced into 600+ tiny fragment paths with no
+   separable components -- a first pass hand-redrew it as separate
+   oval/numeral/cross pieces so they could draw in sequence, but
+   Eliza found that hand-redrawn draw-in "looks weird" and asked for
+   simpler, self-created components or -- her explicitly-accepted
+   fallback -- showing the raw stamp asset appear as a whole instead.
+   Taking that fallback: the real stamp-white.svg now just fades +
+   scales in as one piece (.intro-stamp, no internal sequencing),
+   then the modern F logomark -- which already IS three clean lines
+   in the shipped asset -- draws in over the same spot, right to
+   left, top bar then lower bar then the vertical stroke top-down as
+   one continuous bar (.intro-f-vert-bar) that bleeds off the bottom
+   of the screen. The whole orange screen then fades out.
+   Timing/sequencing lives in js/main.js (search "SITE INTRO");
+   reduced-motion collapses this to a quick fade via the
+   *{ transition-duration } rule below. Click/tap or Escape skips
+   straight to the end. ============================================================ */
 .site-intro{
   position:fixed; inset:0; z-index:200; background: var(--orange);
   cursor:pointer; transition: opacity .45s ease;
@@ -2112,18 +2125,23 @@ body.page-product .carousel .tile figcaption{ display:none; }
 .site-intro.is-removed{ display:none; }
 body.intro-active{ overflow:hidden; }
 
+/* Raw stamp asset, shown whole -- no component sequencing (see the
+   comment above). Fades and scales in as a single piece rather than
+   drawing in parts. */
 .intro-stamp{
-  position:absolute; top:20vh; left:50%; transform:translateX(-50%);
-  width:min(24vw, 230px); overflow:visible;
-  transition: opacity .3s ease .1s;
+  position:absolute; top:20vh; left:50%;
+  transform:translateX(-50%) scale(.92); opacity:0;
+  width:min(24vw, 230px); display:block;
+  transition: opacity .5s ease, transform .5s ease;
 }
+.intro-stamp.is-visible{ opacity:1; transform:translateX(-50%) scale(1); }
 .intro-stamp.is-hidden{ opacity:0; }
 /* Centred on the F glyph's own vertical stroke (at x=117.5 of its 612-wide
    viewBox), not the box -- the F is a left-weighted letterform, not a
    symmetric mark, so centring the box would centre empty space instead of
    the stroke that's meant to land on the stamp's own vertical cross-bar.
-   top is tuned so the two marks' crossbars roughly coincide (see the
-   sizing comment in js/main.js's SITE INTRO section for the numbers). */
+   top is tuned so the two marks roughly coincide (see the sizing comment
+   in js/main.js's SITE INTRO section for the numbers). */
 .intro-f-wrap{
   position:absolute; top:32vh; left:50%; transform: translateX(calc(-117.5 / 612 * 100%));
   width:min(30vw, 300px); opacity:0; transition: opacity .35s ease;
@@ -2131,51 +2149,34 @@ body.intro-active{ overflow:hidden; }
 .intro-f-wrap.is-visible{ opacity:1; }
 .intro-f{ display:block; width:100%; overflow:visible; }
 
-.intro-stamp-oval{
-  fill:none; stroke: var(--cream); stroke-width: calc(2 * var(--u));
-  vector-effect:non-scaling-stroke;
-  stroke-dasharray:790; stroke-dashoffset:790;
-  transition: stroke-dashoffset 1.1s cubic-bezier(.65,0,.35,1);
-}
-.intro-stamp-oval.is-drawn{ stroke-dashoffset:0; }
-
-.intro-stamp-numbers text{
-  fill: var(--cream); font-family: var(--font-body); font-weight:200;
-  font-size:34px; text-anchor:middle; opacity:0; transition: opacity .4s ease;
-}
-.intro-stamp-numbers.is-visible text{ opacity:1; }
-
-.intro-stamp-cross line{
-  fill:none; stroke: var(--cream); vector-effect:non-scaling-stroke;
-  stroke-width: calc(3 * var(--u));
-}
-.intro-cross-top { stroke-dasharray:60;  stroke-dashoffset:60;  transition: stroke-dashoffset .3s ease; }
-.intro-cross-mid { stroke-dasharray:110; stroke-dashoffset:110; transition: stroke-dashoffset .35s ease .1s; }
-.intro-cross-vert{ stroke-dasharray:190; stroke-dashoffset:190; transition: stroke-dashoffset .5s ease .25s; }
-.intro-stamp-cross.is-drawn .intro-cross-top,
-.intro-stamp-cross.is-drawn .intro-cross-mid,
-.intro-stamp-cross.is-drawn .intro-cross-vert{ stroke-dashoffset:0; }
-
 .intro-f line{
   fill:none; stroke: var(--white); stroke-width: calc(9 * var(--u));
   vector-effect:non-scaling-stroke;
 }
 .intro-f-top { stroke-dasharray:517; stroke-dashoffset:517; transition: stroke-dashoffset .45s ease; }
 .intro-f-mid { stroke-dasharray:395; stroke-dashoffset:395; transition: stroke-dashoffset .45s ease .18s; }
-.intro-f-vert{ stroke-dasharray:554; stroke-dashoffset:554; transition: stroke-dashoffset .55s ease .38s; }
 .intro-f-wrap.is-drawn .intro-f-top,
-.intro-f-wrap.is-drawn .intro-f-mid,
-.intro-f-wrap.is-drawn .intro-f-vert{ stroke-dashoffset:0; }
+.intro-f-wrap.is-drawn .intro-f-mid{ stroke-dashoffset:0; }
 
-/* Continues the F's vertical stroke past its own box so it reads as
-   bleeding off the bottom of the screen, rather than stopping at a
-   visible box edge. Height animates in sync with .intro-f-vert. */
-.intro-f-tail{
-  position:absolute; top:100%; left:calc(117.5 / 612 * 100%);
-  width: calc(9 * var(--u)); height:0; background: var(--white);
-  transition: height .5s ease .38s;
+/* Eliza: the vertical stroke read as "cut off weird into 2 pieces" -- it
+   used to be an SVG <line> for the portion inside the F's own box plus a
+   separate HTML div for the "tail" bleeding off the bottom of the screen,
+   drawn with two different transitions (different durations, and via two
+   totally different mechanisms -- stroke-dashoffset vs height) that never
+   quite read as one motion. Replaced both with a single HTML bar spanning
+   from the stroke's start (y=58 of the 612-tall box, as a % of the box)
+   down through the box AND the 60vh bleed in one continuous height
+   transition, so it's one unbroken "part 2" beat after the two horizontal
+   bars, not two. left is centred on the stroke's own centreline (117.5 of
+   612) minus half the bar's width, same centring math .intro-f-wrap
+   already uses for the whole mark. */
+.intro-f-vert-bar{
+  position:absolute; top:calc(58 / 612 * 100%);
+  left:calc((117.5 / 612 * 100%) - (4.5 * var(--u)));
+  width:calc(9 * var(--u)); height:0; background: var(--white);
+  transition: height .6s ease .38s;
 }
-.intro-f-wrap.is-drawn .intro-f-tail{ height:60vh; }
+.intro-f-wrap.is-drawn .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 60vh); }
 
 @media (max-width: 1152px){
   .intro-stamp{ top:16vh; }

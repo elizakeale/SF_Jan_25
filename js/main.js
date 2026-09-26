@@ -723,11 +723,14 @@
 
   /* ---------------- SITE INTRO (index.html only, Figma "intro" /
      "intro - end state" frames) ----------------
-     Sequence: stamp oval draws in -> date numerals fade in -> the
-     abstract F+R cross draws in last -> stamp fades as the modern F
-     draws in over the same spot (right to left: top bar, lower bar,
-     then the vertical stroke top-down, continuing into .intro-f-tail
-     so it bleeds off the bottom) -> whole orange screen fades out.
+     Sequence, simplified per Eliza's feedback that the hand-redrawn
+     component draw-in "looks weird" -- her explicitly-accepted
+     fallback: the raw stamp asset appears as a whole (fade + scale
+     in, no internal sequencing), holds briefly, then crossfades into
+     the modern F drawing in over the same spot (right to left: top
+     bar, lower bar, then the vertical stroke top-down as a single
+     continuous bar -- .intro-f-vert-bar -- bleeding off the bottom)
+     -> whole orange screen fades out.
      Plays once per tab (sessionStorage) since it's a first-visit
      flourish, not something a returning-within-session visitor
      should sit through on every reload. Click/tap/Escape/Enter skips
@@ -736,7 +739,7 @@
      toggles, kept separate from the CSS transition durations (which
      the site's global prefers-reduced-motion rule already zeroes),
      so a reduced-motion visitor doesn't sit through a silent version
-     of the full ~4s timeline. */
+     of the full timeline. */
   (function () {
     var el = document.getElementById('siteIntro');
     if (!el) return;
@@ -744,9 +747,6 @@
     var SEEN_KEY = 'sfIntroSeen';
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var stamp = document.getElementById('introStamp');
-    var oval = document.getElementById('introOval');
-    var numbers = document.getElementById('introNumbers');
-    var crossGroup = document.getElementById('introCross');
     var fWrap = document.getElementById('introF');
     var timers = [];
     var done = false;
@@ -760,10 +760,7 @@
       timers.length = 0;
       // Snap every stage to its end state before fading out, so a skip
       // never leaves a half-drawn line visible for a frame.
-      oval.classList.add('is-drawn');
-      numbers.classList.add('is-visible');
-      crossGroup.classList.add('is-drawn');
-      stamp.classList.add('is-hidden');
+      stamp.classList.add('is-visible', 'is-hidden');
       fWrap.classList.add('is-visible', 'is-drawn');
       el.classList.add('is-done');
       document.body.classList.remove('intro-active');
@@ -784,18 +781,14 @@
     if (reduce) {
       // No stagewise draw -- just present the finished mark briefly,
       // long enough to read as an intentional beat, then reveal the site.
-      oval.classList.add('is-drawn');
-      numbers.classList.add('is-visible');
-      crossGroup.classList.add('is-drawn');
+      stamp.classList.add('is-visible');
       at(150, function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible', 'is-drawn'); });
       at(500, finish);
       return;
     }
 
-    at(0,    function () { oval.classList.add('is-drawn'); });          // oval: 1.1s
-    at(1100, function () { numbers.classList.add('is-visible'); });     // numerals: .4s
-    at(1500, function () { crossGroup.classList.add('is-drawn'); });    // cross: .78s total
-    at(2550, function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible'); }); // crossfade: .3s/.35s
-    at(2650, function () { fWrap.classList.add('is-drawn'); });         // F draw: .93s total (incl. tail)
-    at(3900, finish);                                                   // brief hold, then fade out (.45s)
+    at(0,    function () { stamp.classList.add('is-visible'); });       // raw stamp fades + scales in: .5s
+    at(900,  function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible'); }); // crossfade: .5s/.35s
+    at(1000, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.98s total (incl. vertical bar)
+    at(2400, finish);                                                   // brief hold, then fade out (.45s)
   })();
