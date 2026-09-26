@@ -2154,7 +2154,7 @@ body.intro-active{ overflow:hidden; }
 .intro-f{ display:block; width:100%; overflow:visible; }
 
 .intro-f line{
-  fill:none; stroke: var(--white); stroke-width: calc(9 * var(--u));
+  fill:none; stroke: var(--white); stroke-width: calc(1 * var(--u)); /* Eliza: "thinner, like 1 pt" -- was 9u */
   vector-effect:non-scaling-stroke;
 }
 .intro-f-top { stroke-dasharray:517; stroke-dashoffset:517; transition: stroke-dashoffset .45s ease; }
@@ -2176,8 +2176,8 @@ body.intro-active{ overflow:hidden; }
    already uses for the whole mark. */
 .intro-f-vert-bar{
   position:absolute; top:calc(58 / 612 * 100%);
-  left:calc((117.5 / 612 * 100%) - (4.5 * var(--u)));
-  width:calc(9 * var(--u)); height:0; background: var(--white);
+  left:calc((117.5 / 612 * 100%) - (0.5 * var(--u))); /* recentred for the 1u width below */
+  width:calc(1 * var(--u)); height:0; background: var(--white); /* matches .intro-f line's thinner stroke */
   transition: height .6s ease .38s;
 }
 .intro-f-wrap.is-drawn .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 60vh); }
