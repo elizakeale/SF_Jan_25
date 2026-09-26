@@ -924,10 +924,14 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 .page-lede a{ color:inherit; text-decoration:underline; text-underline-offset:.2em; }
 .page-lede a:hover{ color: var(--orange); }
 
-/* 292:18 / 297:88 -- the soft mark About carries, here with no caption. */
+/* 292:18 / 297:88 -- the soft mark About carries, here with no caption.
+   Base position is also the fallback rest position for js/main.js's
+   pageStampFloat, which pins/releases this on desktop (Contact, Custom,
+   Showroom, Trade, FAQ) so it floats with scroll and stops above the
+   last carousel -- z-index matches the homepage .stamp it mirrors. */
 .page-stamp{
   position:absolute; left: calc(22 * var(--u)); top: calc(597 * var(--u));
-  width: calc(185 * var(--u)); margin:0; pointer-events:none;
+  width: calc(185 * var(--u)); margin:0; pointer-events:none; z-index:5;
 }
 .page-stamp img{ width:100%; height:auto; display:block; }
 

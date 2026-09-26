@@ -48,6 +48,73 @@
     render();
   })();
 
+  /* ---------------- page stamp: same pin/rest treatment, generalized ----------------
+     Contact/Custom/Showroom/Trade/FAQ each carry their own .page-stamp
+     (Figma-tuned position, orange asset) instead of the homepage's shared
+     .stamp -- but Eliza wants the same behavior: "it should float as the
+     contents scroll under it, stopping above the last carousel (always)."
+     Desktop only -- mobile already has its own deliberate static/hidden
+     .page-stamp rules per page (Figma's own mobile frames), untouched here.
+
+     Unlike .stamp above (always fixed via a CSS percentage), .page-stamp's
+     pinned position isn't a clean percentage -- it's measured once from
+     the stylesheet's own absolute top/left (whatever those numbers are per
+     page), so this keeps working unchanged if any of them move. The target
+     to stop above is .scroll-hijack when a page has one (Contact/Trade
+     wrap their carousel in the same scroll-hijack runway as the homepage)
+     or the plain .carousel otherwise (Custom/Showroom/FAQ) -- either way,
+     what matters is just where that section BEGINS, not its height, so
+     both cases use the same formula. */
+  (function pageStampFloat() {
+    var stamp = document.querySelector('.page-stamp');
+    var included = stamp && document.body.matches(
+      '.page-contact, .page-custom, .page-showroom, .page-trade, .page-faq'
+    );
+    if (!included) return;
+    var target = document.querySelector('.scroll-hijack') || document.querySelector('.carousel');
+    if (!target) return;
+    var GAP = 24;
+    var pinnedTop = null;
+
+    function desktop() { return window.innerWidth > 1152; }
+
+    function measure() {
+      if (!desktop()) return;
+      // Clear any inline override first so this reads the stylesheet's own
+      // absolute position, not a stale fixed/absolute value from before.
+      stamp.style.position = '';
+      stamp.style.top = '';
+      var r = stamp.getBoundingClientRect();
+      pinnedTop = r.top + window.scrollY; // scroll-invariant: viewport Y at scrollY 0
+    }
+
+    function render() {
+      if (!desktop()) {
+        stamp.style.position = ''; stamp.style.top = '';
+        return;
+      }
+      if (pinnedTop === null) measure();
+      var stampH = stamp.getBoundingClientRect().height || stamp.offsetHeight;
+      var releaseScrollY = target.offsetTop - pinnedTop - stampH - GAP;
+      if (window.scrollY >= releaseScrollY) {
+        stamp.style.position = 'absolute';
+        stamp.style.top = (target.offsetTop - stampH - GAP) + 'px';
+      } else {
+        stamp.style.position = 'fixed';
+        stamp.style.top = pinnedTop + 'px';
+      }
+    }
+
+    var ticking = false;
+    function onScroll() { if (!ticking) { requestAnimationFrame(function () { ticking = false; render(); }); ticking = true; } }
+    function onResize() { pinnedTop = null; measure(); render(); }
+
+    measure();
+    render();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
+  })();
+
   /* ---------------- header: multiply -> nav joins -> collapse ----------------
      Round 10 correction (2026-09-15), after Eliza's screenshots showed two
      remaining problems in the round-9 rebuild: "paragraph hides behind
