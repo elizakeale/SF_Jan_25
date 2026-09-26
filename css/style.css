@@ -624,16 +624,12 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .footer-copyright{
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.05em; text-transform:uppercase; color: var(--white); line-height:1.5; margin:0;
-  /* Flush left on desktop -- that was deliberate in the mockup, not an
-     oversight. Mobile centres it; see the mobile block. align-self here
-     because .footer-bottom centres its children for the back-to-top's
+  /* Eliza moved this to a fixed two-line break (after the year) in the
+     bottom-left of the footer, left-aligned on every breakpoint -- align-self
+     here because .footer-bottom centres its children for the back-to-top's
      sake, which would otherwise shrink-wrap this and centre it too. */
   align-self:stretch; text-align:left;
 }
-/* The two halves are one line on desktop and two on mobile, so the comma and
-   the break take turns -- rather than two copies of the string that can
-   drift apart. */
-.footer-copyright br{ display:none; }
 .footer-bottom{ display:flex; flex-direction:column; align-items:center; }
 
 /* Back to top. The whole thing is one anchor, so the rule and the label are
@@ -949,14 +945,16 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   background: rgba(255,255,255,.44);          /* 278:1049 */
   border: 1px solid var(--cream);
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
-  color: var(--ink);
+  letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
   height: calc(50 * var(--u)); padding: 0 calc(13 * var(--u));
 }
 .sf-field textarea{
   height: calc(288 * var(--u)); padding: calc(13 * var(--u));
   resize:vertical; line-height:1.7;
 }
-.sf-field input::placeholder, .sf-field textarea::placeholder{ color: var(--ink); opacity:.45; }
+.sf-field input::placeholder, .sf-field textarea::placeholder{
+  color: var(--ink); opacity:.45; text-transform:uppercase; letter-spacing:.05em;
+}
 .sf-field input:focus, .sf-field textarea:focus{ outline:none; border-color: var(--orange); }
 /* Only after a submit attempt, so nothing is flagged on arrival. */
 .sf-form.is-validated input:invalid,
@@ -1143,6 +1141,11 @@ body.page-faq .page-stamp{ left: calc(1218 * var(--u)); top: calc(266 * var(--u)
   font-family: var(--font-body); font-weight:200; font-size: calc(20 * var(--u));
   line-height:1.35; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
 }
+
+/* Anchor target for footer/menu "Lifetime Warranty" links (#faq.html#warranty).
+   scroll-margin-top keeps the fixed header (--hdr-h, published by js/main.js)
+   from covering the question after the smooth-scroll lands. */
+#warranty{ scroll-margin-top: calc(var(--hdr-h, 0px) + 24 * var(--u)); }
 .faq-a{
   position:absolute; left: calc(547 * var(--u)); width: calc(402 * var(--u)); margin:0;
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
@@ -1577,9 +1580,7 @@ body.page-product .carousel .tile figcaption{ display:none; }
     width: calc(83 * var(--mu)); margin: calc(8 * var(--mu)) auto 0;   /* 404:776, centred at x=160+41.5 = 201.5 = 402/2 */
   }
   .footer-bottom{ order:5; margin-top: calc(44 * var(--mu)); }  /* mark ends 2052, legal at 2096 */
-  .footer-copyright{ font-size: calc(14 * var(--mu)); text-align:center; }
-  .footer-copyright br{ display:inline; }   /* two lines here */
-  .fc-sep{ display:none; }                  /* ...so the comma steps aside */
+  .footer-copyright{ font-size: calc(14 * var(--mu)); text-align:left; }
   /* 160:104: legal ends 2142, rule 2158..2208, label at 2219 */
   .back-to-top{
     gap: calc(11 * var(--mu)); margin-top: calc(16 * var(--mu));
@@ -1949,6 +1950,7 @@ body.page-product .carousel .tile figcaption{ display:none; }
     position:static; width:auto; margin:0 0 calc(13 * var(--mu));
     font-size: calc(20 * var(--mu));
   }
+  #warranty{ scroll-margin-top: calc(var(--hdr-h, 0px) + 24 * var(--mu)); }
   .faq-a{
     position:static; width:auto; margin:0;
     font-size: calc(16 * var(--mu));
