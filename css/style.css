@@ -292,7 +292,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    Static/pinned by default (stays put while the page scrolls beneath it) — see the
    Stamp behavior rule in the project plan. Only About and Mobile Hamburger deviate. */
 .stamp{
-  position: fixed; left: var(--edge); top:60.7%; z-index:55;
+  position: fixed; left: var(--edge); top:55%; z-index:55; /* was 60.7% -- shifted up so it clears the "Download Summer 2026 Catalogue" button at initial landing on short viewports (Eliza 2026-09-26) */
   width: calc(142 * var(--u)); /* scaled down 25% from 190px per Eliza's 2026-09-14 note */
   opacity:1;
   pointer-events:none;
@@ -433,7 +433,20 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.7); /* width stays a real 1px -- hairlines don't scale */
   pointer-events:none; animation: scrollCuePulse 2.5s ease-out .6s infinite both;
   transform-origin: top center;
+  transition: opacity .3s ease;
 }
+/* Eliza 2026-09-26: "on scroll, can we have the vertical line disappear
+   sooner so it doesn't start to overlap with things, and in reverse
+   scroll up, also come in later." .hero-content sits at a fixed screen
+   position until the nav docks (see js/main.js's header() render loop),
+   so the cue itself never physically moves on scroll -- it's the row2/
+   row3 nav rows opening beneath it that start to collide with it. Fixed
+   with scroll-position hysteresis in js/main.js (search "scroll-cue
+   hysteresis"): two different thresholds, not one, so it hides early on
+   the way down and only comes back once you're nearly back at the top on
+   the way up -- a single shared threshold would make it flicker back on
+   the moment you paused or nudged upward mid-scroll. */
+.scroll-cue.is-hidden{ opacity:0 !important; }
 @keyframes scrollCuePulse{
   /* Eliza: pulse should shrink to about half its size, not grow, and
      happen 2x as often -- so scaleY goes 1 -> .5 (was 1 -> 1.25) and the

@@ -26,7 +26,7 @@
       // footer pass. Its CSS top stays 60.7%, which is what pinnedTop below
       // assumes.
       var stampH = stamp.getBoundingClientRect().height;
-      var pinnedTop = window.innerHeight * 0.607; // matches .stamp's CSS top:60.7%
+      var pinnedTop = window.innerHeight * 0.55; // matches .stamp's CSS top:55%
       var releaseY = target.offsetTop + target.offsetHeight - window.innerHeight;
       var restTop = releaseY + pinnedTop - GAP;
       var shouldRest = window.scrollY >= releaseY - GAP;
@@ -168,6 +168,12 @@
     var T_ROW3_ON = 0.30;
     var T_ROW3_OFF = 0.55; // un-stack well before the links reach the 3-row block
     var T_ROW2_OFF = 0.75;
+    // scroll-cue hysteresis: Eliza wants it gone early on the way down (well
+    // before row2 even opens at T_ROW2_ON) and only back once you're nearly
+    // at the top on the way up -- two thresholds, not one, so the state
+    // holds steady between them instead of flickering right at a single line.
+    var CUE_HIDE_T = 0.05; // fraction of dockDepth scrolled -> cue hides
+    var CUE_SHOW_T = 0.015; // must scroll back above this (nearer the top) to show again
     var PARA_FADE_ZONE = 160; // px of clearance over which the paragraphs fade -- scroll-linked, so it reads as driven rather than triggered
     var NAV_GAP_U = 33; // wordmark bottom -> nav top inside the bar, in FIGMA px. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
     var UNDOCK_MARGIN = 2; // float-safety only; the dock is zero-pixel, so it needs no real hysteresis
@@ -184,6 +190,8 @@
     var nav = document.getElementById('heroNav');
     var heroContent = document.querySelector('.hero-content');
     var heroIntro = document.querySelector('.hero-intro');
+    var scrollCue = document.querySelector('.scroll-cue');
+    var cueVisible = true;
     var row1 = header ? header.querySelector('.wm-row-1') : null;
     var rows2 = document.querySelectorAll('.wm-row-2');
     var rows3 = document.querySelectorAll('.wm-row-3');
@@ -270,6 +278,7 @@
            with it for free rather than needing a rule of their own. */
         setRows(false, false);
         if (heroIntro) heroIntro.style.opacity = '';
+        if (scrollCue && !cueVisible) { cueVisible = true; scrollCue.classList.remove('is-hidden'); }
         if (pinned) undock();
         /* Only write when something actually changed. This used to set
            --hdr-bg-a, toggle a class and read header.offsetHeight on EVERY
@@ -320,6 +329,13 @@
         if (t >= T_ROW3_ON && t < T_ROW3_OFF) on3 = true;
       }
       setRows(on2, on3);
+
+      if (scrollCue) {
+        var cueT = pinned ? 1 : (y / dockDepth);
+        if (cueVisible && cueT > CUE_HIDE_T) cueVisible = false;
+        else if (!cueVisible && cueT < CUE_SHOW_T) cueVisible = true;
+        scrollCue.classList.toggle('is-hidden', !cueVisible);
+      }
 
       if (heroIntro) {
         if (pinned) {
