@@ -1417,7 +1417,7 @@ body.page-custom .carousel{ background: var(--white); }
      frame -- uses the single shared carousel component, so mobile reuses
      it too rather than one-off building a second, inconsistent gallery.
    ============================================================ */
-.product-section{ position:relative; height: calc(1628 * var(--u)); }
+.product-section{ position:relative; height: calc(1628 * var(--u)); max-width: calc(1440 * var(--u)); margin: 0 auto; }
 
 .product-accent{ position:absolute; background: var(--orange); pointer-events:none; }
 .product-accent-h1{ left: calc(285 * var(--u)); top: calc(215 * var(--u)); width: calc(163 * var(--u)); height: calc(2 * var(--u)); }
@@ -1441,31 +1441,34 @@ body.page-custom .carousel{ background: var(--white); }
 .product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(633 * var(--u)); width: calc(285 * var(--u)); aspect-ratio: 285/190; }
 .product-thumb-cove3 img{ object-position: right 60%; }
 
-/* Eliza: "left right toggle arrows are displaying incorrectly ... also
-   not clickable. the product page should essentially be a left right
-   carousel." The old markup drew each arrow as a stroked right-angle
-   corner (a plain rectangle bracket), which at this size reads as a
-   numeral "7" rather than an arrowhead -- replaced with real chevron
-   paths below. They're now <button> elements (not inert <svg> in a
-   pointer-events:none wrapper) wired up in main.js's productGallery()
-   to cycle the hero photo through this product's full photo set;
-   clicking a thumbnail jumps straight to it (see .product-gallery,
-   [data-gallery-thumb] below). Padding + matching negative margin grows
-   the click target without shifting the icon's visual position. */
+/* Eliza: "arrows look different from figma and should allow me to go
+   left and right through pics" -- the site rule is every arrow icon
+   anywhere renders from images/logos/arrows/arrow-{white,orange,purple}.svg,
+   never a freshly drawn/exported glyph, so these buttons now show the
+   real diagonal arrow-purple.svg asset (mirrored for prev) instead of a
+   hand-drawn chevron. Also draggable: see productGallery() in main.js,
+   which wires these buttons, the thumbnails, AND pointer/touch drag on
+   .product-hero to cycle through this product's photo set. Padding +
+   matching negative margin grows the click target without shifting the
+   icon's visual position. */
 .product-gallery{ position:relative; }
+.product-hero{ cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.product-hero.is-dragging{ cursor: grabbing; }
+.product-hero img{ pointer-events: none; }
 
 .product-nav-arrows{
-  position:absolute; left: calc(1011 * var(--u)); top: calc(607 * var(--u));
+  position:absolute; left: calc(995 * var(--u)); top: calc(607 * var(--u));
   height: calc(17 * var(--u));
-  display:flex; align-items:center; gap: calc(3 * var(--u));
+  display:flex; align-items:center; gap: calc(13 * var(--u));
 }
 .product-nav-btn{
   appearance:none; background:none; border:0; color:inherit;
   padding: calc(6 * var(--u)); margin: calc(-6 * var(--u));
   display:flex; align-items:center; justify-content:center; cursor:pointer;
 }
-.product-nav-btn svg{ width: calc(10 * var(--u)); height: calc(14 * var(--u)); display:block; }
-.product-nav-btn:hover path, .product-nav-btn:focus-visible path{ stroke: var(--orange); }
+.product-nav-icon{ width: calc(16.15 * var(--u)); height: calc(17 * var(--u)); display:block; }
+.product-nav-icon-prev{ transform: scaleX(-1); }
+.product-nav-btn:hover, .product-nav-btn:focus-visible{ opacity:.6; }
 .product-nav-btn:focus-visible{ outline: 1px solid var(--orange); outline-offset: 2px; }
 
 [data-gallery-thumb]{ cursor:pointer; }
@@ -1483,7 +1486,7 @@ body.page-custom .carousel{ background: var(--white); }
 }
 .product-stamp-soft img{ width:100%; height:auto; display:block; }
 
-.product-divider{ position:absolute; left:0; width:100%; height:1px; margin:0; border:0; background: rgba(28,17,35,.14); }
+.product-divider{ position:absolute; left:0; width:100%; height:1px; margin:0; border:0; background: var(--orange); } /* Eliza: "product page line should be orange not grey" */
 .product-divider-1{ top: calc(823 * var(--u)); }
 .product-divider-2{ top: calc(1219 * var(--u)); }
 
@@ -1507,7 +1510,7 @@ body.page-custom .carousel{ background: var(--white); }
 .product-dims{ left: calc(40 * var(--u)); }
 .product-price{ left: calc(528 * var(--u)); }
 .product-config{ left: calc(1006 * var(--u)); }
-.product-config ul{ margin: 1.7em 0 0; padding-left: 1.3em; }
+.product-config ul{ margin: 1.7em 0 0; padding-left: calc(24 * var(--u)); }
 .product-config li + li{ margin-top:.3em; }
 
 .product-cta{
@@ -1556,6 +1559,10 @@ body.page-custom .carousel{ background: var(--white); }
   font-size: calc(13 * var(--u)); line-height:1.4; letter-spacing:.05em;
   text-transform:uppercase; color: var(--ink);
 }
+/* Eliza: "the text on SKUs is different from figma" -- Black Walnut's
+   price-adjustment fine print (Price / Adjusted / Accordingly) runs
+   smaller than the swatch name + price line, matching Figma. */
+.product-swatch-fine{ font-size: calc(10 * var(--u)); }
 
 body.page-product .carousel{ background: var(--white); }
 
@@ -1574,7 +1581,7 @@ body.page-product .carousel{ background: var(--white); }
    -- Figma's own captions for this row sit below where the page's white
    background ends, on orange, matching the shared component's default.
    ------------------------------------------------------------ */
-.catalogue-section{ position:relative; height: calc(2086 * var(--u)); }
+.catalogue-section{ position:relative; height: calc(2086 * var(--u)); max-width: calc(1440 * var(--u)); margin: 0 auto; }
 
 .catalogue-intro{
   position:absolute; left: calc(529 * var(--u)); top: calc(274 * var(--u));
@@ -1621,7 +1628,7 @@ body.page-product .carousel{ background: var(--white); }
    add a second, smaller photo beside the hero one without disturbing
    this desktop absolute layout (mobile hides it, see below). */
 .catalogue-grid{ position:absolute; left:0; top:0; width:100%; height: calc(1723 * var(--u)); z-index:2; }
-.catalogue-col{ position:absolute; display:flex; flex-direction:column; gap: calc(8 * var(--u)); }
+.catalogue-col{ position:absolute; display:flex; flex-direction:column; gap: calc(24 * var(--u)); } /* Eliza: "columns look weirdly spaced" -- widened from 8u to match Figma's real item-to-item gap */
 .catalogue-col:nth-child(1){ left:0;                     top: calc(471 * var(--u)); width: calc(455 * var(--u)); }
 .catalogue-col:nth-child(2){ left: calc(502 * var(--u)); top: calc(582 * var(--u)); width: calc(436 * var(--u)); }
 .catalogue-col:nth-child(3){ right:0;                    top: calc(515 * var(--u)); width: calc(457 * var(--u)); }
@@ -1642,11 +1649,6 @@ body.page-product .carousel{ background: var(--white); }
 .catalogue-arrow{
   width: calc(13 * var(--u)); height: calc(13 * var(--u)); margin-left: calc(8 * var(--u));
   display:inline-block; vertical-align:middle;
-}
-
-.catalogue-divider{
-  position:absolute; left:0; top: calc(1780 * var(--u)); width:100%; height:1px; margin:0; border:0;
-  background: rgba(28,17,35,.14);
 }
 
 .catalogue-more{
@@ -2400,7 +2402,6 @@ body.page-product .carousel .tile figcaption{ display:none; }
   .catalogue-photo-sm img{ width:100%; height:100%; object-fit:cover; display:block; }
   .catalogue-item h2{ margin-top: calc(12 * var(--mu)); padding: 0 var(--edge); font-size: calc(15 * var(--mu)); }
   .catalogue-arrow{ width: calc(13 * var(--mu)); height: calc(13 * var(--mu)); margin-left: calc(8 * var(--mu)); }
-  .catalogue-divider{ display:none; } /* replaced by the item-to-item border-top above */
   .catalogue-more{ margin-top: calc(40 * var(--mu)); font-size: calc(15 * var(--mu)); }
 }
 
@@ -2571,8 +2572,8 @@ body.intro-active{ overflow:hidden; }
   fill:none; stroke: var(--white); stroke-width: calc(2 * var(--u)); /* Eliza: "thinner, like 1 pt" -- was 9u; then "should be 2pt" */
   vector-effect:non-scaling-stroke;
 }
-.intro-f-top { stroke-dasharray:517; stroke-dashoffset:517; transition: stroke-dashoffset .338s ease; }         /* Eliza: "speed up the modern F 25%" -- .45s * .75 */
-.intro-f-mid { stroke-dasharray:390.5; stroke-dashoffset:390.5; transition: stroke-dashoffset .338s ease .135s; }  /* .45s/.18s * .75 */
+.intro-f-top { stroke-dasharray:517; stroke-dashoffset:517; transition: stroke-dashoffset .254s ease; }         /* Eliza: "speed up the modern F 25%" again -- .338s * .75 */
+.intro-f-mid { stroke-dasharray:390.5; stroke-dashoffset:390.5; transition: stroke-dashoffset .254s ease .101s; }  /* .338s/.135s * .75, again */
 /* Eliza 2026-09-26: "still crossing over on the 2nd line/sticking out" -- the
    real logomark's own mid bar (113-508) pokes 4.5u left of the vertical
    stroke's centreline (117.5), which is invisible at logomark scale but
@@ -2598,7 +2599,7 @@ body.intro-active{ overflow:hidden; }
   position:absolute; top:calc(58 / 612 * 100%);
   left:calc((117.5 / 612 * 100%) - (1 * var(--u))); /* recentred for the 2u width below */
   width:calc(2 * var(--u)); height:0; background: var(--white); /* matches .intro-f line's 2pt stroke */
-  transition: height .45s ease .285s; /* Eliza: "speed up the modern F 25%" -- .6s/.38s * .75 */
+  transition: height .338s ease .214s; /* Eliza: "speed up the modern F 25%" again -- .45s/.285s * .75 */
 }
 .intro-f-wrap.is-drawn .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 60vh); }
 

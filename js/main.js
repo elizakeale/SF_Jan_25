@@ -884,9 +884,9 @@
       fWrap.classList.add('is-visible');
       stamp.classList.add('is-accents-hidden');                         // ...and the ring + R/rule bar dissolve at the same instant, so they're not competing with the F for attention
     });
-    at(1165, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.735s total (incl. vertical bar, sped up 25% per Eliza), finishes ~1900
-    at(1970, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s
-    at(2920, finish);                                                   // brief hold, then fade out (.45s)
+    at(1165, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.552s total (incl. vertical bar, sped up 25% per Eliza again), finishes ~1717
+    at(1787, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s
+    at(2737, finish);                                                   // brief hold, then fade out (.45s)
   })();
 
   /* ---------------- catalogue: column parallax drift ----------------
@@ -910,7 +910,7 @@
     if (!cols.length) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var AMPLITUDE = 45; // px of max drift at full scroll-through, each direction -- bumped from 28, Eliza: "not presenting at all"
+    var AMPLITUDE = 90; // px of max drift at full scroll-through, each direction -- doubled from 45, Eliza: "scroll pattern should be 100% more exaggerated"
 
     function desktop() { return window.innerWidth > 1152; }
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -1043,5 +1043,47 @@
       Array.prototype.forEach.call(thumbs, function (t, i) {
         t.addEventListener('click', function () { go(i + 1); });
       });
+
+      // Eliza: "we should also be able to drag left and right on the
+      // product carousel." Pointer Events cover mouse + touch + pen in
+      // one code path; a small distance threshold keeps an ordinary
+      // click/tap from also firing a swipe.
+      var heroFigure = gallery.querySelector('.product-hero');
+      if (heroFigure) {
+        var dragging = false, startX = 0, startY = 0, pointerId = null;
+        var THRESHOLD = 40;
+
+        heroFigure.addEventListener('pointerdown', function (e) {
+          dragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          pointerId = e.pointerId;
+          heroFigure.classList.add('is-dragging');
+        });
+
+        heroFigure.addEventListener('pointermove', function (e) {
+          if (!dragging || e.pointerId !== pointerId) return;
+          if (Math.abs(e.clientX - startX) > 10 && Math.abs(e.clientX - startX) > Math.abs(e.clientY - startY)) {
+            e.preventDefault();
+          }
+        });
+
+        function endDrag(e) {
+          if (!dragging || e.pointerId !== pointerId) return;
+          dragging = false;
+          heroFigure.classList.remove('is-dragging');
+          var dx = e.clientX - startX;
+          var dy = e.clientY - startY;
+          if (Math.abs(dx) > THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+            go(dx < 0 ? index + 1 : index - 1);
+          }
+        }
+
+        heroFigure.addEventListener('pointerup', endDrag);
+        heroFigure.addEventListener('pointercancel', function () {
+          dragging = false;
+          heroFigure.classList.remove('is-dragging');
+        });
+      }
     });
   })();
