@@ -882,7 +882,7 @@
     at(0,    function () { stamp.classList.add('is-drawn'); });         // stamp draws on, part by part: ~1.02s total (sped up 30% per Eliza)
     at(1065, function () {                                              // F fades in OVER the still-visible stamp: .35s
       fWrap.classList.add('is-visible');
-      stamp.classList.add('is-circle-hidden');                          // ...and the ring dissolves at the same instant, so it isn't competing with the F for attention
+      stamp.classList.add('is-accents-hidden');                         // ...and the ring + R/rule bar dissolve at the same instant, so they're not competing with the F for attention
     });
     at(1165, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.735s total (incl. vertical bar, sped up 25% per Eliza), finishes ~1900
     at(1970, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s

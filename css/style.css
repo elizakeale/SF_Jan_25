@@ -2233,12 +2233,15 @@ body.intro-active{ overflow:hidden; }
 .intro-stamp.is-drawn .stamp-circle{ opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.35s; transition-delay:.665s; }
 
 /* Eliza 2026-09-27: "circle should go away AS the modern F comes on to
-   reduce visual distraction" -- js/main.js flips this class the instant
-   the F starts fading in (same moment as fWrap.is-visible), so the ring
-   dissolves right as the F appears rather than lingering until the whole
-   stamp lets go later. Higher specificity (4 classes vs. 3) than the
-   is-drawn rule above wins regardless of source order. */
-.intro-stamp.is-drawn.is-circle-hidden .stamp-circle{
+   reduce visual distraction"; 2026-09-27 (later): "get rid of the R at the
+   same time as the circle" -- js/main.js flips this class the instant the
+   F starts fading in (same moment as fWrap.is-visible), so the ring and
+   the R/rule bar both dissolve right as the F appears rather than
+   lingering until the whole stamp lets go later. Higher specificity (4
+   classes vs. 3) than the is-drawn rules above wins regardless of source
+   order. */
+.intro-stamp.is-drawn.is-accents-hidden .stamp-circle,
+.intro-stamp.is-drawn.is-accents-hidden .stamp-rule{
   opacity:0;
   transition-duration:.3s; transition-delay:0s;
 }
