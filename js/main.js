@@ -993,3 +993,55 @@
       if (e.key === 'Escape' && !modal.hidden) close();
     });
   })();
+
+  /* ---------------- product gallery: hero cycles through this
+     product's photos, arrows + thumbnail clicks both drive it --------
+     Eliza: "the left right toggle arrows are displaying incorrectly...
+     they are also not clickable. the product page should essentially
+     be a left right carousel." Product pages only (.product-gallery),
+     desktop only (.product-nav-arrows is display:none on mobile, where
+     all four photos already show at once in a stacked column -- see
+     style.css). Slide 0 is whatever the hero starts as; slides 1-3 are
+     the three thumbnails in DOM order. Thumbnails never change image --
+     clicking one (or an arrow) swaps the HERO to that photo and marks
+     the matching thumbnail active (see [data-gallery-thumb].is-active
+     in style.css), the usual PDP "big photo + clickable rail" pattern. */
+  (function productGallery() {
+    var galleries = document.querySelectorAll('.product-gallery');
+
+    Array.prototype.forEach.call(galleries, function (gallery) {
+      var heroImg = gallery.querySelector('.product-hero img');
+      var thumbs = gallery.querySelectorAll('[data-gallery-thumb]');
+      var prevBtn = gallery.querySelector('[data-gallery-prev]');
+      var nextBtn = gallery.querySelector('[data-gallery-next]');
+      if (!heroImg || !thumbs.length) return;
+
+      var slides = [{ src: heroImg.getAttribute('src'), alt: heroImg.getAttribute('alt') }];
+      Array.prototype.forEach.call(thumbs, function (t) {
+        var img = t.querySelector('img');
+        if (img) slides.push({ src: img.getAttribute('src'), alt: img.getAttribute('alt') });
+      });
+
+      var index = 0;
+
+      function render() {
+        heroImg.setAttribute('src', slides[index].src);
+        heroImg.setAttribute('alt', slides[index].alt);
+        Array.prototype.forEach.call(thumbs, function (t, i) {
+          t.classList.toggle('is-active', i + 1 === index);
+        });
+      }
+
+      function go(next) {
+        index = (next + slides.length) % slides.length;
+        render();
+      }
+
+      if (prevBtn) prevBtn.addEventListener('click', function () { go(index - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { go(index + 1); });
+
+      Array.prototype.forEach.call(thumbs, function (t, i) {
+        t.addEventListener('click', function () { go(i + 1); });
+      });
+    });
+  })();

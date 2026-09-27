@@ -1441,13 +1441,37 @@ body.page-custom .carousel{ background: var(--white); }
 .product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(633 * var(--u)); width: calc(285 * var(--u)); aspect-ratio: 285/190; }
 .product-thumb-cove3 img{ object-position: right 60%; }
 
+/* Eliza: "left right toggle arrows are displaying incorrectly ... also
+   not clickable. the product page should essentially be a left right
+   carousel." The old markup drew each arrow as a stroked right-angle
+   corner (a plain rectangle bracket), which at this size reads as a
+   numeral "7" rather than an arrowhead -- replaced with real chevron
+   paths below. They're now <button> elements (not inert <svg> in a
+   pointer-events:none wrapper) wired up in main.js's productGallery()
+   to cycle the hero photo through this product's full photo set;
+   clicking a thumbnail jumps straight to it (see .product-gallery,
+   [data-gallery-thumb] below). Padding + matching negative margin grows
+   the click target without shifting the icon's visual position. */
+.product-gallery{ position:relative; }
+
 .product-nav-arrows{
   position:absolute; left: calc(1011 * var(--u)); top: calc(607 * var(--u));
-  width: calc(29 * var(--u)); height: calc(17 * var(--u));
-  display:flex; align-items:center; gap: calc(3 * var(--u)); pointer-events:none;
+  height: calc(17 * var(--u));
+  display:flex; align-items:center; gap: calc(3 * var(--u));
 }
-.product-nav-arrows svg{ width: calc(13 * var(--u)); height: calc(14 * var(--u)); display:block; }
-.product-nav-arrows svg:first-child{ transform: scaleX(-1); }
+.product-nav-btn{
+  appearance:none; background:none; border:0; color:inherit;
+  padding: calc(6 * var(--u)); margin: calc(-6 * var(--u));
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.product-nav-btn svg{ width: calc(10 * var(--u)); height: calc(14 * var(--u)); display:block; }
+.product-nav-btn:hover path, .product-nav-btn:focus-visible path{ stroke: var(--orange); }
+.product-nav-btn:focus-visible{ outline: 1px solid var(--orange); outline-offset: 2px; }
+
+[data-gallery-thumb]{ cursor:pointer; }
+[data-gallery-thumb] img{ transition: opacity .2s ease; }
+[data-gallery-thumb]:hover img{ opacity:.82; }
+[data-gallery-thumb].is-active{ box-shadow: 0 0 0 2px var(--orange) inset; }
 
 .product-stamp-soft{
   /* Eliza 2026-09-27: "the stamp looks very faint" -- .3 read as barely
