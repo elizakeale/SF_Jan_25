@@ -2183,15 +2183,15 @@ body.intro-active{ overflow:hidden; }
 }
 .intro-stamp.is-drawn .stamp-h1{
   clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .18s; transition-delay: 0s;
+  transition-duration: .126s; transition-delay: 0s;
 }
 .intro-stamp.is-drawn .stamp-h2{
   clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .18s; transition-delay: .09s;
+  transition-duration: .126s; transition-delay: .063s;
 }
 .intro-stamp.is-drawn .stamp-rule{
   clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .18s; transition-delay: .56s;
+  transition-duration: .126s; transition-delay: .392s;
 }
 
 /* Vertical + Bottom Point: the descending stroke, drawn top -> bottom
@@ -2203,11 +2203,11 @@ body.intro-active{ overflow:hidden; }
 }
 .intro-stamp.is-drawn .stamp-vert{
   clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .32s; transition-delay: .18s;
+  transition-duration: .224s; transition-delay: .126s;
 }
 .intro-stamp.is-drawn .stamp-bottom{
   clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .16s; transition-delay: .46s;
+  transition-duration: .112s; transition-delay: .322s;
 }
 
 /* Numerals: Eliza 2026-09-27: "can we actually omit the #s?" -- the
@@ -2230,7 +2230,18 @@ body.intro-active{ overflow:hidden; }
   opacity:0; transform: translate(-57.240463px, -79.063366px) scale(.94);
   transform-box: fill-box; transform-origin: center;
 }
-.intro-stamp.is-drawn .stamp-circle{ opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.5s; transition-delay:.95s; }
+.intro-stamp.is-drawn .stamp-circle{ opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.35s; transition-delay:.665s; }
+
+/* Eliza 2026-09-27: "circle should go away AS the modern F comes on to
+   reduce visual distraction" -- js/main.js flips this class the instant
+   the F starts fading in (same moment as fWrap.is-visible), so the ring
+   dissolves right as the F appears rather than lingering until the whole
+   stamp lets go later. Higher specificity (4 classes vs. 3) than the
+   is-drawn rule above wins regardless of source order. */
+.intro-stamp.is-drawn.is-circle-hidden .stamp-circle{
+  opacity:0;
+  transition-duration:.3s; transition-delay:0s;
+}
 /* Centred on the F glyph's own vertical stroke (at x=117.5 of its 612-wide
    viewBox), not the box -- the F is a left-weighted letterform, not a
    symmetric mark, so centring the box would centre empty space instead of
