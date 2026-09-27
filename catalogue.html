@@ -94,49 +94,79 @@
       <span>Download Summer 2026 Catalogue</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
     </a>
 
-    <!-- Three columns, each independently drifting a few pixels opposite
-         its neighbours on scroll -- Eliza: "slightly move in opposite
-         vertical directions as you scroll down and up, just for visual
-         effect, not functional." Purely decorative translateY, driven by
+    <!-- Figma 244:562 -- soft floating orange seal between the download
+         button and the grid, see .catalogue-stamp in style.css for why
+         it reuses stamp-orange.svg rather than the real doodle asset. -->
+    <figure class="catalogue-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-orange.svg" alt=""></figure>
+
+    <!-- Three columns at their real Figma boxes (see .catalogue-col),
+         each independently drifting a few pixels opposite its neighbours
+         on scroll -- Eliza: "slightly move in opposite vertical
+         directions as you scroll down and up, just for visual effect,
+         not functional." Purely decorative translateY, driven by
          js/main.js's catalogueParallax() (scroll-linked, not a CSS
          transition -- see the governing motion principle elsewhere on the
          site: a threshold/transition-driven version would read as jitter
-         rather than something the user's own scroll is doing). Desktop
-         only -- collapses to a single column on mobile, where the effect
-         is dropped entirely along with the grid. -->
+         rather than something the user's own scroll is doing). Columns A
+         and C bleed to the page edges; column A bleeds left, column C
+         bleeds right, matching Figma exactly. Each .catalogue-item-media
+         also carries a smaller second photo (.catalogue-photo-sm,
+         mobile-only) reusing the same image where Figma's own distinct
+         crop isn't in the asset library yet. -->
     <div class="catalogue-grid" data-catalogue-parallax>
       <div class="catalogue-col" data-parallax-dir="1">
         <a class="catalogue-item" href="product-cove-table.html">
-          <figure class="catalogue-photo" style="aspect-ratio:455/547"><img src="images/product/cove-table.webp" alt="Cove Side Table"></figure>
-          <h2>Cove Side Table</h2>
+          <div class="catalogue-item-media">
+            <figure class="catalogue-photo" style="aspect-ratio:455/547"><img src="images/product/cove-table.webp" alt="Cove Side Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/cove-side-table.jpg" alt=""></figure>
+          </div>
+          <h2>Cove Side Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
         <a class="catalogue-item" href="contact.html">
-          <figure class="catalogue-photo" style="aspect-ratio:455/551"><img src="images/home/portage-chair.jpg" alt="Portage Chair"></figure>
-          <h2>Portage Chair</h2>
+          <div class="catalogue-item-media">
+            <figure class="catalogue-photo" style="aspect-ratio:455/551"><img src="images/home/portage-chair.jpg" alt="Portage Chair"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/portage-chair.jpg" alt=""></figure>
+          </div>
+          <h2>Portage Chair<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
       </div>
       <div class="catalogue-col" data-parallax-dir="-1">
         <a class="catalogue-item" href="contact.html">
-          <figure class="catalogue-photo" style="aspect-ratio:1.208"><img src="images/home/point-grey-stools.webp" alt="Point Grey Stools"></figure>
-          <h2>Point Grey Stools</h2>
+          <div class="catalogue-item-media">
+            <figure class="catalogue-photo" style="aspect-ratio:1.208"><img src="images/home/point-grey-stools.webp" alt="Point Grey Stools"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/point-grey-stools.webp" alt=""></figure>
+          </div>
+          <h2>Point Grey Stools<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
         <a class="catalogue-item" href="contact.html">
-          <figure class="catalogue-photo" style="aspect-ratio:1.393"><img src="images/home/bluff-table.webp" alt="Bluff Table"></figure>
-          <h2>Bluff Table</h2>
+          <div class="catalogue-item-media">
+            <figure class="catalogue-photo" style="aspect-ratio:1.393"><img src="images/home/bluff-table.webp" alt="Bluff Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/bluff-table.webp" alt=""></figure>
+          </div>
+          <h2>Bluff Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
         <a class="catalogue-item" href="contact.html">
-          <figure class="catalogue-photo" style="aspect-ratio:1.249"><img src="images/home/shoal-coffee-table.webp" alt="Shoal Coffee Table"></figure>
-          <h2>Shoal Coffee Table</h2>
+          <div class="catalogue-item-media">
+            <figure class="catalogue-photo" style="aspect-ratio:1.249"><img src="images/home/shoal-coffee-table.webp" alt="Shoal Coffee Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/shoal-coffee-table.webp" alt=""></figure>
+          </div>
+          <h2>Shoal Coffee Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
       </div>
       <div class="catalogue-col" data-parallax-dir="1">
         <a class="catalogue-item" href="contact.html">
-          <figure class="catalogue-photo" style="aspect-ratio:1"><img src="images/home/bluff-stools.jpg" alt="Bluff Stool"></figure>
-          <h2>Bluff Stool</h2>
+          <div class="catalogue-item-media">
+            <figure class="catalogue-photo" style="aspect-ratio:1"><img src="images/home/bluff-stools.jpg" alt="Bluff Stool"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/bluff-stools.jpg" alt=""></figure>
+          </div>
+          <h2>Bluff Stool<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
         <a class="catalogue-item" href="contact.html">
-          <figure class="catalogue-photo" style="aspect-ratio:1"><img src="images/home/westlake-table.webp" alt="Westlake Table"></figure>
-          <h2>Westlake Table</h2>
+          <div class="catalogue-item-media">
+            <figure class="catalogue-photo" style="aspect-ratio:1"><img src="images/home/westlake-table.webp" alt="Westlake Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/westlake-table.webp" alt=""></figure>
+          </div>
+          <h2>Westlake Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
       </div>
     </div>

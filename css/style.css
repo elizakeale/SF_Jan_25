@@ -831,6 +831,9 @@ body.page-contact, body.page-trade, body.page-thanks{
   --rule-top: calc(215 * var(--u));
   --rule-h: calc(810 * var(--u));
 }
+body.page-catalogue{
+  --rule-h: calc(2199 * var(--u));
+}
 .about-rule::before, .about-rule::after,
 .page-rule::before, .page-rule::after{
   content:''; position:absolute; height: calc(2 * var(--u)); background: var(--orange);
@@ -1551,11 +1554,11 @@ body.page-product .carousel{ background: var(--white); }
    -- Figma's own captions for this row sit below where the page's white
    background ends, on orange, matching the shared component's default.
    ------------------------------------------------------------ */
-.catalogue-section{ position:relative; padding: calc(266 * var(--u)) var(--edge) calc(64 * var(--u)); }
+.catalogue-section{ position:relative; height: calc(2086 * var(--u)); }
 
 .catalogue-intro{
-  margin: 0 0 0 calc(489 * var(--u)); margin-top: calc(-25 * var(--u));
-  max-width: calc(399 * var(--u));
+  position:absolute; left: calc(529 * var(--u)); top: calc(274 * var(--u));
+  width: calc(399 * var(--u));
 }
 .catalogue-intro p{
   margin:0; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
@@ -1565,9 +1568,9 @@ body.page-product .carousel{ background: var(--white); }
 .catalogue-intro p + p{ margin-top: 1.7em; }
 
 .catalogue-download{
+  position:absolute; left: calc(1076 * var(--u)); top: calc(394 * var(--u));
   display:flex; align-items:center; justify-content:space-between; gap: calc(12 * var(--u));
   width: calc(324 * var(--u)); min-height: calc(33 * var(--u));
-  margin: calc(48 * var(--u)) 0 0 calc(489 * var(--u));
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
@@ -1577,33 +1580,58 @@ body.page-product .carousel{ background: var(--white); }
 .catalogue-download:hover{ background: var(--orange-light); }
 .catalogue-download img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); flex:none; }
 
-.catalogue-grid{
-  display:flex; gap: calc(45 * var(--u)); margin-top: calc(96 * var(--u));
+/* Soft floating orange seal between the download button and the image
+   grid (244:562, imgStudioMarkFfa000Soft1) -- that exact Figma asset
+   export is blocked from this environment (403), so this reuses the
+   same stamp-orange.svg + faded-opacity treatment already established
+   for .product-stamp-soft rather than a bespoke doodle graphic. Flag to
+   Eliza if she wants the real hand-drawn seal swapped in later. */
+.catalogue-stamp{
+  position:absolute; left: calc(847 * var(--u)); top: calc(446 * var(--u));
+  width: calc(126 * var(--u)); margin:0; opacity:.55; pointer-events:none; z-index:1;
 }
-.catalogue-col{ flex:1 1 0; display:flex; flex-direction:column; gap: calc(56 * var(--u)); min-width:0; }
-/* Same slight masonry stagger Figma's own scattered coordinates show
-   (columns don't all start level) -- kept as a static offset, on top of
-   which the parallax below adds its scroll-linked motion. */
-.catalogue-col:nth-child(2){ margin-top: calc(111 * var(--u)); }
-.catalogue-col:nth-child(3){ margin-top: calc(44 * var(--u)); }
+.catalogue-stamp img{ width:100%; height:auto; display:block; }
+
+/* Three columns at their real Figma boxes -- column A bleeds to the left
+   page edge and column C bleeds to the right page edge, per Eliza's
+   feedback that these should touch the sides like Figma rather than sit
+   inset inside the page's usual --edge margin. Each column keeps its own
+   Figma top offset (the stagger) under the scroll-linked parallax in
+   js/main.js -- .catalogue-item-media wraps the two photos so mobile can
+   add a second, smaller photo beside the hero one without disturbing
+   this desktop absolute layout (mobile hides it, see below). */
+.catalogue-grid{ position:absolute; left:0; top:0; width:100%; height: calc(1723 * var(--u)); z-index:2; }
+.catalogue-col{ position:absolute; display:flex; flex-direction:column; gap: calc(8 * var(--u)); }
+.catalogue-col:nth-child(1){ left:0;                     top: calc(471 * var(--u)); width: calc(455 * var(--u)); }
+.catalogue-col:nth-child(2){ left: calc(502 * var(--u)); top: calc(582 * var(--u)); width: calc(436 * var(--u)); }
+.catalogue-col:nth-child(3){ right:0;                    top: calc(515 * var(--u)); width: calc(457 * var(--u)); }
 
 .catalogue-item{ display:block; text-decoration:none; color: var(--ink); }
+.catalogue-item-media{ display:block; }
 .catalogue-photo{
   margin:0; background: var(--cream); overflow:hidden;
 }
 .catalogue-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.catalogue-photo-sm{ display:none; } /* mobile-only second photo, see below */
 .catalogue-item h2{
   margin: calc(16 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200;
   font-size: calc(20 * var(--u)); letter-spacing:.05em; text-transform:uppercase;
   color: var(--ink); transition: color .18s ease;
 }
 .catalogue-item:hover h2{ color: var(--orange); }
-
-.catalogue-divider{
-  margin: calc(80 * var(--u)) 0 0; border:0; height:1px; background: rgba(28,17,35,.14);
+.catalogue-arrow{
+  width: calc(13 * var(--u)); height: calc(13 * var(--u)); margin-left: calc(8 * var(--u));
+  display:inline-block; vertical-align:middle;
 }
 
-.catalogue-more{ max-width: calc(399 * var(--u)); margin-top: calc(64 * var(--u)); }
+.catalogue-divider{
+  position:absolute; left:0; top: calc(1780 * var(--u)); width:100%; height:1px; margin:0; border:0;
+  background: rgba(28,17,35,.14);
+}
+
+.catalogue-more{
+  position:absolute; left: calc(529 * var(--u)); top: calc(1817 * var(--u)); width: calc(399 * var(--u));
+}
 .catalogue-more p{
   margin:0; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
@@ -1612,9 +1640,9 @@ body.page-product .carousel{ background: var(--white); }
 .catalogue-more p + p{ margin-top: 1.7em; }
 
 .catalogue-collaborate{
+  position:absolute; left: calc(528 * var(--u)); top: calc(1989 * var(--u));
   display:flex; align-items:center; justify-content:space-between; gap: calc(12 * var(--u));
   width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
-  margin: calc(24 * var(--u)) 0 0;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
@@ -2313,11 +2341,21 @@ body.page-product .carousel .tile figcaption{ display:none; }
 
   body.page-product .carousel{ margin-top: calc(32 * var(--mu)); }
 
-  /* CATALOGUE mobile (342:587): single column, no parallax (desktop-only
-     effect), page-rule dropped like every other mobile frame. */
+  /* CATALOGUE mobile (342:587): a real two-column layout, not desktop
+     turned into a single stack -- a wide "hero" photo (264mu) on the
+     left, a smaller second photo (138mu) on the right, bottom-aligned
+     with the hero (every item in this Figma frame has its hero and
+     small photo share the exact same bottom edge -- confirmed against
+     every one of the 7 items, not a guess). Caption + arrow run full
+     width below both photos; a hairline separates each item. No
+     parallax (desktop-only effect) and page-rule is dropped like every
+     other mobile frame. */
   body.page-catalogue .page-rule{ display:none; }
-  .catalogue-section{ padding: calc(101 * var(--mu)) 0 calc(48 * var(--mu)); }
-  .catalogue-intro, .catalogue-more{ margin-left:0; padding: 0 var(--edge); max-width:none; }
+  .catalogue-section{ height:auto; padding: calc(101 * var(--mu)) 0 calc(48 * var(--mu)); }
+  .catalogue-intro, .catalogue-more, .catalogue-download, .catalogue-collaborate{
+    position:static; left:auto; top:auto;
+  }
+  .catalogue-intro, .catalogue-more{ margin-left:0; padding: 0 var(--edge); max-width:none; width:auto; }
   .catalogue-intro{ margin-top: calc(24 * var(--mu)); font-size: calc(15 * var(--mu)); }
   .catalogue-download, .catalogue-collaborate{
     width:auto; margin: calc(24 * var(--mu)) var(--edge) 0;
@@ -2325,10 +2363,24 @@ body.page-product .carousel .tile figcaption{ display:none; }
     padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
   }
   .catalogue-download img, .catalogue-collaborate img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
-  .catalogue-grid{ flex-direction:column; gap: calc(32 * var(--mu)); margin-top: calc(32 * var(--mu)); padding: 0 var(--edge); transform:none !important; }
-  .catalogue-col{ margin-top:0 !important; gap: calc(32 * var(--mu)); transform:none !important; }
-  .catalogue-item h2{ margin-top: calc(12 * var(--mu)); font-size: calc(15 * var(--mu)); }
-  .catalogue-divider{ margin-top: calc(40 * var(--mu)); }
+  .catalogue-stamp{ display:none; }
+
+  .catalogue-grid{ position:static; height:auto; display:flex; flex-direction:column; margin-top: calc(32 * var(--mu)); }
+  .catalogue-col{ position:static; display:contents; } /* desktop-only grouping */
+  .catalogue-item{ display:block; }
+  .catalogue-item + .catalogue-item{ 
+    margin-top: calc(32 * var(--mu)); padding-top: calc(32 * var(--mu));
+    border-top: 1px solid rgba(28,17,35,.14);
+  }
+  .catalogue-item-media{
+    display:grid; grid-template-columns: calc(264 * var(--mu)) calc(138 * var(--mu));
+    align-items:end; column-gap:0;
+  }
+  .catalogue-photo-sm{ display:block; margin:0; background: var(--cream); overflow:hidden; }
+  .catalogue-photo-sm img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .catalogue-item h2{ margin-top: calc(12 * var(--mu)); padding: 0 var(--edge); font-size: calc(15 * var(--mu)); }
+  .catalogue-arrow{ width: calc(13 * var(--mu)); height: calc(13 * var(--mu)); margin-left: calc(8 * var(--mu)); }
+  .catalogue-divider{ display:none; } /* replaced by the item-to-item border-top above */
   .catalogue-more{ margin-top: calc(40 * var(--mu)); font-size: calc(15 * var(--mu)); }
 }
 

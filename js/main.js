@@ -910,7 +910,7 @@
     if (!cols.length) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var AMPLITUDE = 28; // px of max drift at full scroll-through, each direction
+    var AMPLITUDE = 45; // px of max drift at full scroll-through, each direction -- bumped from 28, Eliza: "not presenting at all"
 
     function desktop() { return window.innerWidth > 1152; }
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
