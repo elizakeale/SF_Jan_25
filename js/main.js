@@ -816,11 +816,13 @@
      ring). All ten are driven by one class flip (.intro-stamp.is-drawn),
      staggered purely through each part's own transition-delay -- the same
      pattern the modern F below it already uses, just with more parts.
-     Once the stamp finishes drawing (~1.45s in), it crossfades into the
-     modern F drawing in over the same spot (right to left: top bar, lower
-     bar, then the vertical stroke top-down as a single continuous bar --
-     .intro-f-vert-bar -- bleeding off the bottom) -> whole orange screen
-     fades out.
+     Once the stamp finishes drawing (~1.45s in), the modern F fades in and
+     draws directly OVER it (right to left: top bar, lower bar, then the
+     vertical stroke top-down as a single continuous bar --
+     .intro-f-vert-bar -- bleeding off the bottom) -- both marks visible
+     together, on purpose (Eliza: "trying to show the connection"). Only
+     once the F has fully drawn does the stamp let go, fading away on its
+     own over a slower .8s -- whole orange screen fades out.
      Plays once per tab (sessionStorage) since it's a first-visit
      flourish, not something a returning-within-session visitor
      should sit through on every reload. Click/tap/Escape/Enter skips
@@ -878,7 +880,8 @@
     }
 
     at(0,    function () { stamp.classList.add('is-drawn'); });         // stamp draws on, part by part: ~1.45s total
-    at(1500, function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible'); }); // crossfade: .35s/.35s
-    at(1600, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.98s total (incl. vertical bar)
-    at(2950, finish);                                                   // brief hold, then fade out (.45s)
+    at(1500, function () { fWrap.classList.add('is-visible'); });       // F fades in OVER the still-visible stamp: .35s
+    at(1600, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.98s total (incl. vertical bar), finishes ~2580
+    at(2650, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s
+    at(3600, finish);                                                   // brief hold, then fade out (.45s)
   })();

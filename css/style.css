@@ -2155,7 +2155,14 @@ body.intro-active{ overflow:hidden; }
   position:absolute; top:20vh; left:50%;
   transform:translateX(-50%);
   width:min(24vw, 230px); display:block;
-  transition: opacity .35s ease;
+  /* Eliza 2026-09-27: "have the F come in over the stamp ... then have
+     stamp fade away gracefully" -- was a quick .35s crossfade timed to
+     start the instant the F appeared (no overlap). Now the F draws in
+     directly on top of the still-visible stamp (see js/main.js's SITE
+     INTRO timeline) and only afterward does the stamp itself dissolve,
+     alone, over a slower .8s -- the "gracefully" part -- so the two marks
+     visibly share the same spot before the stamp lets go. */
+  transition: opacity .8s ease;
 }
 .intro-stamp.is-hidden{ opacity:0; }
 .intro-stamp svg{ display:block; width:100%; height:auto; overflow:visible; }
