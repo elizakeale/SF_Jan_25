@@ -1391,15 +1391,11 @@ body.page-custom .carousel{ background: var(--white); }
    to the first divider, and a second short horizontal tick -- built
    literally rather than forced into the shared .page-rule pattern).
    ------------------------------------------------------------
-   Asset-library gap: Figma's gallery shows four Cove Table photos (a
-   hero + three thumbnails/angles) but the Drive asset library has only
-   one finished Cove Table photograph (Images/06. Catalogue/Web_Optimized/
-   Cove_WebOptimized.jpg -- also the one used site-wide, e.g. the homepage
-   carousel tile). Rather than fabricate three fake "other angles," every
-   gallery slot below reuses that one real photo (object-fit:cover with a
-   different object-position per slot for some framing variety). Flag for
-   Eliza: more Cove Table angles would let each slot show something
-   different.
+   Gallery: hero uses the site-wide Cove Table photo (also the homepage
+   carousel tile); the three thumbnails use the additional angles Eliza
+   supplied in Images/07.Product_Pages/01.Cove_Table (cove-table-2/3/4.webp
+   -- joinery detail, in-situ side view, styled detail) rather than
+   reusing a single shot.
    Same gap for the three wood-species swatches (walnut / euro beech /
    cherry) -- no swatch photography exists, so these are flat CSS
    gradients sampled from Figma's own swatch colors, not photographed
