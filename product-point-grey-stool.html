@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Point Grey Stool — Studio Fritz</title>
+<meta name="description" content="Point Grey Stool — [PLACEHOLDER] a tall bar stool in solid wood. Starting at $[PLACEHOLDER] USD.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Estedad:wght@200..900&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" type="image/svg+xml" href="images/logos/logomark/logomark-orange.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="images/logos/logomark/logomark-orange.png">
+<link rel="apple-touch-icon" href="images/logos/logomark/logomark-orange@2x.png">
+</head>
+<body class="page-light page-product">
+
+<!-- Header, hamburger and footer are copied verbatim from index.html. This is
+     a static site with no templating, so they are duplicated by necessity --
+     index.html stays the canonical copy; changes go there first, then here.
+     No nav item gets aria-current: this page sits beneath Catalogue (not yet
+     built), so none of the six top-level links is its parent. -->
+<header class="wordmark-header is-static" id="wmHeader">
+  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+    <div class="wm-col wm-left"><span class="wm-row-1">STUDIO</span></div>
+  </a>
+  <a class="wm-mark" href="index.html" aria-label="Studio Fritz — home">
+    <img class="wm-mark-orange" src="images/logos/logomark/logomark-orange.svg" alt="">
+    <img class="wm-mark-white" src="images/logos/logomark/logomark-white.svg" alt="">
+  </a>
+  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+    <div class="wm-col wm-right"><span class="wm-row-1">FRITZ</span></div>
+  </a>
+  <nav class="hero-links is-static-nav" aria-label="Primary">
+    <a href="custom.html">Custom</a>
+    <a href="about.html">About</a>
+    <a href="showroom.html">Showroom</a>
+    <a href="catalogue.html">Catalogue</a>
+    <a href="contact.html">Contact</a>
+    <a href="trade.html">Trade</a>
+  </nav>
+  <button class="nav-toggle" id="navToggle" type="button"
+          aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <div class="mm-inner">
+    <nav class="mm-links" aria-label="Primary">
+      <div class="mm-col mm-col-a">
+        <a href="custom.html">Custom</a>
+        <a href="catalogue.html">Catalogue</a>
+        <a href="about.html">About</a>
+      </div>
+      <div class="mm-col mm-col-b">
+        <a href="contact.html">Contact</a>
+        <a href="trade.html">Trade</a>
+        <a href="showroom.html">Showroom</a>
+      </div>
+    </nav>
+    <div class="mm-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
+    <div class="mm-col mm-secondary">
+      <a href="faq.html">Frequently Asked Questions</a>
+      <a href="faq.html#warranty">Lifetime Guarantee</a>
+      <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+      <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+    </div>
+    <div class="newsletter mm-newsletter">
+      <label for="mm-email">Sign Up for Newsletter</label>
+      <form onsubmit="return false;">
+        <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+        <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+      </form>
+      <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
+    </div>
+  </div>
+</div>
+
+<main id="top">
+
+  <section class="product-section">
+
+    <!-- 509:72/73/75: this page's own small bracket accent, not the shared
+         .page-rule -- see the stylesheet comment. Desktop only. -->
+    <div class="product-accent product-accent-h1" aria-hidden="true"></div>
+    <div class="product-accent product-accent-v" aria-hidden="true"></div>
+    <div class="product-accent product-accent-h2" aria-hidden="true"></div>
+
+    <div class="product-top">
+      <figure class="product-stamp-soft"><img src="images/logos/stamp/stamp-orange.svg" alt=""></figure>
+      <h1 class="product-title">Point Grey Stool</h1>
+    </div>
+
+    <!-- Point Grey Stool photography from the Google Drive asset library --
+         four real photos across the hero + three thumbnail slots. -->
+    <figure class="product-photo product-hero">
+      <img src="images/product/point-grey-stool-1.webp" alt="Point Grey Stool, pair view">
+    </figure>
+    <figure class="product-photo product-thumb-cove2">
+      <img src="images/product/point-grey-stool-3.webp" alt="Point Grey Stool, three-quarter view">
+    </figure>
+    <figure class="product-photo product-thumb-cove3">
+      <img src="images/product/point-grey-stool-1.webp" alt="Point Grey Stool, alternate view">
+    </figure>
+    <figure class="product-photo product-thumb-5">
+      <img src="images/product/point-grey-stool-2.webp" alt="Point Grey Stool, front view">
+    </figure>
+
+    <div class="product-nav-arrows" aria-hidden="true">
+      <svg viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1L1 1L1 13" stroke="#1C1123" stroke-width="1.5"/></svg>
+      <svg viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L12 1L12 13" stroke="#1C1123" stroke-width="1.5"/></svg>
+    </div>
+
+    <div class="product-desc">
+      <p>[PLACEHOLDER COPY] Material, construction, and joinery details for the Point Grey Stool go here.</p>
+      <p>[PLACEHOLDER COPY] Design intent and commission story for the Point Grey Stool go here.</p>
+    </div>
+
+    <hr class="product-divider product-divider-1">
+
+    <div class="product-dims">
+      <p>Dimensions: [PLACEHOLDER] D x [PLACEHOLDER] W x [PLACEHOLDER] H</p>
+      <p>Finish: [PLACEHOLDER]</p>
+    </div>
+
+    <div class="product-price">
+      <p>Starting Price $[PLACEHOLDER] USD + Tax</p>
+    </div>
+    <a class="product-cta product-cta-inquire" href="mailto:contact@studiofritz.co?subject=Point%20Grey%20Stool%20Inquiry"
+       data-inquire-open data-inquire-product="Point Grey Stool">
+      <span>Inquire to Purchase</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+    </a>
+    <a class="product-cta product-cta-spec" href="mailto:eliza@studiofritz.co?subject=Point%20Grey%20Stool%20Spec%20Sheet">
+      <span>Download Spec Sheet</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+    </a>
+
+    <div class="product-config">
+      <p>Configurations:</p>
+      <ul>
+        <li>Dimensions configurable</li>
+        <li>Available in the following wood species:</li>
+      </ul>
+    </div>
+    <div class="product-swatches">
+      <div class="product-swatch product-swatch-beech"><span class="product-swatch-chip" aria-hidden="true"></span><p>Euro Beech<br>+$0</p></div>
+      <div class="product-swatch product-swatch-cherry"><span class="product-swatch-chip" aria-hidden="true"></span><p>Black Cherry<br>+$0</p></div>
+      <div class="product-swatch product-swatch-walnut"><span class="product-swatch-chip" aria-hidden="true"></span><p>Black Walnut<br>+$, price adjusted accordingly</p></div>
+    </div>
+
+    <hr class="product-divider product-divider-2">
+  </section>
+
+  <!-- Same shared four-tile carousel and caption drift as every other page --
+       Figma's own mobile frame swaps in a different, one-off strip with no
+       captions and no matching assets anywhere else on the site; reusing the
+       standard component (which this page's own desktop frame also uses) is
+       more consistent than building a second gallery component. -->
+  <div class="carousel" data-carousel aria-label="Studio Fritz pieces in the wild">
+    <div class="carousel-track">
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:0.832"><img src="images/product/cove-table.webp" alt="Cove Side Table"></div>
+        <figcaption>Cove Side Table</figcaption>
+      </figure>
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:1.390"><img src="images/home/bluff-table.webp" alt="Bluff Table"></div>
+        <figcaption>Bluff Table</figcaption>
+      </figure>
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:1.490"><img src="images/home/bluff-stools.jpg" alt="Bluff Stool"></div>
+        <figcaption>Bluff Stool</figcaption>
+      </figure>
+      <figure class="tile">
+        <div class="tile-media" style="aspect-ratio:1.343"><img src="images/home/portage-chair.jpg" alt="Portage Chair"></div>
+        <figcaption>Portage Chair</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <footer class="site-footer" id="about">
+    <div class="footer-top">
+      <div class="footer-wm"><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><a class="footer-wm-mark" href="index.html" aria-label="Studio Fritz — home"><img src="images/logos/logomark/logomark-white.svg" alt=""></a><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <a href="custom.html">Custom</a>
+          <a href="catalogue.html">Catalogue</a>
+          <a href="about.html">About</a>
+        </div>
+        <div class="footer-col">
+          <a href="contact.html">Contact</a>
+          <a href="trade.html">Trade</a>
+          <a href="showroom.html">Showroom</a>
+        </div>
+        <div class="footer-col footer-col-wide">
+          <a href="faq.html">Frequently Asked Questions</a>
+          <a href="faq.html#warranty">Lifetime Guarantee</a>
+          <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
+          <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
+        </div>
+        <div class="newsletter">
+          <label for="nl-email">Sign Up for Newsletter</label>
+          <form onsubmit="return false;">
+            <input id="nl-email" type="email" placeholder="ENTER YOUR EMAIL" required>
+            <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+          </form>
+          <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">Studio Fritz LLC &copy; 2023<br>All Rights Reserved, Seattle, WA, USA</p>
+        <a class="back-to-top" href="#top">
+          <span class="btt-line" aria-hidden="true"></span>
+          <span>Back to Top</span>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<!-- Inquire pop-up (2026-09-27, built from Eliza's pasted screenshot -- not
+     a linked Figma node): every product page's own "Inquire to Purchase"
+     button opens this instead of navigating away. js/main.js's
+     inquireModal() pre-fills the Item(s) of Interest field from whichever
+     button was clicked, via that button's own data-inquire-product
+     attribute -- so this one shared markup block serves every product page
+     without per-page copy. Reuses the shared .sf-form fields (including
+     their built-in text-transform:uppercase -- "force caps lock on all
+     fields" is already true of every form on the site). Copied verbatim
+     onto any future product page, same as header/footer above. -->
+<div class="inquire-modal" id="inquireModal" hidden>
+  <div class="inquire-modal-backdrop" data-inquire-close></div>
+  <div class="inquire-modal-panel" role="dialog" aria-modal="true" aria-labelledby="inquireModalLede">
+    <figure class="inquire-modal-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></figure>
+    <button class="inquire-modal-close" type="button" data-inquire-close aria-label="Close">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L18 18M18 2L2 18" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
+    <p class="inquire-modal-lede" id="inquireModalLede">Email us directly at <a href="mailto:contact@studiofritz.co">contact@studiofritz.co</a> or fill out the form below. A member of our team will get back to you in 24&ndash;48 hours.</p>
+
+    <form class="sf-form" method="POST" data-endpoint="TODO" data-email="contact@studiofritz.co" novalidate>
+      <input type="hidden" name="_subject" value="Website enquiry - Inquire to Purchase">
+      <input type="hidden" name="_next" value="thank-you.html">
+      <div class="sf-col-a">
+        <p class="sf-field">
+          <label for="inquire-name">Your Name*</label>
+          <input id="inquire-name" name="name" type="text" required>
+        </p>
+        <p class="sf-field">
+          <label for="inquire-email">Your Email*</label>
+          <input id="inquire-email" name="email" type="email" required>
+        </p>
+        <p class="sf-field">
+          <label for="inquire-company">Your Company</label>
+          <input id="inquire-company" name="company" type="text">
+        </p>
+      </div>
+      <div class="sf-col-b">
+        <p class="sf-field">
+          <label for="inquire-items">Item(s) of Interest + Other Notes*</label>
+          <textarea id="inquire-items" name="items" data-inquire-item-field required></textarea>
+        </p>
+      </div>
+      <div class="sf-actions">
+        <p class="sf-note"></p>
+        <button class="sf-submit" type="submit">
+          <span>Submit</span><span><img src="images/logos/arrows/arrow-orange.svg" alt=""></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
