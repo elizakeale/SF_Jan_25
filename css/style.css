@@ -2253,7 +2253,15 @@ body.intro-active{ overflow:hidden; }
    top is tuned so the two marks roughly coincide (see the sizing comment
    in js/main.js's SITE INTRO section for the numbers). */
 .intro-f-wrap{
-  position:absolute; top:32vh; left:50%; transform: translateX(calc(-117.5 / 612 * 100%));
+  /* Eliza 2026-09-27: "F is coming in too low, over R rather than F" --
+     now that the F draws in directly over the still-visible stamp, its own
+     top+mid bars need to land level with the stamp's Horizontal 1/2 (its
+     own top double-bar), not several stamp-heights lower at the Rule bar.
+     32vh put the F's top bar right on top of the stamp's Rule (measured:
+     F top bar landed at y=314px vs the stamp's H1 at y=245px in a 900px-
+     tall viewport); 24.3vh is that same 69px correction applied to top,
+     tuned at the 1440x900 reference the rest of this section already uses. */
+  position:absolute; top:24.3vh; left:50%; transform: translateX(calc(-117.5 / 612 * 100%));
   width:min(30vw, 300px); opacity:0; transition: opacity .35s ease;
 }
 .intro-f-wrap.is-visible{ opacity:1; }
@@ -2296,7 +2304,7 @@ body.intro-active{ overflow:hidden; }
 
 @media (max-width: 1152px){
   .intro-stamp{ top:16vh; }
-  .intro-f-wrap{ top:26vh; }
+  .intro-f-wrap{ top:19.7vh; }
   .intro-stamp{ width:min(38vw, 150px); }
   .intro-f-wrap{ width:min(46vw, 190px); }
 }
