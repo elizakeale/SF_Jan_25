@@ -1058,6 +1058,72 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 }
 
 /* ============================================================
+   INQUIRE MODAL (shared component, not a Figma-linked frame --
+   built from a pasted screenshot Eliza sent, "Inquire pop-up" /
+   "Inquire pop-up mobile", 2026-09-27, not a get_design_context node)
+   Every "Inquire to Purchase" button on a product page opens this
+   instead of navigating to Contact -- js/main.js's inquireModal()
+   pre-fills the Item(s) of Interest field from that button's own
+   data-inquire-product attribute, so each product page's own trigger
+   supplies its own copy with no per-page script needed. Reuses the
+   shared .sf-form/.sf-field markup verbatim (including its
+   text-transform:uppercase inputs -- "force caps lock on all
+   fields" is already true of every form on the site) rather than a
+   parallel field system, just repositioned from page-absolute to
+   modal-relative and recoloured for the orange panel.
+   ------------------------------------------------------------ */
+.inquire-modal{
+  position:fixed; inset:0; z-index:300; display:flex;
+  align-items:flex-start; justify-content:center;
+  padding: calc(120 * var(--u)) var(--edge) calc(64 * var(--u));
+  overflow-y:auto;
+}
+.inquire-modal[hidden]{ display:none; }
+body.inquire-modal-open{ overflow:hidden; }
+
+.inquire-modal-backdrop{ position:fixed; inset:0; background: rgba(28,17,35,.4); }
+.inquire-modal-panel{
+  position:relative; z-index:1; width:100%; max-width: calc(877 * var(--u));
+  background: var(--orange); color: var(--white);
+  padding: calc(40 * var(--u)) calc(48 * var(--u)) calc(48 * var(--u));
+}
+.inquire-modal-stamp{ width: calc(64 * var(--u)); margin: 0 0 calc(24 * var(--u)); }
+.inquire-modal-stamp img{ width:100%; height:auto; display:block; }
+.inquire-modal-close{
+  position:absolute; top: calc(28 * var(--u)); right: calc(28 * var(--u));
+  width: calc(20 * var(--u)); height: calc(20 * var(--u)); padding:0; border:0;
+  background:none; color: var(--white); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.inquire-modal-close svg{ width:100%; height:100%; display:block; }
+
+.inquire-modal-lede{
+  margin: 0 0 calc(32 * var(--u)); max-width: calc(600 * var(--u));
+  font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--white);
+}
+.inquire-modal-lede a{ color:inherit; text-decoration:underline; text-underline-offset:.2em; }
+
+.inquire-modal .sf-form{
+  position:static; display:grid;
+  grid-template-columns: calc(283 * var(--u)) 1fr; column-gap: calc(37 * var(--u));
+}
+.inquire-modal .sf-col-b{ display:flex; flex-direction:column; }
+.inquire-modal .sf-col-b .sf-field{ flex:1; display:flex; flex-direction:column; }
+.inquire-modal .sf-col-b .sf-field textarea{ flex:1; }
+.inquire-modal .sf-field label{ color: var(--white); }
+.inquire-modal .sf-field input, .inquire-modal .sf-field textarea{
+  background: var(--white); border: 1px solid var(--white); color: var(--ink);
+}
+.inquire-modal .sf-field input::placeholder, .inquire-modal .sf-field textarea::placeholder{ color: var(--ink); }
+.inquire-modal .sf-field input:focus, .inquire-modal .sf-field textarea:focus{ border-color: var(--ink); }
+.inquire-modal .sf-field-error{ color: var(--white); }
+.inquire-modal .sf-note{ color: var(--white); }
+.inquire-modal .sf-unwired{ color: var(--ink); }
+.inquire-modal .sf-submit{ background: var(--white); color: var(--orange); }
+.inquire-modal .sf-submit:hover{ background: var(--cream); }
+
+/* ============================================================
    SHOWROOM (278:1574 desktop / 370:462 mobile)
    White section runs 0-1719 (278:1575) -- same seam as Contact/Trade below.
    Its rule (321:704) is still at the old y=42 bar position, never carried
@@ -1469,6 +1535,95 @@ body.page-custom .carousel{ background: var(--white); }
 }
 
 body.page-product .carousel{ background: var(--white); }
+
+/* ============================================================
+   CATALOGUE (244:489 desktop / 342:587 mobile)
+   Reuses the shared .page-rule bracket (unlike Product, which built its
+   own literal copy) -- see the standing rule on .page-rule above for why
+   that's the version to copy from. Section is normal document flow, not
+   the absolute-positioned-to-Figma-coordinates approach About/Custom/
+   Product use: the product grid was reorganized into three clean columns
+   at Eliza's request (for the scroll-parallax effect below), which
+   doesn't map onto Figma's own scattered per-item coordinates anyway, so
+   there's nothing gained by fighting flow layout to hit exact positions
+   here. Bottom carousel keeps the default orange background/white
+   caption (no white-carousel override like Showroom/FAQ/Custom/Product)
+   -- Figma's own captions for this row sit below where the page's white
+   background ends, on orange, matching the shared component's default.
+   ------------------------------------------------------------ */
+.catalogue-section{ position:relative; padding: calc(266 * var(--u)) var(--edge) calc(64 * var(--u)); }
+
+.catalogue-intro{
+  margin: 0 0 0 calc(489 * var(--u)); margin-top: calc(-25 * var(--u));
+  max-width: calc(399 * var(--u));
+}
+.catalogue-intro p{
+  margin:0; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+  text-align:justify;
+}
+.catalogue-intro p + p{ margin-top: 1.7em; }
+
+.catalogue-download{
+  display:flex; align-items:center; justify-content:space-between; gap: calc(12 * var(--u));
+  width: calc(324 * var(--u)); min-height: calc(33 * var(--u));
+  margin: calc(48 * var(--u)) 0 0 calc(489 * var(--u));
+  padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
+  background: var(--orange); color: var(--white); text-decoration:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.catalogue-download:hover{ background: var(--orange-light); }
+.catalogue-download img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); flex:none; }
+
+.catalogue-grid{
+  display:flex; gap: calc(45 * var(--u)); margin-top: calc(96 * var(--u));
+}
+.catalogue-col{ flex:1 1 0; display:flex; flex-direction:column; gap: calc(56 * var(--u)); min-width:0; }
+/* Same slight masonry stagger Figma's own scattered coordinates show
+   (columns don't all start level) -- kept as a static offset, on top of
+   which the parallax below adds its scroll-linked motion. */
+.catalogue-col:nth-child(2){ margin-top: calc(111 * var(--u)); }
+.catalogue-col:nth-child(3){ margin-top: calc(44 * var(--u)); }
+
+.catalogue-item{ display:block; text-decoration:none; color: var(--ink); }
+.catalogue-photo{
+  margin:0; background: var(--cream); overflow:hidden;
+}
+.catalogue-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.catalogue-item h2{
+  margin: calc(16 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200;
+  font-size: calc(20 * var(--u)); letter-spacing:.05em; text-transform:uppercase;
+  color: var(--ink); transition: color .18s ease;
+}
+.catalogue-item:hover h2{ color: var(--orange); }
+
+.catalogue-divider{
+  margin: calc(80 * var(--u)) 0 0; border:0; height:1px; background: rgba(28,17,35,.14);
+}
+
+.catalogue-more{ max-width: calc(399 * var(--u)); margin-top: calc(64 * var(--u)); }
+.catalogue-more p{
+  margin:0; font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+  text-align:justify;
+}
+.catalogue-more p + p{ margin-top: 1.7em; }
+
+.catalogue-collaborate{
+  display:flex; align-items:center; justify-content:space-between; gap: calc(12 * var(--u));
+  width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
+  margin: calc(24 * var(--u)) 0 0;
+  padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
+  background: var(--orange); color: var(--white); text-decoration:none;
+  font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
+  letter-spacing:.05em; text-transform:uppercase;
+  transition: background .18s ease;
+}
+.catalogue-collaborate:hover{ background: var(--orange-light); }
+.catalogue-collaborate img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); flex:none; }
+
 
 /* Every carousel-background override above turns the tile background white --
    but .tile figcaption is hardcoded white text (correct on the orange
@@ -1942,6 +2097,26 @@ body.page-product .carousel .tile figcaption{ display:none; }
   .sf-unwired{ font-size: calc(14 * var(--mu)); }
   .sf-field-error{ margin-top: calc(6 * var(--mu)); font-size: calc(12 * var(--mu)); }
 
+
+  /* INQUIRE MODAL mobile: full-bleed panel, fields stacked like every
+     other .sf-form on mobile (base .sf-form{display:block} rule already
+     handles that -- this just neutralizes the desktop grid this modal
+     adds above and rescales to --mu). */
+  .inquire-modal{ padding:0; align-items:stretch; }
+  .inquire-modal-panel{
+    max-width:none; min-height:100%;
+    padding: calc(72 * var(--mu)) var(--edge) calc(48 * var(--mu));
+  }
+  .inquire-modal-stamp{ width: calc(44 * var(--mu)); margin-bottom: calc(24 * var(--mu)); }
+  .inquire-modal-close{
+    top: calc(28 * var(--mu)); right: var(--edge);
+    width: calc(16 * var(--mu)); height: calc(16 * var(--mu));
+  }
+  .inquire-modal-lede{ max-width:none; font-size: calc(15 * var(--mu)); margin-bottom: calc(24 * var(--mu)); }
+  .inquire-modal .sf-form{ display:block; }
+  .inquire-modal .sf-col-b{ margin-top: calc(29 * var(--mu)); display:block; }
+  .inquire-modal .sf-col-b .sf-field textarea{ flex:none; }
+
   .page-thanks-msg{
     position:static; width:auto; padding: 0 calc(16 * var(--mu));
     margin: calc(40 * var(--mu)) 0 0; font-size: calc(18 * var(--mu));
@@ -2137,6 +2312,24 @@ body.page-product .carousel .tile figcaption{ display:none; }
   .product-swatch p{ font-size: calc(12 * var(--mu)); margin-top: calc(6 * var(--mu)); }
 
   body.page-product .carousel{ margin-top: calc(32 * var(--mu)); }
+
+  /* CATALOGUE mobile (342:587): single column, no parallax (desktop-only
+     effect), page-rule dropped like every other mobile frame. */
+  body.page-catalogue .page-rule{ display:none; }
+  .catalogue-section{ padding: calc(101 * var(--mu)) 0 calc(48 * var(--mu)); }
+  .catalogue-intro, .catalogue-more{ margin-left:0; padding: 0 var(--edge); max-width:none; }
+  .catalogue-intro{ margin-top: calc(24 * var(--mu)); font-size: calc(15 * var(--mu)); }
+  .catalogue-download, .catalogue-collaborate{
+    width:auto; margin: calc(24 * var(--mu)) var(--edge) 0;
+    min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+  }
+  .catalogue-download img, .catalogue-collaborate img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
+  .catalogue-grid{ flex-direction:column; gap: calc(32 * var(--mu)); margin-top: calc(32 * var(--mu)); padding: 0 var(--edge); transform:none !important; }
+  .catalogue-col{ margin-top:0 !important; gap: calc(32 * var(--mu)); transform:none !important; }
+  .catalogue-item h2{ margin-top: calc(12 * var(--mu)); font-size: calc(15 * var(--mu)); }
+  .catalogue-divider{ margin-top: calc(40 * var(--mu)); }
+  .catalogue-more{ margin-top: calc(40 * var(--mu)); font-size: calc(15 * var(--mu)); }
 }
 
 

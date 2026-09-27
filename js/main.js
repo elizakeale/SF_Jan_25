@@ -888,3 +888,108 @@
     at(1970, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s
     at(2920, finish);                                                   // brief hold, then fade out (.45s)
   })();
+
+  /* ---------------- catalogue: column parallax drift ----------------
+     Eliza: "for catalogue, the 3 columns should slightly move in
+     opposite vertical directions as you scroll down and up, just for
+     visual effect, not functional." Scroll-linked (not a CSS
+     transition) per the site's governing motion principle -- driven
+     directly by scrollY so it reads as something the user's own
+     scroll is doing, not a triggered animation. Desktop only; mobile
+     collapses the grid to one column and drops the effect (see the
+     CSS media query, which also forces transform:none there as a
+     belt-and-suspenders guard). Amplitude is bounded against the
+     grid's OWN scroll range through the viewport, not raw scrollY,
+     so a long page never drifts a column out from under its
+     neighbours, and it behaves the same on a 13" laptop and a 27"
+     iMac. */
+  (function catalogueParallax() {
+    var grid = document.querySelector('[data-catalogue-parallax]');
+    if (!grid || !document.body.classList.contains('page-catalogue')) return;
+    var cols = Array.prototype.slice.call(grid.querySelectorAll('[data-parallax-dir]'));
+    if (!cols.length) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var AMPLITUDE = 28; // px of max drift at full scroll-through, each direction
+
+    function desktop() { return window.innerWidth > 1152; }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+    function render() {
+      if (!desktop()) {
+        cols.forEach(function (col) { col.style.transform = ''; });
+        return;
+      }
+      var r = grid.getBoundingClientRect();
+      // Progress of the grid through the viewport: 0 as its top just
+      // enters at the bottom edge, 1 as its bottom just leaves at the
+      // top edge -- centered (near-zero drift) while the grid sits
+      // centered in view, growing toward the extremes.
+      var span = r.height + window.innerHeight;
+      var progress = span > 0 ? (window.innerHeight - r.top) / span : 0.5;
+      progress = clamp(progress, 0, 1);
+      var offset = ((progress - 0.5) * 2 * AMPLITUDE); // -AMPLITUDE..AMPLITUDE
+      cols.forEach(function (col) {
+        var dir = col.getAttribute('data-parallax-dir') === '-1' ? -1 : 1;
+        col.style.transform = 'translateY(' + (offset * dir).toFixed(1) + 'px)';
+      });
+    }
+
+    var ticking = false;
+    function onScroll() { if (!ticking) { requestAnimationFrame(function () { ticking = false; render(); }); ticking = true; } }
+
+    render();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  })();
+
+  /* ---------------- inquire modal: "Inquire to Purchase" popup --------------
+     New per Eliza (2026-09-27, sent as a pasted Figma screenshot, not a
+     linked node -- built from that image, not get_design_context). Every
+     "Inquire to Purchase" button on a product page opens this modal instead
+     of navigating away, with the Item(s) of Interest field pre-filled from
+     that button's own data-inquire-product attribute -- so it's correct
+     per-product without any page needing its own copy of this script. The
+     trigger keeps a real mailto: href as a no-JS fallback (same philosophy
+     as the site's other "download" fallbacks): JS only intercepts the click
+     when it can actually open the modal.
+     Field caps: .sf-field input/textarea already force text-transform:
+     uppercase sitewide (see the shared form styles), so nothing extra is
+     needed here for "force caps lock on all fields." */
+  (function inquireModal() {
+    var modal = document.querySelector('.inquire-modal');
+    var triggers = document.querySelectorAll('[data-inquire-open]');
+    if (!modal || !triggers.length) return;
+    var itemField = modal.querySelector('[data-inquire-item-field]');
+    var lastFocused = null;
+
+    function open(product) {
+      lastFocused = document.activeElement;
+      if (itemField && product) itemField.value = product;
+      modal.hidden = false;
+      document.body.classList.add('inquire-modal-open');
+      var nameField = modal.querySelector('input[name="name"]');
+      if (nameField) nameField.focus();
+    }
+
+    function close() {
+      modal.hidden = true;
+      document.body.classList.remove('inquire-modal-open');
+      if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+
+    Array.prototype.forEach.call(triggers, function (trigger) {
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        open(trigger.getAttribute('data-inquire-product') || '');
+      });
+    });
+
+    Array.prototype.forEach.call(modal.querySelectorAll('[data-inquire-close]'), function (el) {
+      el.addEventListener('click', close);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !modal.hidden) close();
+    });
+  })();
