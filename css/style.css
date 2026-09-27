@@ -2206,27 +2206,39 @@ body.intro-active{ overflow:hidden; }
 /* Numerals: compact hand-drawn glyphs -- a wipe reads as smearing across
    the curves, so these pop in with a quick fade + scale instead, each
    from its own center (transform-box: fill-box, matching the clip-path
-   fill-box math above). */
+   fill-box math above).
+   Eliza 2026-09-27: "circle and numbers are coming in off base" -- every
+   layer in the source file carries its own
+   transform="translate(-57.240463,-79.063366)" attribute (Inkscape's
+   artboard offset), which the strokes above never disturb since they're
+   only ever touched via clip-path. But a CSS `transform` property on an
+   element REPLACES its SVG transform ATTRIBUTE outright rather than
+   composing with it -- so the moment these had `transform: scale(...)`,
+   that translate was discarded and they rendered at their raw untranslated
+   coordinates, well off the cross. Fixed by baking the same translate into
+   the CSS transform chain (in px, which SVG treats as its own user units)
+   so scaling composes with it instead of replacing it. */
 .intro-stamp .stamp-num28,
 .intro-stamp .stamp-num9,
 .intro-stamp .stamp-num4,
 .intro-stamp .stamp-num7{
-  opacity:0; transform: scale(.7);
+  opacity:0; transform: translate(-57.240463px, -79.063366px) scale(.7);
   transform-box: fill-box; transform-origin: center;
 }
-.intro-stamp.is-drawn .stamp-num28{ opacity:1; transform: scale(1); transition-duration:.22s; transition-delay:.64s; }
-.intro-stamp.is-drawn .stamp-num9 { opacity:1; transform: scale(1); transition-duration:.20s; transition-delay:.72s; }
-.intro-stamp.is-drawn .stamp-num4 { opacity:1; transform: scale(1); transition-duration:.20s; transition-delay:.80s; }
-.intro-stamp.is-drawn .stamp-num7 { opacity:1; transform: scale(1); transition-duration:.20s; transition-delay:.88s; }
+.intro-stamp.is-drawn .stamp-num28{ opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.22s; transition-delay:.64s; }
+.intro-stamp.is-drawn .stamp-num9 { opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.20s; transition-delay:.72s; }
+.intro-stamp.is-drawn .stamp-num4 { opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.20s; transition-delay:.80s; }
+.intro-stamp.is-drawn .stamp-num7 { opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.20s; transition-delay:.88s; }
 
 /* Circle: the outer ring, stamped last as the flourish that completes the
    mark -- fades + settles from a slight zoom-out rather than a directional
-   wipe, since it wraps the whole piece rather than running in one line. */
+   wipe, since it wraps the whole piece rather than running in one line.
+   Same translate-preserving fix as the numerals above. */
 .intro-stamp .stamp-circle{
-  opacity:0; transform: scale(.94);
+  opacity:0; transform: translate(-57.240463px, -79.063366px) scale(.94);
   transform-box: fill-box; transform-origin: center;
 }
-.intro-stamp.is-drawn .stamp-circle{ opacity:1; transform: scale(1); transition-duration:.5s; transition-delay:.95s; }
+.intro-stamp.is-drawn .stamp-circle{ opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.5s; transition-delay:.95s; }
 /* Centred on the F glyph's own vertical stroke (at x=117.5 of its 612-wide
    viewBox), not the box -- the F is a left-weighted letterform, not a
    symmetric mark, so centring the box would centre empty space instead of
