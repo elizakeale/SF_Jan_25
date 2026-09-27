@@ -809,7 +809,18 @@ body.page-about, body.page-light{ background: var(--white); color: var(--ink); }
   width: calc(2 * var(--u)); height: var(--rule-h, calc(2391 * var(--u)));
   background: var(--orange); pointer-events:none;
 }
-/* Every white page draws the same bracket at a different depth, so the two
+/* STANDING RULE (Eliza, 2026-09-27): whenever this bracket/crossbar motif
+   is built anywhere on the site -- this shared component, the Product
+   page's own literal .product-accent copy below, or any future one --
+   the SECOND (lower) crossbar must start flush with the vertical stroke
+   and extend only outward (away from the first crossbar), never back
+   across the vertical to the far side. Only the FIRST/top crossbar is
+   meant to cross the vertical on both sides (that's the "T" the corner
+   reads as). This exact failure mode -- the second line sticking out
+   past the vertical -- has recurred more than once (see the intro-F
+   glyph fix elsewhere in this file), hence writing it down as a rule
+   rather than re-deriving it per instance.
+   Every white page draws the same bracket at a different depth, so the two
    numbers that differ are variables and the motif is written once. The
    defaults are About's, so About renders exactly as before.
    Contact (321:665) and Trade (321:718) still have the rule at the OLD
@@ -1374,8 +1385,12 @@ body.page-custom .carousel{ background: var(--white); }
 .product-nav-arrows svg:first-child{ transform: scaleX(-1); }
 
 .product-stamp-soft{
+  /* Eliza 2026-09-27: "the stamp looks very faint" -- .3 read as barely
+     there against the white section background. .55 keeps it a soft
+     background accent (not competing with the real content) while
+     actually being visible. */
   position:absolute; left: calc(1301 * var(--u)); top: calc(594 * var(--u));
-  width: calc(126 * var(--u)); margin:0; opacity:.3; pointer-events:none;
+  width: calc(126 * var(--u)); margin:0; opacity:.55; pointer-events:none;
 }
 .product-stamp-soft img{ width:100%; height:auto; display:block; }
 
@@ -1423,9 +1438,30 @@ body.page-custom .carousel{ background: var(--white); }
 .product-swatches{ position:absolute; left: calc(1006 * var(--u)); top: calc(1450 * var(--u)); display:flex; gap: calc(27 * var(--u)); }
 .product-swatch{ width: calc(73 * var(--u)); text-align:center; }
 .product-swatch-chip{ display:block; width:100%; aspect-ratio:1; border-radius: calc(4 * var(--u)); }
-.product-swatch-beech .product-swatch-chip{ background: linear-gradient(135deg,#e9d2a8,#cfab7c); }
-.product-swatch-cherry .product-swatch-chip{ background: linear-gradient(135deg,#986339,#6c4023); }
-.product-swatch-walnut .product-swatch-chip{ background: linear-gradient(135deg,#61564d,#3b322b); }
+/* Eliza 2026-09-27: "SKUs look wrong" -- flat two-stop gradients read as
+   plain color chips, not wood. No swatch photography exists yet (see the
+   asset-library-gap comment at the top of this section) and Figma's own
+   swatch images (Walnut 1 / Euro Beech 1 / Cherry 1, nodes 244:281/283/287)
+   couldn't be pulled into this repo this session -- the Figma asset host
+   isn't reachable from here. Layered a faint repeating grain streak over
+   each base tone as a closer stand-in in the meantime; swap for the real
+   Figma swatch exports (or new macro photos) as soon as they're in the
+   Drive asset library. */
+.product-swatch-beech .product-swatch-chip{
+  background:
+    repeating-linear-gradient(97deg, rgba(120,86,45,.14) 0 2px, transparent 2px 8px),
+    linear-gradient(135deg,#ecd7ae,#cfab7c);
+}
+.product-swatch-cherry .product-swatch-chip{
+  background:
+    repeating-linear-gradient(97deg, rgba(40,16,4,.18) 0 2px, transparent 2px 8px),
+    linear-gradient(135deg,#a06f42,#6c4023);
+}
+.product-swatch-walnut .product-swatch-chip{
+  background:
+    repeating-linear-gradient(97deg, rgba(0,0,0,.22) 0 2px, transparent 2px 8px),
+    linear-gradient(135deg,#6b5f54,#3b322b);
+}
 .product-swatch p{
   margin: calc(8 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200;
   font-size: calc(13 * var(--u)); line-height:1.4; letter-spacing:.05em;
