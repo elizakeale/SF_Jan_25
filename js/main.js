@@ -881,7 +881,7 @@
 
     at(0,    function () { stamp.classList.add('is-drawn'); });         // stamp draws on, part by part: ~1.45s total
     at(1500, function () { fWrap.classList.add('is-visible'); });       // F fades in OVER the still-visible stamp: .35s
-    at(1600, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.98s total (incl. vertical bar), finishes ~2580
-    at(2650, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s
-    at(3600, finish);                                                   // brief hold, then fade out (.45s)
+    at(1600, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.735s total (incl. vertical bar, sped up 25% per Eliza), finishes ~2335
+    at(2405, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s
+    at(3355, finish);                                                   // brief hold, then fade out (.45s)
   })();
