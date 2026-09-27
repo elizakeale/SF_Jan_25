@@ -806,14 +806,21 @@
 
   /* ---------------- SITE INTRO (index.html only, Figma "intro" /
      "intro - end state" frames) ----------------
-     Sequence, simplified per Eliza's feedback that the hand-redrawn
-     component draw-in "looks weird" -- her explicitly-accepted
-     fallback: the raw stamp asset appears as a whole (fade + scale
-     in, no internal sequencing), holds briefly, then crossfades into
-     the modern F drawing in over the same spot (right to left: top
-     bar, lower bar, then the vertical stroke top-down as a single
-     continuous bar -- .intro-f-vert-bar -- bleeding off the bottom)
-     -> whole orange screen fades out.
+     Eliza 2026-09-27: replaced the raster stamp's whole-piece fade with
+     her real vector trace (StampFile_ForClaude.svg / StampInkscape.svg),
+     drawn on in the order she gave, by name, matching the file's own
+     Inkscape layer labels: Horizontal 1, Horizontal 2, Vertical, Bottom
+     Point, R, Number 28, Number 9, Number 4, Number 7, Circle -- see the
+     .stamp-part rules in css/style.css for how each one reveals (wipe for
+     the straight strokes, fade+scale for the numerals and the closing
+     ring). All ten are driven by one class flip (.intro-stamp.is-drawn),
+     staggered purely through each part's own transition-delay -- the same
+     pattern the modern F below it already uses, just with more parts.
+     Once the stamp finishes drawing (~1.45s in), it crossfades into the
+     modern F drawing in over the same spot (right to left: top bar, lower
+     bar, then the vertical stroke top-down as a single continuous bar --
+     .intro-f-vert-bar -- bleeding off the bottom) -> whole orange screen
+     fades out.
      Plays once per tab (sessionStorage) since it's a first-visit
      flourish, not something a returning-within-session visitor
      should sit through on every reload. Click/tap/Escape/Enter skips
@@ -843,7 +850,7 @@
       timers.length = 0;
       // Snap every stage to its end state before fading out, so a skip
       // never leaves a half-drawn line visible for a frame.
-      stamp.classList.add('is-visible', 'is-hidden');
+      stamp.classList.add('is-drawn', 'is-hidden');
       fWrap.classList.add('is-visible', 'is-drawn');
       el.classList.add('is-done');
       document.body.classList.remove('intro-active');
@@ -864,14 +871,14 @@
     if (reduce) {
       // No stagewise draw -- just present the finished mark briefly,
       // long enough to read as an intentional beat, then reveal the site.
-      stamp.classList.add('is-visible');
+      stamp.classList.add('is-drawn');
       at(150, function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible', 'is-drawn'); });
       at(500, finish);
       return;
     }
 
-    at(0,    function () { stamp.classList.add('is-visible'); });       // raw stamp fades + scales in: .5s
-    at(900,  function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible'); }); // crossfade: .5s/.35s
-    at(1000, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.98s total (incl. vertical bar)
-    at(2400, finish);                                                   // brief hold, then fade out (.45s)
+    at(0,    function () { stamp.classList.add('is-drawn'); });         // stamp draws on, part by part: ~1.45s total
+    at(1500, function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible'); }); // crossfade: .35s/.35s
+    at(1600, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.98s total (incl. vertical bar)
+    at(2950, finish);                                                   // brief hold, then fade out (.45s)
   })();

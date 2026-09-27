@@ -2142,17 +2142,91 @@ body.page-product .carousel .tile figcaption{ display:none; }
 .site-intro.is-removed{ display:none; }
 body.intro-active{ overflow:hidden; }
 
-/* Raw stamp asset, shown whole -- no component sequencing (see the
-   comment above). Fades and scales in as a single piece rather than
-   drawing in parts. */
+/* Eliza 2026-09-27: real vector trace supplied (StampFile_ForClaude.svg /
+   StampInkscape.svg, Assets/Stamps), replacing the raster fallback above's
+   whole-piece fade. Inlined directly in index.html (not <img src=...>) so
+   its own named layers -- Horizontal 1/2, Vertical, Bottom Point, R, Number
+   28/9/4/7, Circle, exactly as Eliza's Inkscape file labels them -- can be
+   targeted individually below and drawn on in that order, the same way the
+   modern F draws in via clip-path/opacity + staggered transition-delay
+   rather than one uniform fade. Container itself no longer fades/scales as
+   a block -- it's visible immediately and empty until its parts reveal. */
 .intro-stamp{
   position:absolute; top:20vh; left:50%;
-  transform:translateX(-50%) scale(.92); opacity:0;
+  transform:translateX(-50%);
   width:min(24vw, 230px); display:block;
-  transition: opacity .5s ease, transform .5s ease;
+  transition: opacity .35s ease;
 }
-.intro-stamp.is-visible{ opacity:1; transform:translateX(-50%) scale(1); }
 .intro-stamp.is-hidden{ opacity:0; }
+.intro-stamp svg{ display:block; width:100%; height:auto; overflow:visible; }
+
+.intro-stamp .stamp-part{
+  transition-property: clip-path, -webkit-clip-path, opacity, transform;
+  transition-timing-function: ease;
+  transition-duration: 0s; /* each part sets its own duration once .is-drawn is on */
+}
+
+/* Horizontal 1, Horizontal 2, R (the divider rule): thin wide strokes,
+   drawn left -> right. */
+.intro-stamp .stamp-h1,
+.intro-stamp .stamp-h2,
+.intro-stamp .stamp-rule{
+  clip-path: inset(0 100% 0 0);
+  -webkit-clip-path: inset(0 100% 0 0);
+}
+.intro-stamp.is-drawn .stamp-h1{
+  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
+  transition-duration: .18s; transition-delay: 0s;
+}
+.intro-stamp.is-drawn .stamp-h2{
+  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
+  transition-duration: .18s; transition-delay: .09s;
+}
+.intro-stamp.is-drawn .stamp-rule{
+  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
+  transition-duration: .18s; transition-delay: .56s;
+}
+
+/* Vertical + Bottom Point: the descending stroke, drawn top -> bottom
+   (Bottom Point continues where Vertical leaves off). */
+.intro-stamp .stamp-vert,
+.intro-stamp .stamp-bottom{
+  clip-path: inset(0 0 100% 0);
+  -webkit-clip-path: inset(0 0 100% 0);
+}
+.intro-stamp.is-drawn .stamp-vert{
+  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
+  transition-duration: .32s; transition-delay: .18s;
+}
+.intro-stamp.is-drawn .stamp-bottom{
+  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
+  transition-duration: .16s; transition-delay: .46s;
+}
+
+/* Numerals: compact hand-drawn glyphs -- a wipe reads as smearing across
+   the curves, so these pop in with a quick fade + scale instead, each
+   from its own center (transform-box: fill-box, matching the clip-path
+   fill-box math above). */
+.intro-stamp .stamp-num28,
+.intro-stamp .stamp-num9,
+.intro-stamp .stamp-num4,
+.intro-stamp .stamp-num7{
+  opacity:0; transform: scale(.7);
+  transform-box: fill-box; transform-origin: center;
+}
+.intro-stamp.is-drawn .stamp-num28{ opacity:1; transform: scale(1); transition-duration:.22s; transition-delay:.64s; }
+.intro-stamp.is-drawn .stamp-num9 { opacity:1; transform: scale(1); transition-duration:.20s; transition-delay:.72s; }
+.intro-stamp.is-drawn .stamp-num4 { opacity:1; transform: scale(1); transition-duration:.20s; transition-delay:.80s; }
+.intro-stamp.is-drawn .stamp-num7 { opacity:1; transform: scale(1); transition-duration:.20s; transition-delay:.88s; }
+
+/* Circle: the outer ring, stamped last as the flourish that completes the
+   mark -- fades + settles from a slight zoom-out rather than a directional
+   wipe, since it wraps the whole piece rather than running in one line. */
+.intro-stamp .stamp-circle{
+  opacity:0; transform: scale(.94);
+  transform-box: fill-box; transform-origin: center;
+}
+.intro-stamp.is-drawn .stamp-circle{ opacity:1; transform: scale(1); transition-duration:.5s; transition-delay:.95s; }
 /* Centred on the F glyph's own vertical stroke (at x=117.5 of its 612-wide
    viewBox), not the box -- the F is a left-weighted letterform, not a
    symmetric mark, so centring the box would centre empty space instead of
