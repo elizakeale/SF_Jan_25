@@ -1466,14 +1466,14 @@ body.page-custom .carousel{ background: var(--white); }
 
 .product-photo{ position:relative; margin:0; background: var(--cream); overflow:hidden; }
 .product-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* Each box below keeps its own Figma-authored size/aspect-ratio -- that's
+   a property of the BOX, not of whichever photo currently rotates into
+   it -- but no longer a per-box object-position: see the comment above
+   .gallery-img for why. */
 .product-hero{  position:absolute; left: calc(474 * var(--u)); top: calc(232 * var(--u)); width: calc(492 * var(--u)); aspect-ratio: 492/591; }
-.product-hero img{ object-position: center 18%; }
 .product-thumb-5{     position:absolute; left: calc(46 * var(--u));  top: calc(552 * var(--u)); width: calc(162 * var(--u)); aspect-ratio: 162/271; }
-.product-thumb-5 img{ object-position: left center; }
 .product-thumb-cove2{ position:absolute; left: calc(233 * var(--u)); top: calc(671 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; }
-.product-thumb-cove2 img{ object-position: center 70%; }
 .product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(633 * var(--u)); width: calc(285 * var(--u)); aspect-ratio: 285/190; }
-.product-thumb-cove3 img{ object-position: right 60%; }
 
 /* Eliza: "arrows look different from figma and should allow me to go
    left and right through pics" -- the site rule is every arrow icon
@@ -1521,9 +1521,10 @@ body.page-custom .carousel{ background: var(--white); }
    a multi-box jump needs more time than a single step so it doesn't
    blur past the intervening photos). */
 .gallery-img{
-  width:100%; height:100%; object-fit:cover; display:block;
+  width:100%; height:100%; object-fit:cover; object-position:center; display:block;
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(.65,0,.35,1);
+  -webkit-user-drag:none; user-select:none; -webkit-user-select:none;
 }
 .gallery-img.is-entering-next{ transform: translateX(22px); opacity:0; }
 .gallery-img.is-entering-prev{ transform: translateX(-22px); opacity:0; }
@@ -1771,15 +1772,18 @@ body.page-product .carousel{ background: var(--white); }
 
 /* Every carousel-background override above turns the tile background white --
    but .tile figcaption is hardcoded white text (correct on the orange
-   carousels elsewhere), so on these four it goes invisible while still
+   carousels elsewhere), so on these four it went invisible while still
    reserving its own height: a blank white band between the images and
-   whatever follows (reported live on Custom, but the same shared rule hits
-   Showroom/FAQ/Product too). Same fix mobile already applies everywhere --
-   no per-tile captions on a white carousel. */
+   whatever follows (reported live on Custom, but the same shared rule hit
+   Showroom/FAQ/Product too). First fix just hid the captions outright --
+   Eliza (product page, 2026-09-28): "names are missing below bottom
+   carousel," with a Figma reference showing them present in --ink, so
+   recolor instead of hiding. Mobile keeps its own no-per-tile-captions
+   rule below (Figma's mobile frames genuinely omit them). */
 body.page-showroom .carousel .tile figcaption,
 body.page-faq .carousel .tile figcaption,
 body.page-custom .carousel .tile figcaption,
-body.page-product .carousel .tile figcaption{ display:none; }
+body.page-product .carousel .tile figcaption{ color: var(--ink); }
 
 /* ============================================================
    MOBILE — built from Figma's 402-wide frames:

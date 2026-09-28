@@ -972,27 +972,46 @@
      centered and capped at max-width:1440u (see .product-section), so
      the two coordinate systems don't line up -- this version measures
      and pins `left` explicitly too, not just `top`. */
+  /* ---------------- product stamp: same pin/rest float as the other
+     pages' .page-stamp AND the homepage's own .stamp -- recomputed fresh
+     every frame instead of cached once ---------------------------------
+     Eliza (4th pass, 2026-09-28): "stamp is behaving odd, sometimes its
+     stuck, u should copy same approach as homepage." The previous version
+     measured the stamp's own natural position ONCE (via getBoundingClientRect
+     right after page load) and cached it for the rest of the page's life --
+     if anything about the layout wasn't fully settled at that instant, the
+     cached number is wrong forever after and the stamp reads as stuck.
+     The homepage's own .stamp (stampFooterStop above) never has this
+     problem because it never caches a measurement: its pinned position is
+     recomputed from window.innerHeight on every single call. This version
+     does the same thing for .product-stamp-soft -- every render() call
+     re-derives the pinned spot from two elements that are NEVER themselves
+     moved by this code (.product-section's own offsetTop, and
+     .product-accent-v's live width as a stand-in for --u's current
+     resolved pixel value, since custom properties don't hand back a
+     resolved px number directly) -- so a wrong frame can never persist
+     into the next one. */
   (function productStampFloat() {
     var stamp = document.querySelector('.product-stamp-soft');
-    if (!stamp || !document.body.classList.contains('page-product')) return;
+    var section = document.querySelector('.product-section');
+    var uRef = document.querySelector('.product-accent-v'); // width: calc(2 * var(--u))
+    if (!stamp || !section || !uRef || !document.body.classList.contains('page-product')) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var target = document.querySelector('.carousel');
     if (!target) return;
     var GAP = 24;
-    var pinnedTop = null, pinnedLeft = null;
 
     function desktop() { return window.innerWidth > 1152; }
 
-    function measure() {
-      if (!desktop()) return;
-      // Clear any inline override first so this reads the stylesheet's own
-      // position, not a stale fixed/absolute value from before.
-      stamp.style.position = '';
-      stamp.style.top = '';
-      stamp.style.left = '';
-      var r = stamp.getBoundingClientRect();
-      pinnedTop = r.top + window.scrollY; // scroll-invariant: viewport Y at scrollY 0
-      pinnedLeft = r.left; // viewport X -- unaffected by vertical scroll
+    // The stamp's own natural (untransformed) position, re-derived from
+    // stable references every time -- never read off the stamp itself.
+    function naturalTop() {
+      var uPx = uRef.getBoundingClientRect().width / 2;
+      return section.getBoundingClientRect().top + window.scrollY + 594 * uPx;
+    }
+    function naturalLeft() {
+      var uPx = uRef.getBoundingClientRect().width / 2;
+      return section.getBoundingClientRect().left + 1301 * uPx;
     }
 
     function render() {
@@ -1000,8 +1019,9 @@
         stamp.style.position = ''; stamp.style.top = ''; stamp.style.left = '';
         return;
       }
-      if (pinnedTop === null) measure();
-      var stampH = stamp.getBoundingClientRect().height || stamp.offsetHeight;
+      var pinnedTop = naturalTop();
+      var pinnedLeft = naturalLeft();
+      var stampH = stamp.offsetHeight;
       var releaseScrollY = target.offsetTop - pinnedTop - stampH - GAP;
       if (window.scrollY >= releaseScrollY) {
         stamp.style.position = 'absolute';
@@ -1016,9 +1036,8 @@
 
     var ticking = false;
     function onScroll() { if (!ticking) { requestAnimationFrame(function () { ticking = false; render(); }); ticking = true; } }
-    function onResize() { pinnedTop = null; pinnedLeft = null; measure(); render(); }
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onResize);
+    window.addEventListener('resize', onScroll);
     render();
   })();
 
@@ -1176,6 +1195,13 @@
       // rotation step per completed drag.
       var dragging = false, startX = 0, startY = 0, pointerId = null;
       var THRESHOLD = 40;
+
+      // Belt-and-suspenders alongside draggable="false" + -webkit-user-drag:none
+      // in the markup/CSS (see .gallery-img): a real click-drag starting on an
+      // <img> can still kick off the browser's native HTML5 drag-and-drop
+      // (a ghost image, no further pointermove) in browsers that don't honor
+      // one of those alone, which is what silently ate Eliza's click-drag.
+      hero.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
       hero.addEventListener('pointerdown', function (e) {
         dragging = true;
