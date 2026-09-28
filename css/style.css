@@ -1522,15 +1522,6 @@ body.page-custom .carousel{ background: var(--white); }
    blur past the intervening photos). */
 .gallery-img{
   width:100%; height:100%; object-fit:cover; object-position:center; display:block;
-  /* Eliza (5th pass, 2026-09-28): "still weird crops." Some source photos
-     (e.g. cove-table-3.webp) have the subject pushed into one corner of an
-     otherwise near-box-aspect-ratio frame, so plain object-fit:cover barely
-     crops anything and the empty background dominates the thumbnail. These
-     two custom properties let a specific photo opt into an actual zoom-in
-     crop (see productGallery()'s data-zoom/data-crop handling in main.js,
-     which sets them per-photo -- they travel with the photo through every
-     rotation, not with the box). Untouched photos get the harmless
-     defaults (no zoom, centered origin). */
   transform: scale(var(--photo-zoom, 1));
   transform-origin: var(--photo-origin, 50% 50%);
   transition-property: transform, opacity;
@@ -1539,6 +1530,26 @@ body.page-custom .carousel{ background: var(--white); }
 }
 .gallery-img.is-entering-next{ transform: translateX(22px) scale(var(--photo-zoom, 1)); opacity:0; }
 .gallery-img.is-entering-prev{ transform: translateX(-22px) scale(var(--photo-zoom, 1)); opacity:0; }
+
+/* Per-photo crop, 6th pass (2026-09-28): "still cropping" persisted after
+   the previous fix because that one set --photo-zoom/--photo-origin from
+   JS (productGallery()'s data-zoom/data-crop handling), and that function
+   bails out entirely below the 1152px desktop breakpoint -- so the crop
+   only ever applied on desktop, and mobile (the stacked-column layout
+   below) kept showing the raw, uncorrected center crop the whole time.
+   Rather than duplicate the fix into the mobile code path too, moved the
+   crop itself out of JS entirely: it's now a plain attribute selector
+   keyed to the photo's own filename, so it applies identically whether
+   productGallery() has run, is mid-rotation, or never runs at all (mobile,
+   a JS error, print styles, view-source, anything). :not(.product-hero)
+   keeps hero exempt -- object-fit:contain there shows the full image
+   uncropped regardless of which photo currently occupies it, see
+   .product-hero .gallery-img above. Add one rule per photo that needs it;
+   nothing else has to change when a new one comes up. */
+.product-photo:not(.product-hero) .gallery-img[src*="cove-table-3.webp"]{
+  --photo-zoom: 1.4;
+  --photo-origin: 100% 0%;
+}
 
 .product-nav-arrows{
   position:absolute; left: calc(995 * var(--u)); top: calc(607 * var(--u));

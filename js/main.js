@@ -1146,37 +1146,17 @@
       function imgOf(slot) { return slot.querySelector('.gallery-img'); }
       function mod(n) { return ((n % 4) + 4) % 4; }
 
-      // Eliza (5th pass, 2026-09-28): "still weird crops." The uniform
-      // object-position:center fix (previous pass) removed the wrong
-      // per-BOX memory but assumed every photo is centrally composed --
-      // it isn't (cove-table-3.webp has the table pushed to the upper
-      // right with a lot of empty floor in the lower-left, so a dead-
-      // center crop wastes most of a tall thumbnail box on that empty
-      // area). Each <img> in the markup can carry its own data-crop
-      // attribute (an object-position value tuned for THAT photo); it
-      // travels with the photo's identity through every rotation because
-      // it's read into `state` here alongside src/alt and permuted the
-      // same way, rather than living on the box. A photo with no
-      // data-crop just keeps the CSS default (object-position:center).
-      // The hero slot is exempt -- object-fit:contain (whole image, no
-      // crop) with its own fixed bottom-aligned treatment regardless of
-      // photo, see .product-hero .gallery-img in style.css.
+      // Per-photo crop (e.g. cove-table-3.webp) is handled entirely in
+      // CSS now -- a plain attribute selector keyed to the photo's src,
+      // see .gallery-img[src*="..."] in style.css -- specifically so it
+      // keeps working here with zero help from this function, which
+      // bails out below the desktop breakpoint (a previous version drove
+      // the crop from here via data-crop/data-zoom, which meant it only
+      // ever applied on desktop and silently never applied on mobile).
       var state = slots.map(function (slot) {
         var img = imgOf(slot);
-        return {
-          src: img.src, alt: img.alt,
-          crop: img.getAttribute('data-crop') || '',
-          zoom: parseFloat(img.getAttribute('data-zoom')) || 1
-        };
+        return { src: img.src, alt: img.alt };
       });
-      function applyCrop(slot, s) {
-        if (slot === hero) return;
-        var img = imgOf(slot);
-        img.style.objectPosition = s.crop;
-        img.style.setProperty('--photo-origin', s.crop || '50% 50%');
-        img.style.setProperty('--photo-zoom', s.zoom);
-      }
-      slots.forEach(function (slot, i) { applyCrop(slot, state[i]); });
 
       // Positive steps = "next" (forward through FLOW); negative = "prev".
       function rotate(steps) {
@@ -1198,7 +1178,6 @@
           img.classList.add(enterClass);
           img.src = newState[i].src;
           img.alt = newState[i].alt;
-          applyCrop(slot, newState[i]);
           void img.offsetHeight; // force reflow so the class above actually applies before it's removed
           img.style.transitionProperty = '';
           requestAnimationFrame(function () { img.classList.remove(enterClass); });
