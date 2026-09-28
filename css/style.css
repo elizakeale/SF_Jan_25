@@ -1504,12 +1504,25 @@ body.page-custom .carousel{ background: var(--white); }
 .product-hero{ overflow:hidden; background: var(--white); }
 .product-hero-track{
   display:flex; width:100%; height:100%;
-  transition: transform .5s cubic-bezier(.65,0,.35,1);
+  /* Duration is set inline per-transition by productGallery() in main.js,
+     not fixed here -- see the comment there for why: a multi-slide jump
+     (clicking a thumbnail 2-3 positions away) needs more time than a
+     single arrow-click step so the eye can actually track each photo
+     passing, rather than reading as one fast unreadable swap. Easing
+     stays fixed here since it doesn't depend on distance. */
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(.65,0,.35,1);
 }
 .product-hero-slide{
   flex: 0 0 100%; width:100%; height:100%;
   display:flex; align-items:center; justify-content:center;
 }
+/* A hairline seam between slides so the slide is visible to the eye even
+   when two adjacent photos are both light/white -- without it, a
+   near-white-on-white transition can read as an instant swap rather than
+   something visibly moving. Eliza: "to the naked eye you should actually
+   be able to follow this progression." */
+.product-hero-slide + .product-hero-slide{ border-left: 1px solid rgba(28,17,35,.12); }
 .product-hero-slide img{ width:100%; height:100%; object-fit:contain; object-position:center bottom; }
 
 .product-nav-arrows{
@@ -1700,8 +1713,14 @@ body.page-product .carousel{ background: var(--white); }
 }
 .catalogue-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
 .catalogue-photo-sm{ display:none; } /* mobile-only second photo, see below */
+/* Eliza 2026-09-28: "product names in left col should be flush with 16px
+   horizontal margin, not flush like the pics" -- the photos deliberately
+   bleed to the page edge (see .catalogue-col above), but the caption text
+   underneath should sit at the standard --edge inset like body copy
+   elsewhere on the site, not flush with the photo's own edge. */
 .catalogue-item h2{
-  margin: calc(16 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200;
+  margin: calc(16 * var(--u)) 0 0; padding: 0 var(--edge);
+  font-family: var(--font-body); font-weight:200;
   font-size: calc(20 * var(--u)); letter-spacing:.05em; text-transform:uppercase;
   color: var(--ink); transition: color .18s ease;
 }

@@ -943,6 +943,44 @@
     window.addEventListener('resize', onScroll);
   })();
 
+  /* ---------------- product: floating stamp ----------------
+     Eliza 2026-09-28: "the stamp should float as you scroll." Same
+     scroll-linked-drift technique as catalogueParallax() above (driven
+     by scrollY, not a transition, so it reads as the user's own scroll
+     moving it) -- but a single element with no opposite-direction
+     neighbour, so it just lags behind the page at a fraction of the
+     real scroll distance while its section is in view, reading as
+     "floating" above the content rather than scrolling at the same
+     rate as everything else. Desktop only, same reduced-motion guard. */
+  (function productStampFloat() {
+    var stamp = document.querySelector('.product-stamp-soft');
+    if (!stamp || !document.body.classList.contains('page-product')) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var section = stamp.closest('.product-section') || stamp.parentElement;
+    var AMPLITUDE = 60; // px of max float, matches the subtlety of the catalogue drift at this element's scale
+
+    function desktop() { return window.innerWidth > 1152; }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+    function render() {
+      if (!desktop()) { stamp.style.transform = ''; return; }
+      var r = section.getBoundingClientRect();
+      var span = r.height + window.innerHeight;
+      var progress = span > 0 ? (window.innerHeight - r.top) / span : 0.5;
+      progress = clamp(progress, 0, 1);
+      var offset = (progress - 0.5) * 2 * AMPLITUDE;
+      stamp.style.transform = 'translateY(' + offset.toFixed(1) + 'px)';
+    }
+
+    var ticking = false;
+    function onScroll() { if (!ticking) { requestAnimationFrame(function () { ticking = false; render(); }); ticking = true; } }
+
+    render();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  })();
+
   /* ---------------- inquire modal: "Inquire to Purchase" popup --------------
      New per Eliza (2026-09-27, sent as a pasted Figma screenshot, not a
      linked node -- built from that image, not get_design_context). Every
@@ -1019,7 +1057,22 @@
       var slideCount = track.children.length;
       var index = 0;
 
-      function render() {
+      // Eliza: "instead of replacing the image, the images ... should
+      // literally take each other's place, moving into each other's
+      // positions ... you should actually be able to follow this
+      // progression, like people in a line stepping up." A single arrow
+      // click (one slide) already read fine at .5s, but jumping several
+      // slides at once (e.g. clicking a thumbnail 2-3 positions away)
+      // covered 2-3x the distance in the same fixed .5s -- fast enough
+      // to blur past the intervening photos instead of visibly stepping
+      // through them. Scaling duration by the distance traveled (capped
+      // so a long jump doesn't drag) keeps the same per-slide speed
+      // regardless of how many positions are crossed.
+      var STEP_MS = 500, MAX_MS = 1100;
+
+      function render(distance) {
+        var ms = Math.min(MAX_MS, STEP_MS * Math.max(1, distance || 1));
+        track.style.transitionDuration = ms + 'ms';
         track.style.transform = 'translateX(' + (index * -100) + '%)';
         Array.prototype.forEach.call(thumbs, function (t, i) {
           t.classList.toggle('is-active', i + 1 === index);
@@ -1027,8 +1080,14 @@
       }
 
       function go(next) {
-        index = (next + slideCount) % slideCount;
-        render();
+        // Plain linear distance, not circular: the track is a straight
+        // strip (index * -100%), not a looping carousel, so jumping from
+        // slide 0 to slide 3 really does travel 3 slide-widths on screen
+        // -- that's the distance the duration above needs to scale to.
+        var newIndex = (next + slideCount) % slideCount;
+        var distance = Math.abs(newIndex - index) || 1;
+        index = newIndex;
+        render(distance);
       }
 
       if (prevBtn) prevBtn.addEventListener('click', function () { go(index - 1); });
