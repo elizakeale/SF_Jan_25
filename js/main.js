@@ -1056,127 +1056,156 @@
     });
   })();
 
-  /* ---------------- product gallery: hero cycles through this
-     product's photos, arrows + thumbnail clicks both drive it --------
+  /* ---------------- product gallery: hero + 3 thumbnails rotate as one
+     loop -----------------------------------------------------------
      Eliza: "the left right toggle arrows are displaying incorrectly...
-     they are also not clickable. the product page should essentially
-     be a left right carousel." Product pages only (.product-gallery),
-     desktop only (.product-nav-arrows is display:none on mobile, where
-     all four photos already show at once in a stacked column -- see
-     style.css). Slide 0 is whatever the hero starts as; slides 1-3 are
-     the three thumbnails in DOM order. Thumbnails never change image --
-     clicking one (or an arrow) swaps the HERO to that photo and marks
-     the matching thumbnail active (see [data-gallery-thumb].is-active
-     in style.css), the usual PDP "big photo + clickable rail" pattern. */
+     the product page should essentially be a left right carousel," then
+     later: "the photos are swapping but not literally moving along the
+     carousel... they're supposed to cycle right to left, like people in
+     a line stepping up." The first version only slid photos inside the
+     hero box itself; the 3 thumbnails sat outside it as a fixed rail
+     that never changed, so one of them could sit there looking like a
+     frozen duplicate of whatever the hero currently showed. This
+     version treats all 4 boxes as slots in one rotating loop over the
+     product's 4 photos: FLOW is the order photos travel through the
+     boxes as you click "next" -- thumb-cove3 (right of the arrows) into
+     hero, hero's old photo out to thumb-cove2, thumb-cove2's out to
+     thumb-5, thumb-5's wrapping back around to thumb-cove3. That
+     right-to-left order is what "cycle right to left" describes; "prev"
+     runs it backward. Each box keeps its own established crop treatment
+     (hero: full image, no crop, bottom-aligned; thumbnails: their own
+     object-position) regardless of which photo currently occupies it --
+     see .gallery-img in style.css. Product pages only (.product-gallery),
+     desktop only: mobile shows all 4 photos at once in a stacked column
+     already (see style.css), so there's nothing to rotate there. */
   (function productGallery() {
     var galleries = document.querySelectorAll('.product-gallery');
+    function desktop() { return window.innerWidth > 1152; }
 
     Array.prototype.forEach.call(galleries, function (gallery) {
-      var track = gallery.querySelector('.product-hero-track');
-      var thumbs = gallery.querySelectorAll('[data-gallery-thumb]');
+      var hero = gallery.querySelector('.product-hero');
+      var cove2 = gallery.querySelector('.product-thumb-cove2');
+      var cove3 = gallery.querySelector('.product-thumb-cove3');
+      var thumb5 = gallery.querySelector('.product-thumb-5');
       var prevBtn = gallery.querySelector('[data-gallery-prev]');
       var nextBtn = gallery.querySelector('[data-gallery-next]');
-      if (!track || !thumbs.length) return;
+      if (!hero || !cove2 || !cove3 || !thumb5) return;
+      if (!desktop()) return; // mobile: leave each box on its own fixed photo
 
-      var slideCount = track.children.length;
-      var index = 0;
-
-      // Eliza: "instead of replacing the image, the images ... should
-      // literally take each other's place, moving into each other's
-      // positions ... you should actually be able to follow this
-      // progression, like people in a line stepping up." A single arrow
-      // click (one slide) already read fine at .5s, but jumping several
-      // slides at once (e.g. clicking a thumbnail 2-3 positions away)
-      // covered 2-3x the distance in the same fixed .5s -- fast enough
-      // to blur past the intervening photos instead of visibly stepping
-      // through them. Scaling duration by the distance traveled (capped
-      // so a long jump doesn't drag) keeps the same per-slide speed
-      // regardless of how many positions are crossed.
+      // FLOW order: index 0 = thumb-cove3, 1 = hero, 2 = thumb-cove2,
+      // 3 = thumb-5 -- the sequence a photo travels through on "next".
+      var slots = [cove3, hero, cove2, thumb5];
+      var HERO_I = 1;
       var STEP_MS = 500, MAX_MS = 1100;
 
-      function render(distance) {
-        var ms = Math.min(MAX_MS, STEP_MS * Math.max(1, distance || 1));
-        track.style.transitionDuration = ms + 'ms';
-        track.style.transform = 'translateX(' + (index * -100) + '%)';
-        Array.prototype.forEach.call(thumbs, function (t, i) {
-          t.classList.toggle('is-active', i + 1 === index);
+      function imgOf(slot) { return slot.querySelector('.gallery-img'); }
+      function mod(n) { return ((n % 4) + 4) % 4; }
+
+      var state = slots.map(function (slot) {
+        var img = imgOf(slot);
+        return { src: img.src, alt: img.alt };
+      });
+
+      // Positive steps = "next" (forward through FLOW); negative = "prev".
+      function rotate(steps) {
+        if (!steps) return;
+        var ms = Math.min(MAX_MS, STEP_MS * Math.abs(steps));
+        var enterClass = steps > 0 ? 'is-entering-next' : 'is-entering-prev';
+        var newState = state.map(function (_, i) { return state[mod(i - steps)]; });
+
+        slots.forEach(function (slot, i) {
+          if (newState[i].src === state[i].src) return; // this box's photo didn't change
+          var img = imgOf(slot);
+          img.style.transitionDuration = ms + 'ms';
+          // Set the "just arrived from off to one side" start state with
+          // no transition, swap in the new photo, force a reflow, then
+          // remove the class so the CSS transition carries it back to
+          // rest -- entering-photo slides in the direction that matches
+          // this rotation's own flow instead of just fading/popping in.
+          img.style.transitionProperty = 'none';
+          img.classList.add(enterClass);
+          img.src = newState[i].src;
+          img.alt = newState[i].alt;
+          void img.offsetHeight; // force reflow so the class above actually applies before it's removed
+          img.style.transitionProperty = '';
+          requestAnimationFrame(function () { img.classList.remove(enterClass); });
         });
+
+        state = newState;
       }
 
-      function go(next) {
-        // Plain linear distance, not circular: the track is a straight
-        // strip (index * -100%), not a looping carousel, so jumping from
-        // slide 0 to slide 3 really does travel 3 slide-widths on screen
-        // -- that's the distance the duration above needs to scale to.
-        var newIndex = (next + slideCount) % slideCount;
-        var distance = Math.abs(newIndex - index) || 1;
-        index = newIndex;
-        render(distance);
-      }
+      if (prevBtn) prevBtn.addEventListener('click', function () { rotate(-1); });
+      if (nextBtn) nextBtn.addEventListener('click', function () { rotate(1); });
 
-      if (prevBtn) prevBtn.addEventListener('click', function () { go(index - 1); });
-      if (nextBtn) nextBtn.addEventListener('click', function () { go(index + 1); });
-
-      Array.prototype.forEach.call(thumbs, function (t, i) {
-        t.addEventListener('click', function () { go(i + 1); });
+      // Clicking a thumbnail brings ITS current photo into the hero slot,
+      // going whichever direction (forward or backward through FLOW) is
+      // fewer steps, so e.g. thumb-cove2 (flow-adjacent just after hero)
+      // takes one quick "prev"-style step rather than three "next" ones.
+      Array.prototype.forEach.call(gallery.querySelectorAll('[data-gallery-thumb]'), function (thumb) {
+        var slotIndex = slots.indexOf(thumb);
+        if (slotIndex === -1) return;
+        thumb.addEventListener('click', function () {
+          var forward = mod(HERO_I - slotIndex);
+          var backward = mod(slotIndex - HERO_I);
+          rotate(forward <= backward ? forward : -backward);
+        });
       });
 
       // Eliza: "we should also be able to drag left and right on the
       // product carousel." Pointer Events cover mouse + touch + pen in
       // one code path; a small distance threshold keeps an ordinary
-      // click/tap from also firing a swipe.
-      var heroFigure = gallery.querySelector('.product-hero');
-      if (heroFigure) {
-        var dragging = false, startX = 0, startY = 0, pointerId = null;
-        var THRESHOLD = 40;
+      // click/tap from also firing a swipe. Drag only drives the hero
+      // box (the others aren't meant to be dragged individually), one
+      // rotation step per completed drag.
+      var dragging = false, startX = 0, startY = 0, pointerId = null;
+      var THRESHOLD = 40;
 
-        heroFigure.addEventListener('pointerdown', function (e) {
-          dragging = true;
-          startX = e.clientX;
-          startY = e.clientY;
-          pointerId = e.pointerId;
-          heroFigure.classList.add('is-dragging');
-        });
+      hero.addEventListener('pointerdown', function (e) {
+        dragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        pointerId = e.pointerId;
+        hero.classList.add('is-dragging');
+      });
 
-        heroFigure.addEventListener('pointermove', function (e) {
-          if (!dragging || e.pointerId !== pointerId) return;
-          if (Math.abs(e.clientX - startX) > 10 && Math.abs(e.clientX - startX) > Math.abs(e.clientY - startY)) {
-            e.preventDefault();
-          }
-        });
-
-        function endDrag(e) {
-          if (!dragging || e.pointerId !== pointerId) return;
-          dragging = false;
-          heroFigure.classList.remove('is-dragging');
-          var dx = e.clientX - startX;
-          var dy = e.clientY - startY;
-          if (Math.abs(dx) > THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
-            go(dx < 0 ? index + 1 : index - 1);
-          }
-        }
-
-        heroFigure.addEventListener('pointerup', endDrag);
-        heroFigure.addEventListener('pointercancel', function () {
-          dragging = false;
-          heroFigure.classList.remove('is-dragging');
-        });
-
-        // Eliza: "carousel force horizontal scroll not working" -- a
-        // trackpad two-finger swipe fires wheel events, not pointer
-        // events, so the drag handling above never saw it. Treat a
-        // mostly-horizontal wheel gesture the same as a drag: advance
-        // one slide, then ignore further wheel deltas briefly so one
-        // swipe doesn't fire through several slides at once.
-        var wheelLocked = false;
-        heroFigure.addEventListener('wheel', function (e) {
-          if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      hero.addEventListener('pointermove', function (e) {
+        if (!dragging || e.pointerId !== pointerId) return;
+        if (Math.abs(e.clientX - startX) > 10 && Math.abs(e.clientX - startX) > Math.abs(e.clientY - startY)) {
           e.preventDefault();
-          if (wheelLocked) return;
-          wheelLocked = true;
-          go(e.deltaX > 0 ? index + 1 : index - 1);
-          setTimeout(function () { wheelLocked = false; }, 500);
-        }, { passive: false });
+        }
+      });
+
+      function endDrag(e) {
+        if (!dragging || e.pointerId !== pointerId) return;
+        dragging = false;
+        hero.classList.remove('is-dragging');
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        if (Math.abs(dx) > THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+          rotate(dx < 0 ? 1 : -1);
+        }
       }
+
+      hero.addEventListener('pointerup', endDrag);
+      hero.addEventListener('pointercancel', function () {
+        dragging = false;
+        hero.classList.remove('is-dragging');
+      });
+
+      // Eliza: "carousel force horizontal scroll not working" -- a
+      // trackpad two-finger swipe fires wheel events, not pointer
+      // events, so the drag handling above never saw it. Treat a
+      // mostly-horizontal wheel gesture the same as a drag: advance one
+      // step, then ignore further wheel deltas briefly so one swipe
+      // doesn't fire through several boxes at once.
+      var wheelLocked = false;
+      hero.addEventListener('wheel', function (e) {
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        if (wheelLocked) return;
+        wheelLocked = true;
+        rotate(e.deltaX > 0 ? 1 : -1);
+        setTimeout(function () { wheelLocked = false; }, 500);
+      }, { passive: false });
     });
   })();

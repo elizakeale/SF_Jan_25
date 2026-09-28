@@ -91,23 +91,36 @@
       <h1 class="product-title">Cove Side Table</h1>
     </div>
 
+    <!-- Eliza 2026-09-28, 2nd pass: "the photos are swapping but not
+         literally moving along the carousel ... they're supposed to cycle
+         right to left, like people in a line stepping up." Rebuilt as one
+         rotating 4-photo loop across all 4 boxes (hero + 3 thumbnails)
+         instead of a separate hero-only filmstrip plus a static thumbnail
+         rail: advancing genuinely moves every photo one box over (flow
+         order set in js/main.js: thumb-cove3 -> hero -> thumb-cove2 ->
+         thumb-5 -> wraps back to thumb-cove3), so the thumbnail that used
+         to sit fixed next to the arrows no longer looks like a frozen
+         duplicate of the hero -- it's mid-rotation like everything else.
+         Each box keeps its own established crop treatment (hero: full
+         image, no crop; thumbnails: their own object-position) regardless
+         of which photo currently occupies it -- see productGallery() in
+         main.js for the rotation logic and .gallery-img in style.css for
+         the per-box enter/exit slide. Desktop only, matching the nav
+         arrows -- mobile keeps each of the 4 boxes on its own fixed photo
+         (already showing all four at once in a stacked column, so there's
+         nothing to rotate there). -->
     <div class="product-gallery">
-      <figure class="product-photo product-hero">
-        <div class="product-hero-track">
-          <div class="product-hero-slide"><img src="images/product/cove-table.webp" alt="Cove Side Table, asymmetric double-layered design in black cherry"></div>
-          <div class="product-hero-slide"><img src="images/product/cove-table-3.webp" alt="Cove Side Table, side view in situ"></div>
-          <div class="product-hero-slide"><img src="images/product/cove-table-4.webp" alt="Cove Side Table, styled detail view"></div>
-          <div class="product-hero-slide"><img src="images/product/cove-table-2.webp" alt="Cove Side Table, joinery detail"></div>
-        </div>
+      <figure class="product-photo product-hero" data-gallery-slot="hero">
+        <img class="gallery-img" src="images/product/cove-table.webp" alt="Cove Side Table, asymmetric double-layered design in black cherry">
       </figure>
-      <figure class="product-photo product-thumb-cove2" data-gallery-thumb>
-        <img src="images/product/cove-table-3.webp" alt="Cove Side Table, side view in situ">
+      <figure class="product-photo product-thumb-cove2" data-gallery-slot="cove2" data-gallery-thumb>
+        <img class="gallery-img" src="images/product/cove-table-3.webp" alt="Cove Side Table, side view in situ">
       </figure>
-      <figure class="product-photo product-thumb-cove3" data-gallery-thumb>
-        <img src="images/product/cove-table-4.webp" alt="Cove Side Table, styled detail view">
+      <figure class="product-photo product-thumb-cove3" data-gallery-slot="cove3" data-gallery-thumb>
+        <img class="gallery-img" src="images/product/cove-table-4.webp" alt="Cove Side Table, styled detail view">
       </figure>
-      <figure class="product-photo product-thumb-5" data-gallery-thumb>
-        <img src="images/product/cove-table-2.webp" alt="Cove Side Table, joinery detail">
+      <figure class="product-photo product-thumb-5" data-gallery-slot="thumb5" data-gallery-thumb>
+        <img class="gallery-img" src="images/product/cove-table-2.webp" alt="Cove Side Table, joinery detail">
       </figure>
 
       <div class="product-nav-arrows">
