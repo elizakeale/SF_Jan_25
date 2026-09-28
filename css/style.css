@@ -700,7 +700,9 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    to match the homepage hero's own above-the-fold button (.btn-outline):
    white outline, white text, transparent background, since they're above
    the fold there same as the hero's. Sized to match the email input above
-   it, same as before. */
+   it, same as before. This is still the base/mobile-menu appearance;
+   see the .site-footer override below for the desktop footer, which
+   Eliza later asked to have a solid orange fill instead of transparent. */
 .newsletter .accent{
   display:flex; align-items:center; justify-content:space-between; /* Figma
     404:410 label at x=1062 in a box starting x=1049, Group 30 arrow at
@@ -728,6 +730,21 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    of turning --orange-light rather than inverting. */
 .newsletter .accent:hover{ background: var(--orange-light); color: var(--white); border-color: var(--orange-light); }
 .newsletter .accent img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); } /* same 14x14 artboard as the input arrow; Figma draws them at equal size */
+
+/* RULE (Eliza 2026-09-28): "download catalogue" buttons should have an
+   orange background in the footer, not transparent -- scoped to
+   .site-footer specifically so the mobile menu's own outline version
+   (see the comment above, its own separate Eliza decision) is untouched.
+   Matches the site's standard solid-CTA convention (.product-cta,
+   .showroom-cta, etc.): var(--orange) fill, var(--orange-light) on
+   hover, white text/icon throughout since both oranges are dark enough
+   for white to stay legible. */
+.site-footer .newsletter .accent{
+  background: var(--orange); border-color: var(--orange); color: var(--white);
+}
+.site-footer .newsletter .accent:hover{
+  background: var(--orange-light); border-color: var(--orange-light); color: var(--white);
+}
 
 @media (max-width: 1152px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }
@@ -1134,15 +1151,18 @@ body.inquire-modal-open{ overflow:hidden; }
    Contact/Trade: run from 215 to the white/carousel seam.
    ------------------------------------------------------------
    Departures from Figma, all of them drift rather than design:
-   - the Furnish Bainbridge logo (298:182) is a real third-party
-     trademark -- a Bainbridge Island furniture shop Studio Fritz's
-     showroom partners with -- and Figma's asset host returns 403 to this
-     build environment (confirmed from both the cloud container and this
-     device), so it can't be downloaded, and hand-redrawing someone
-     else's mark isn't appropriate either. Held as a plain text credit in
-     its slot, same box the real file will fill, so dropping it in later
-     is a one-line swap -- same pattern as the About photos before they
-     landed.
+   - Eliza 2026-09-28: re-pulled 278:1574 fresh (get_design_context +
+     get_metadata) after she flagged this section as "way off." Findings:
+     the "Furnish Bainbridge is a woman-owned..." paragraph that used to
+     sit above the address was never in Figma at all -- removed. The
+     Furnish Bainbridge logo (298:182) IS downloadable after all (the
+     earlier 403 was some transient/session issue, not a real block) --
+     it's a real placed raster, now saved as
+     images/showroom/furnish-bainbridge-logo.png and rendered as an
+     actual <img>, not a text placeholder. And the interior photo's real
+     box (524:90) is 424x283 landscape, not the 254x381 portrait box this
+     was built against -- fixed below, which is why the photo looked
+     wrongly cropped.
    - image15 (298:185), the small accent between the two blurbs, is two
      plain rules meeting at a corner, not a photo or a third-party mark --
      reproduced directly instead of held back.
@@ -1167,16 +1187,18 @@ body.page-showroom{
 }
 .showroom-col p{ margin:0; }
 .showroom-col p + p{ margin-top: 1.7em; }
+/* Desktop's Figma frame has no blurb, only the address -- see the drift
+   note above. Hidden here, shown in the mobile media query where its own
+   frame really does include it. */
+.showroom-blurb{ display:none; }
 .showroom-partner{ top: calc(317 * var(--u)); }
 .showroom-location{ top: calc(982 * var(--u)); }
 
-/* 298:182 -- see the drift note above. */
-.showroom-logo-credit{
-  position:absolute; left: calc(309 * var(--u)); top: calc(538 * var(--u));
-  width: calc(162 * var(--u)); height: calc(119 * var(--u));
-  display:flex; flex-direction:column; justify-content:center;
-  font-family: var(--font-body); font-weight:300; font-size: calc(16 * var(--u));
-  line-height:1.3; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
+/* 298:182 -- real placed logo, 309,384, 107x79 (see the drift note above). */
+.showroom-logo{
+  position:absolute; left: calc(309 * var(--u)); top: calc(384 * var(--u));
+  width: calc(107 * var(--u)); height: calc(79 * var(--u));
+  object-fit: contain;
 }
 
 /* 298:185 -- a plain corner-rule accent; see the drift note above. */
@@ -1188,9 +1210,12 @@ body.page-showroom{
 .showroom-accent::before{ left:0; top:0; width:1px; height:100%; }
 .showroom-accent::after{ left:0; top: calc(32 * var(--u)); width:100%; height:1px; }
 
+/* 524:90 ("5 1") -- real box is 823,325, 424x283 (landscape); was built
+   against a stale 824,279, 254x381 (portrait) box, which force-cropped
+   Eliza's landscape photo into a tall sliver. Fixed to the real coords. */
 .showroom-portrait{
-  position:absolute; left: calc(824 * var(--u)); top: calc(279 * var(--u));
-  width: calc(254 * var(--u)); aspect-ratio: 254 / 381; margin:0; background: var(--cream);
+  position:absolute; left: calc(823 * var(--u)); top: calc(325 * var(--u));
+  width: calc(424 * var(--u)); aspect-ratio: 424 / 283; margin:0; background: var(--cream);
 }
 .showroom-interior{
   position:absolute; left: calc(1137 * var(--u)); top: calc(943 * var(--u));
@@ -2212,22 +2237,30 @@ body.page-product .carousel .tile figcaption{ display:none; }
   .showroom-section{ height:auto; padding-top: calc(81 * var(--mu)); }
   body.page-showroom .page-rule{ display:none; }
 
-  .showroom-logo-credit{
+  /* Mobile's own Figma frame (370:462, node 397:194) places this logo at
+     a genuinely different size than desktop's (162x119 vs 107x79) -- not
+     a guess, confirmed via get_metadata on the mobile frame directly. */
+  .showroom-logo{
     position:static; width: calc(162 * var(--mu)); height: calc(119 * var(--mu));
     margin: calc(49 * var(--mu)) 0 0 var(--edge);
-    font-size: calc(14 * var(--mu));
   }
   .showroom-col{
     position:static; width:auto; padding: 0 var(--edge);
     font-size: calc(16 * var(--mu));
   }
+  /* Mobile's frame combines blurb + address as one text block -- shown
+     here only (see the desktop drift note above). */
+  .showroom-blurb{ display:block; }
   .showroom-partner{ margin-top: calc(34 * var(--mu)); }
   .showroom-location{ margin-top: calc(54 * var(--mu)); }
-  /* 254x381 at left:0 in the mobile frame -- a deliberate partial-width
-     bleed, not the full-width stretch every other mobile photo gets. */
+  /* Mobile's own frame (370:462, node 524:91) is 424x283 at left:0 --
+     same landscape box/aspect as desktop's 524:90, just re-measured here
+     directly rather than assumed; it runs slightly past the 402-wide
+     mobile frame edge, a deliberate partial-width bleed, not the
+     full-width stretch every other mobile photo gets. */
   .showroom-portrait{
     position:static; left:auto; top:auto;
-    width: calc(254 * var(--mu)); aspect-ratio: 254 / 381; margin: calc(194 * var(--mu)) 0 0;
+    width: calc(424 * var(--mu)); aspect-ratio: 424 / 283; margin: calc(194 * var(--mu)) 0 0;
   }
   .showroom-interior{ display:none; }
   .showroom-accent{

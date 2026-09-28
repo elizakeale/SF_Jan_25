@@ -81,16 +81,32 @@
   <section class="showroom-section">
     <h1 class="page-label">Showroom</h1>
 
-    <!-- 298:182 is Furnish Bainbridge's own logo -- a real third-party mark
-         that Figma's asset host won't serve to this build environment (see
-         the stylesheet comment above this section). Text credit stands in
-         until Eliza can supply the file directly. Comes before the blurb
-         in DOM order on purpose -- Figma's mobile frame puts the logo
-         above the paragraph, desktop positions both independently. -->
-    <p class="showroom-logo-credit">Furnish<br>Bainbridge</p>
+    <!-- Eliza 2026-09-28: "refer to figma, this is way off. paragraph
+         should be gone, text is weird, photo is cropped." Re-pulled real
+         coordinates via get_design_context/get_metadata on 278:1574
+         (file 5Cn1sXHUVREVMKGLUWM2WF) rather than guessing again:
+         - node 298:181 is ONLY the address text -- there is no separate
+           "Furnish Bainbridge is a woman-owned..." paragraph anywhere in
+           this frame. That paragraph was a fabrication; removed outright.
+         - node 298:182 ("image 14") is a real placed raster of Furnish
+           Bainbridge's actual logo (downloaded via download_assets/
+           get_screenshot -- Figma's asset host serves it fine, the old
+           comment claiming otherwise was wrong) at 309,384, 107x79.
+           Swapped the text placeholder for the real image.
+         - node 524:90 ("5 1", the interior photo) is 823,325, 424x283 --
+           a LANDSCAPE box, not the 254x381 portrait box this was built
+           with. That mismatch was why Eliza's photo (itself landscape)
+           was being force-cropped into a tall portrait frame. -->
+    <img class="showroom-logo" src="images/showroom/furnish-bainbridge-logo.png" alt="Furnish Bainbridge">
 
     <div class="showroom-col showroom-partner">
-      <p>Furnish Bainbridge is a woman-owned, family-run furniture and home goods shop on Bainbridge Island, offering custom furniture, bespoke fabrics, and design.</p>
+      <!-- Eliza 2026-09-28: desktop's own Figma frame (278:1574, node
+           298:181) has ONLY the address -- no blurb -- so the blurb below
+           is desktop-hidden. Mobile's frame (370:462, node 397:174) DOES
+           combine the blurb + address as one text block, so it's shown
+           there (see the mobile media query below), in its real Figma
+           order: logo image first, then this text. -->
+      <p class="showroom-blurb">Furnish Bainbridge is a woman-owned, family-run furniture and home goods shop on Bainbridge Island, offering custom furniture, bespoke fabrics, and design.</p>
       <p>400 Winslow Way E #110, Bainbridge Island, WA 98110</p>
     </div>
 
