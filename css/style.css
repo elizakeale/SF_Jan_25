@@ -1530,29 +1530,17 @@ body.page-custom .carousel{ background: var(--white); }
 .product-swatches{ position:absolute; left: calc(1006 * var(--u)); top: calc(1450 * var(--u)); display:flex; gap: calc(27 * var(--u)); }
 .product-swatch{ width: calc(73 * var(--u)); text-align:center; }
 .product-swatch-chip{ display:block; width:100%; aspect-ratio:1; border-radius: calc(4 * var(--u)); }
-/* Eliza 2026-09-27: "SKUs look wrong" -- flat two-stop gradients read as
-   plain color chips, not wood. No swatch photography exists yet (see the
-   asset-library-gap comment at the top of this section) and Figma's own
-   swatch images (Walnut 1 / Euro Beech 1 / Cherry 1, nodes 244:281/283/287)
-   couldn't be pulled into this repo this session -- the Figma asset host
-   isn't reachable from here. Layered a faint repeating grain streak over
-   each base tone as a closer stand-in in the meantime; swap for the real
-   Figma swatch exports (or new macro photos) as soon as they're in the
-   Drive asset library. */
+/* Eliza sent real macro photos of the three wood species (Drive:
+   Product Pages > 08. Wood Options) -- replaced the CSS-gradient
+   stand-ins with the actual swatch photography. */
 .product-swatch-beech .product-swatch-chip{
-  background:
-    repeating-linear-gradient(97deg, rgba(120,86,45,.14) 0 2px, transparent 2px 8px),
-    linear-gradient(135deg,#ecd7ae,#cfab7c);
+  background: url("../images/product/swatch-beech.webp") center/cover;
 }
 .product-swatch-cherry .product-swatch-chip{
-  background:
-    repeating-linear-gradient(97deg, rgba(40,16,4,.18) 0 2px, transparent 2px 8px),
-    linear-gradient(135deg,#a06f42,#6c4023);
+  background: url("../images/product/swatch-cherry.webp") center/cover;
 }
 .product-swatch-walnut .product-swatch-chip{
-  background:
-    repeating-linear-gradient(97deg, rgba(0,0,0,.22) 0 2px, transparent 2px 8px),
-    linear-gradient(135deg,#6b5f54,#3b322b);
+  background: url("../images/product/swatch-walnut.webp") center/cover;
 }
 .product-swatch p{
   margin: calc(8 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200;
