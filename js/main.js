@@ -1078,6 +1078,22 @@
           dragging = false;
           heroFigure.classList.remove('is-dragging');
         });
+
+        // Eliza: "carousel force horizontal scroll not working" -- a
+        // trackpad two-finger swipe fires wheel events, not pointer
+        // events, so the drag handling above never saw it. Treat a
+        // mostly-horizontal wheel gesture the same as a drag: advance
+        // one slide, then ignore further wheel deltas briefly so one
+        // swipe doesn't fire through several slides at once.
+        var wheelLocked = false;
+        heroFigure.addEventListener('wheel', function (e) {
+          if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+          e.preventDefault();
+          if (wheelLocked) return;
+          wheelLocked = true;
+          go(e.deltaX > 0 ? index + 1 : index - 1);
+          setTimeout(function () { wheelLocked = false; }, 500);
+        }, { passive: false });
       }
     });
   })();
