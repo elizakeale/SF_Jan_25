@@ -975,62 +975,71 @@
   /* ---------------- product stamp: same pin/rest float as the other
      pages' .page-stamp AND the homepage's own .stamp -- recomputed fresh
      every frame instead of cached once ---------------------------------
-     Eliza (4th pass, 2026-09-28): "stamp is behaving odd, sometimes its
-     stuck, u should copy same approach as homepage." The previous version
-     measured the stamp's own natural position ONCE (via getBoundingClientRect
-     right after page load) and cached it for the rest of the page's life --
-     if anything about the layout wasn't fully settled at that instant, the
-     cached number is wrong forever after and the stamp reads as stuck.
-     The homepage's own .stamp (stampFooterStop above) never has this
-     problem because it never caches a measurement: its pinned position is
-     recomputed from window.innerHeight on every single call. This version
-     does the same thing for .product-stamp-soft -- every render() call
-     re-derives the pinned spot from two elements that are NEVER themselves
-     moved by this code (.product-section's own offsetTop, and
-     .product-accent-v's live width as a stand-in for --u's current
-     resolved pixel value, since custom properties don't hand back a
-     resolved px number directly) -- so a wrong frame can never persist
-     into the next one. */
+     Eliza (5th pass, 2026-09-28): "stamp still not working." Found the
+     actual bug: the previous version's "resting" branch set stamp.style.top
+     to a number measured in .carousel's own coordinate frame (its offsetTop,
+     relative to whatever ITS offsetParent is -- body/main, since .carousel
+     is a sibling of .product-section, not a child of it) but applied it
+     while stamp.style.position was 'absolute', which makes the browser
+     resolve that top relative to stamp's OWN offsetParent (.product-section,
+     the nearest positioned ancestor) -- two different coordinate spaces, so
+     the "landing" spot was nowhere near the carousel. The "floating" branch
+     had a second bug: it fed a document-absolute Y (section top + scrollY)
+     into position:fixed's top, which is viewport-relative -- so instead of
+     staying pinned in view, the stamp raced down the screen as you scrolled
+     and usually ended up off-screen entirely, reading as "stuck"/invisible.
+     Rewritten as three explicit states (mirrors the homepage's own .stamp /
+     stampFooterStop above): natural in-flow position (untouched, stylesheet
+     handles it) -> pinned to the viewport once that natural spot would
+     scroll above the fold -> resting just above the section's own bottom
+     edge (which already lines up exactly with where the carousel begins,
+     so nothing here needs to reach into .carousel's unrelated coordinate
+     frame at all). Every number is re-derived from .product-section's and
+     .product-accent-v's live geometry on every single render() call -- never
+     cached, never read off the stamp itself -- so a wrong frame can't
+     persist into the next one. */
   (function productStampFloat() {
     var stamp = document.querySelector('.product-stamp-soft');
     var section = document.querySelector('.product-section');
     var uRef = document.querySelector('.product-accent-v'); // width: calc(2 * var(--u))
     if (!stamp || !section || !uRef || !document.body.classList.contains('page-product')) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var target = document.querySelector('.carousel');
-    if (!target) return;
     var GAP = 24;
 
     function desktop() { return window.innerWidth > 1152; }
-
-    // The stamp's own natural (untransformed) position, re-derived from
-    // stable references every time -- never read off the stamp itself.
-    function naturalTop() {
-      var uPx = uRef.getBoundingClientRect().width / 2;
-      return section.getBoundingClientRect().top + window.scrollY + 594 * uPx;
-    }
-    function naturalLeft() {
-      var uPx = uRef.getBoundingClientRect().width / 2;
-      return section.getBoundingClientRect().left + 1301 * uPx;
-    }
 
     function render() {
       if (!desktop()) {
         stamp.style.position = ''; stamp.style.top = ''; stamp.style.left = '';
         return;
       }
-      var pinnedTop = naturalTop();
-      var pinnedLeft = naturalLeft();
+      var uPx = uRef.getBoundingClientRect().width / 2;
+      var sectionRect = section.getBoundingClientRect(); // viewport-relative, live
       var stampH = stamp.offsetHeight;
-      var releaseScrollY = target.offsetTop - pinnedTop - stampH - GAP;
-      if (window.scrollY >= releaseScrollY) {
+
+      // Where the stylesheet's own calc(594*u)/calc(1301*u) puts it,
+      // expressed in the current viewport.
+      var naturalTopViewport = sectionRect.top + 594 * uPx;
+      var naturalLeftViewport = sectionRect.left + 1301 * uPx;
+
+      // Where it should land once done floating: just above the section's
+      // own bottom edge, in .product-section's OWN coordinate space (its
+      // offsetParent once this goes absolute) -- the section's height
+      // already runs exactly down to where the carousel begins, so this
+      // needs nothing from .carousel itself.
+      var restTopInSection = section.offsetHeight - stampH - GAP;
+      var restTopViewport = sectionRect.top + restTopInSection;
+
+      if (restTopViewport <= GAP) {
         stamp.style.position = 'absolute';
-        stamp.style.top = (target.offsetTop - stampH - GAP) + 'px';
+        stamp.style.top = restTopInSection + 'px';
         stamp.style.left = ''; // back to the stylesheet's section-relative left
-      } else {
+      } else if (naturalTopViewport <= GAP) {
         stamp.style.position = 'fixed';
-        stamp.style.top = pinnedTop + 'px';
-        stamp.style.left = pinnedLeft + 'px';
+        stamp.style.top = GAP + 'px';
+        stamp.style.left = naturalLeftViewport + 'px';
+      } else {
+        stamp.style.position = ''; stamp.style.top = ''; stamp.style.left = '';
       }
     }
 
@@ -1137,10 +1146,37 @@
       function imgOf(slot) { return slot.querySelector('.gallery-img'); }
       function mod(n) { return ((n % 4) + 4) % 4; }
 
+      // Eliza (5th pass, 2026-09-28): "still weird crops." The uniform
+      // object-position:center fix (previous pass) removed the wrong
+      // per-BOX memory but assumed every photo is centrally composed --
+      // it isn't (cove-table-3.webp has the table pushed to the upper
+      // right with a lot of empty floor in the lower-left, so a dead-
+      // center crop wastes most of a tall thumbnail box on that empty
+      // area). Each <img> in the markup can carry its own data-crop
+      // attribute (an object-position value tuned for THAT photo); it
+      // travels with the photo's identity through every rotation because
+      // it's read into `state` here alongside src/alt and permuted the
+      // same way, rather than living on the box. A photo with no
+      // data-crop just keeps the CSS default (object-position:center).
+      // The hero slot is exempt -- object-fit:contain (whole image, no
+      // crop) with its own fixed bottom-aligned treatment regardless of
+      // photo, see .product-hero .gallery-img in style.css.
       var state = slots.map(function (slot) {
         var img = imgOf(slot);
-        return { src: img.src, alt: img.alt };
+        return {
+          src: img.src, alt: img.alt,
+          crop: img.getAttribute('data-crop') || '',
+          zoom: parseFloat(img.getAttribute('data-zoom')) || 1
+        };
       });
+      function applyCrop(slot, s) {
+        if (slot === hero) return;
+        var img = imgOf(slot);
+        img.style.objectPosition = s.crop;
+        img.style.setProperty('--photo-origin', s.crop || '50% 50%');
+        img.style.setProperty('--photo-zoom', s.zoom);
+      }
+      slots.forEach(function (slot, i) { applyCrop(slot, state[i]); });
 
       // Positive steps = "next" (forward through FLOW); negative = "prev".
       function rotate(steps) {
@@ -1162,6 +1198,7 @@
           img.classList.add(enterClass);
           img.src = newState[i].src;
           img.alt = newState[i].alt;
+          applyCrop(slot, newState[i]);
           void img.offsetHeight; // force reflow so the class above actually applies before it's removed
           img.style.transitionProperty = '';
           requestAnimationFrame(function () { img.classList.remove(enterClass); });

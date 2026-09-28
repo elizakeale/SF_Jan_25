@@ -1522,12 +1522,23 @@ body.page-custom .carousel{ background: var(--white); }
    blur past the intervening photos). */
 .gallery-img{
   width:100%; height:100%; object-fit:cover; object-position:center; display:block;
+  /* Eliza (5th pass, 2026-09-28): "still weird crops." Some source photos
+     (e.g. cove-table-3.webp) have the subject pushed into one corner of an
+     otherwise near-box-aspect-ratio frame, so plain object-fit:cover barely
+     crops anything and the empty background dominates the thumbnail. These
+     two custom properties let a specific photo opt into an actual zoom-in
+     crop (see productGallery()'s data-zoom/data-crop handling in main.js,
+     which sets them per-photo -- they travel with the photo through every
+     rotation, not with the box). Untouched photos get the harmless
+     defaults (no zoom, centered origin). */
+  transform: scale(var(--photo-zoom, 1));
+  transform-origin: var(--photo-origin, 50% 50%);
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(.65,0,.35,1);
   -webkit-user-drag:none; user-select:none; -webkit-user-select:none;
 }
-.gallery-img.is-entering-next{ transform: translateX(22px); opacity:0; }
-.gallery-img.is-entering-prev{ transform: translateX(-22px); opacity:0; }
+.gallery-img.is-entering-next{ transform: translateX(22px) scale(var(--photo-zoom, 1)); opacity:0; }
+.gallery-img.is-entering-prev{ transform: translateX(-22px) scale(var(--photo-zoom, 1)); opacity:0; }
 
 .product-nav-arrows{
   position:absolute; left: calc(995 * var(--u)); top: calc(607 * var(--u));
@@ -1653,8 +1664,6 @@ body.page-custom .carousel{ background: var(--white); }
    smaller than the swatch name + price line, matching Figma. */
 .product-swatch-fine{ font-size: calc(10 * var(--u)); }
 
-body.page-product .carousel{ background: var(--white); }
-
 /* ============================================================
    CATALOGUE (244:489 desktop / 342:587 mobile)
    Reuses the shared .page-rule bracket (unlike Product, which built its
@@ -1666,7 +1675,7 @@ body.page-product .carousel{ background: var(--white); }
    doesn't map onto Figma's own scattered per-item coordinates anyway, so
    there's nothing gained by fighting flow layout to hit exact positions
    here. Bottom carousel keeps the default orange background/white
-   caption (no white-carousel override like Showroom/FAQ/Custom/Product)
+   caption (no white-carousel override like Showroom/FAQ/Custom)
    -- Figma's own captions for this row sit below where the page's white
    background ends, on orange, matching the shared component's default.
    ------------------------------------------------------------ */
@@ -1782,8 +1791,7 @@ body.page-product .carousel{ background: var(--white); }
    rule below (Figma's mobile frames genuinely omit them). */
 body.page-showroom .carousel .tile figcaption,
 body.page-faq .carousel .tile figcaption,
-body.page-custom .carousel .tile figcaption,
-body.page-product .carousel .tile figcaption{ color: var(--ink); }
+body.page-custom .carousel .tile figcaption{ color: var(--ink); }
 
 /* ============================================================
    MOBILE — built from Figma's 402-wide frames:
