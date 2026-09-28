@@ -1456,6 +1456,28 @@ body.page-custom .carousel{ background: var(--white); }
 .product-hero.is-dragging{ cursor: grabbing; }
 .product-hero img{ pointer-events: none; }
 
+/* Eliza: "the left and right motion on the product carousel should be
+   more obvious, somehow flipping through the images... i almost miss
+   the flipping" + "images are different sizes, instead of cropping them
+   all the same, you should adjust and show the full images... think of
+   it more as each one coming into its spot one at a time in a line,
+   rather than updating the same crop with a new image." Swapped the old
+   instant src-swap-inside-a-fixed-crop for a real filmstrip: every photo
+   sits side by side in .product-hero-track (one slide per photo, full
+   image visible via object-fit:contain instead of a forced cover-crop)
+   and the track slides left/right so the incoming photo visibly travels
+   into the hero's slot. See productGallery() in main.js. */
+.product-hero{ overflow:hidden; background: var(--cream); }
+.product-hero-track{
+  display:flex; width:100%; height:100%;
+  transition: transform .5s cubic-bezier(.65,0,.35,1);
+}
+.product-hero-slide{
+  flex: 0 0 100%; width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+}
+.product-hero-slide img{ width:100%; height:100%; object-fit:contain; object-position:center; }
+
 .product-nav-arrows{
   position:absolute; left: calc(995 * var(--u)); top: calc(607 * var(--u));
   height: calc(17 * var(--u));
@@ -1512,6 +1534,11 @@ body.page-custom .carousel{ background: var(--white); }
 .product-config{ left: calc(1006 * var(--u)); }
 .product-config ul{ margin: 1.7em 0 0; padding-left: calc(24 * var(--u)); }
 .product-config li + li{ margin-top:.3em; }
+/* Eliza: "bullets look too big relative to figma" -- the default disc
+   marker scales with the list text's own font-size (var(--fs-body)),
+   which reads much heavier than Figma's small bullet glyph; ::marker
+   lets the dot shrink independently of the (unchanged) list text. */
+.product-config li::marker{ font-size: .5em; }
 
 .product-cta{
   position:absolute; left: calc(528 * var(--u)); width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
@@ -1525,10 +1552,21 @@ body.page-custom .carousel{ background: var(--white); }
 .product-cta:hover{ background: var(--orange-light); }
 .product-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
 .product-cta-inquire{ top: calc(1325 * var(--u)); }
-.product-cta-spec{ top: calc(1391 * var(--u)); }
+/* Eliza: "make 'download spec sheet' orange outline, transparent fill,
+   orange text" -- using an explicit white fill rather than truly
+   transparent (same look here since the section behind it is white, but
+   won't go invisible-then-wrong-contrast if this button ever sits on a
+   non-white background elsewhere). */
+.product-cta-spec{
+  top: calc(1391 * var(--u));
+  background: var(--white); color: var(--orange);
+  border: 1px solid var(--orange);
+}
+.product-cta-spec:hover{ background: var(--orange); color: var(--white); }
+.product-cta-spec:hover img{ content: url("../images/logos/arrows/arrow-white.svg"); }
 
 .product-swatches{ position:absolute; left: calc(1006 * var(--u)); top: calc(1450 * var(--u)); display:flex; gap: calc(27 * var(--u)); }
-.product-swatch{ width: calc(73 * var(--u)); text-align:center; }
+.product-swatch{ width: calc(73 * var(--u)); text-align:right; } /* Eliza: "walnut, cherry, price adjusted etc should be right aligned" */
 .product-swatch-chip{ display:block; width:100%; aspect-ratio:1; border-radius: calc(4 * var(--u)); }
 /* Eliza sent real macro photos of the three wood species (Drive:
    Product Pages > 08. Wood Options) -- replaced the CSS-gradient
@@ -2431,6 +2469,14 @@ body.page-product .carousel .tile figcaption{ display:none; }
 .site-intro.is-done{ opacity:0; pointer-events:none; }
 .site-intro.is-removed{ display:none; }
 body.intro-active{ overflow:hidden; }
+
+/* Eliza: "it looks too big on macbook 13, scale down the entire
+   animation 50%" -- rather than hand-halving every vh/vw/px value
+   tuned into the stamp and F below (and losing their careful mutual
+   alignment), wrap both marks in one positioned box the same size as
+   the intro screen and scale THAT by half, anchored to viewport
+   center so the whole composition just shrinks in place. */
+.intro-marks{ position:absolute; inset:0; transform: scale(.5); transform-origin: 50% 50%; }
 
 /* Eliza 2026-09-27: real vector trace supplied (StampFile_ForClaude.svg /
    StampInkscape.svg, Assets/Stamps), replacing the raster fallback above's
