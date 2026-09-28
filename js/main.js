@@ -952,57 +952,74 @@
      real scroll distance while its section is in view, reading as
      "floating" above the content rather than scrolling at the same
      rate as everything else. Desktop only, same reduced-motion guard. */
+  /* ---------------- product stamp: same pin/rest float as the other
+     pages' .page-stamp (see pageStampFloat above), not a subtle in-place
+     drift -----------------------------------------------------------
+     Eliza (3rd pass, 2026-09-28): "the stamp is still static, it should
+     float as user scrolls over below the fold content, same as the stamp
+     on homepage." The previous version nudged the stamp a few px via
+     transform while it stayed in normal document flow -- against a full
+     page's worth of scrolling that reads as static, because the stamp
+     mostly just scrolls away with everything else. What "float" actually
+     means elsewhere on the site: pin the stamp in place (position:fixed)
+     while the page scrolls under it, then let it come to rest just above
+     the next section once that section catches up.
+
+     One difference from .page-stamp: that element's ancestor spans the
+     full viewport width, so the same `left` value works whether it's
+     position:fixed (viewport-relative) or position:absolute (ancestor-
+     relative). .product-stamp-soft's ancestor, .product-section, is
+     centered and capped at max-width:1440u (see .product-section), so
+     the two coordinate systems don't line up -- this version measures
+     and pins `left` explicitly too, not just `top`. */
   (function productStampFloat() {
     var stamp = document.querySelector('.product-stamp-soft');
     if (!stamp || !document.body.classList.contains('page-product')) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    // Eliza (2nd pass, 2026-09-28): "the stamp is still static, not
-    // floating as i scroll." The first version based progress on the
-    // WHOLE .product-section's transit through the viewport, but that
-    // section runs ~1660u tall while the stamp itself sits fixed near
-    // its top -- by the time the section had scrolled far enough for
-    // progress to move noticeably, the stamp (a small, absolutely
-    // positioned element) had usually already scrolled out of view, so
-    // the visible drift was real but tiny. Using the STAMP's own transit
-    // through the viewport instead means the full drift amplitude plays
-    // out exactly while it's on screen, not diluted across a much taller
-    // container.
-    var AMPLITUDE = 90; // px of max float while the stamp itself is in view
+    var target = document.querySelector('.carousel');
+    if (!target) return;
+    var GAP = 24;
+    var pinnedTop = null, pinnedLeft = null;
 
     function desktop() { return window.innerWidth > 1152; }
-    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
-    // getBoundingClientRect() reflects the CSS transform already applied,
-    // so measuring the stamp's own rect while it's mid-float would feed
-    // last frame's offset into this frame's progress calc (a compounding
-    // loop). Clearing the transform before measuring, then restoring it,
-    // keeps the measurement anchored to the stamp's untransformed
-    // position every time.
-    function naturalRect() {
-      var prev = stamp.style.transform;
-      stamp.style.transform = 'none';
+    function measure() {
+      if (!desktop()) return;
+      // Clear any inline override first so this reads the stylesheet's own
+      // position, not a stale fixed/absolute value from before.
+      stamp.style.position = '';
+      stamp.style.top = '';
+      stamp.style.left = '';
       var r = stamp.getBoundingClientRect();
-      stamp.style.transform = prev;
-      return r;
+      pinnedTop = r.top + window.scrollY; // scroll-invariant: viewport Y at scrollY 0
+      pinnedLeft = r.left; // viewport X -- unaffected by vertical scroll
     }
 
     function render() {
-      if (!desktop()) { stamp.style.transform = ''; return; }
-      var r = naturalRect();
-      var span = r.height + window.innerHeight;
-      var progress = span > 0 ? (window.innerHeight - r.top) / span : 0.5;
-      progress = clamp(progress, 0, 1);
-      var offset = (progress - 0.5) * 2 * AMPLITUDE;
-      stamp.style.transform = 'translateY(' + offset.toFixed(1) + 'px)';
+      if (!desktop()) {
+        stamp.style.position = ''; stamp.style.top = ''; stamp.style.left = '';
+        return;
+      }
+      if (pinnedTop === null) measure();
+      var stampH = stamp.getBoundingClientRect().height || stamp.offsetHeight;
+      var releaseScrollY = target.offsetTop - pinnedTop - stampH - GAP;
+      if (window.scrollY >= releaseScrollY) {
+        stamp.style.position = 'absolute';
+        stamp.style.top = (target.offsetTop - stampH - GAP) + 'px';
+        stamp.style.left = ''; // back to the stylesheet's section-relative left
+      } else {
+        stamp.style.position = 'fixed';
+        stamp.style.top = pinnedTop + 'px';
+        stamp.style.left = pinnedLeft + 'px';
+      }
     }
 
     var ticking = false;
     function onScroll() { if (!ticking) { requestAnimationFrame(function () { ticking = false; render(); }); ticking = true; } }
-
-    render();
+    function onResize() { pinnedTop = null; pinnedLeft = null; measure(); render(); }
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', onResize);
+    render();
   })();
 
   /* ---------------- inquire modal: "Inquire to Purchase" popup --------------
