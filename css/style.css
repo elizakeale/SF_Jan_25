@@ -1555,7 +1555,19 @@ body.page-custom .carousel{ background: var(--white); }
 }
 .product-stamp-soft img{ width:100%; height:auto; display:block; }
 
-.product-divider{ position:absolute; left:0; width:100%; height:1px; margin:0; border:0; background: var(--orange); } /* Eliza: "product page line should be orange not grey" */
+/* Eliza 2026-09-28: "the orange horizontal bar should bleed with left and
+   right of the page." left:0/width:100% is 100% of .product-section,
+   which is capped at max-width:1440u and centered -- once --u hits its
+   1.4px clamp ceiling (viewports wider than ~2016px, e.g. Eliza's iMac),
+   the section stops growing but the viewport keeps going, leaving a
+   visible gap on both sides where this line used to stop short of the
+   real page edge. The standard full-bleed trick (50%/-50vw) breaks it
+   out of the section's own constrained box so it always reaches the true
+   viewport edges regardless of --u's ceiling. */
+.product-divider{
+  position:absolute; left:50%; width:100vw; margin-left:-50vw;
+  height:1px; margin-top:0; margin-bottom:0; border:0; background: var(--orange);
+} /* Eliza: "product page line should be orange not grey" */
 .product-divider-1{ top: calc(823 * var(--u)); }
 .product-divider-2{ top: calc(1219 * var(--u)); }
 

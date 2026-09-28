@@ -957,15 +957,39 @@
     if (!stamp || !document.body.classList.contains('page-product')) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var section = stamp.closest('.product-section') || stamp.parentElement;
-    var AMPLITUDE = 60; // px of max float, matches the subtlety of the catalogue drift at this element's scale
+    // Eliza (2nd pass, 2026-09-28): "the stamp is still static, not
+    // floating as i scroll." The first version based progress on the
+    // WHOLE .product-section's transit through the viewport, but that
+    // section runs ~1660u tall while the stamp itself sits fixed near
+    // its top -- by the time the section had scrolled far enough for
+    // progress to move noticeably, the stamp (a small, absolutely
+    // positioned element) had usually already scrolled out of view, so
+    // the visible drift was real but tiny. Using the STAMP's own transit
+    // through the viewport instead means the full drift amplitude plays
+    // out exactly while it's on screen, not diluted across a much taller
+    // container.
+    var AMPLITUDE = 90; // px of max float while the stamp itself is in view
 
     function desktop() { return window.innerWidth > 1152; }
     function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
+    // getBoundingClientRect() reflects the CSS transform already applied,
+    // so measuring the stamp's own rect while it's mid-float would feed
+    // last frame's offset into this frame's progress calc (a compounding
+    // loop). Clearing the transform before measuring, then restoring it,
+    // keeps the measurement anchored to the stamp's untransformed
+    // position every time.
+    function naturalRect() {
+      var prev = stamp.style.transform;
+      stamp.style.transform = 'none';
+      var r = stamp.getBoundingClientRect();
+      stamp.style.transform = prev;
+      return r;
+    }
+
     function render() {
       if (!desktop()) { stamp.style.transform = ''; return; }
-      var r = section.getBoundingClientRect();
+      var r = naturalRect();
       var span = r.height + window.innerHeight;
       var progress = span > 0 ? (window.innerHeight - r.top) / span : 0.5;
       progress = clamp(progress, 0, 1);
