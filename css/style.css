@@ -1465,7 +1465,7 @@ body.page-custom .carousel{ background: var(--white); }
 }
 
 .product-photo{ position:relative; margin:0; background: var(--cream); overflow:hidden; }
-.product-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.product-photo img{ width:100%; height:100%; object-fit:contain; display:block; } /* higher specificity than .gallery-img alone (class+tag beats class) -- kept in sync with it above so this legacy rule can't silently win and re-crop everything */
 /* Each box below keeps its own Figma-authored size/aspect-ratio -- that's
    a property of the BOX, not of whichever photo currently rotates into
    it -- but no longer a per-box object-position: see the comment above
@@ -1521,35 +1521,26 @@ body.page-custom .carousel{ background: var(--white); }
    a multi-box jump needs more time than a single step so it doesn't
    blur past the intervening photos). */
 .gallery-img{
-  width:100%; height:100%; object-fit:cover; object-position:center; display:block;
-  transform: scale(var(--photo-zoom, 1));
-  transform-origin: var(--photo-origin, 50% 50%);
+  /* Eliza (7th pass, 2026-09-29): "what if each image needs to be fitted
+     to its dimensions? not force cropped." Every previous pass in this
+     thread was still fundamentally object-fit:cover -- always filling the
+     box completely, always cutting off whatever doesn't fit, with the only
+     question being WHERE to cut. That's the wrong shape of fix for photos
+     whose composition doesn't match a box's aspect ratio at all (a
+     landscape shot rotating through a tall portrait box, say): no crop
+     position is right, because a crop is the wrong operation. Switched to
+     object-fit:contain -- the full photo always shows, letterboxed on
+     whichever axis doesn't match, against .product-photo's own background
+     (--cream) rather than empty white. Nothing is ever cut off regardless
+     of which photo lands in which box, so this needs no per-photo tuning
+     at all and can't drift out of date the way the cover-based fix did. */
+  width:100%; height:100%; object-fit:contain; object-position:center; display:block;
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(.65,0,.35,1);
   -webkit-user-drag:none; user-select:none; -webkit-user-select:none;
 }
-.gallery-img.is-entering-next{ transform: translateX(22px) scale(var(--photo-zoom, 1)); opacity:0; }
-.gallery-img.is-entering-prev{ transform: translateX(-22px) scale(var(--photo-zoom, 1)); opacity:0; }
-
-/* Per-photo crop, 6th pass (2026-09-28): "still cropping" persisted after
-   the previous fix because that one set --photo-zoom/--photo-origin from
-   JS (productGallery()'s data-zoom/data-crop handling), and that function
-   bails out entirely below the 1152px desktop breakpoint -- so the crop
-   only ever applied on desktop, and mobile (the stacked-column layout
-   below) kept showing the raw, uncorrected center crop the whole time.
-   Rather than duplicate the fix into the mobile code path too, moved the
-   crop itself out of JS entirely: it's now a plain attribute selector
-   keyed to the photo's own filename, so it applies identically whether
-   productGallery() has run, is mid-rotation, or never runs at all (mobile,
-   a JS error, print styles, view-source, anything). :not(.product-hero)
-   keeps hero exempt -- object-fit:contain there shows the full image
-   uncropped regardless of which photo currently occupies it, see
-   .product-hero .gallery-img above. Add one rule per photo that needs it;
-   nothing else has to change when a new one comes up. */
-.product-photo:not(.product-hero) .gallery-img[src*="cove-table-3.webp"]{
-  --photo-zoom: 1.4;
-  --photo-origin: 100% 0%;
-}
+.gallery-img.is-entering-next{ transform: translateX(22px); opacity:0; }
+.gallery-img.is-entering-prev{ transform: translateX(-22px); opacity:0; }
 
 .product-nav-arrows{
   position:absolute; left: calc(995 * var(--u)); top: calc(607 * var(--u));
