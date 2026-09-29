@@ -184,28 +184,45 @@
        install/workshop photos with captions describing what's shown,
        rather than the usual product-piece captions -- same shared
        carousel component, different content for this page only. -->
-  <div class="carousel" data-carousel aria-label="More from Studio Fritz">
-    <div class="carousel-track">
-      <figure class="tile">
-        <div class="tile-media" style="aspect-ratio:0.800"><img src="images/showroom/int-6.webp" alt="Studio Fritz workshop"></div>
-        <figcaption>About the Maker</figcaption>
-      </figure>
-      <figure class="tile">
-        <div class="tile-media" style="aspect-ratio:0.738">
-          <video autoplay muted loop playsinline>
-            <source src="images/home/union-sq-carousel.mp4" type="video/mp4">
-          </video>
+  <!-- Eliza: "the force scroll on the last carousel on the catalogue is
+       not forced scroll, should be exact same as on homepage last
+       carousel." js/main.js's scroll-hijack runway does
+       document.querySelector('.scroll-hijack') -- singular, first match
+       in the page -- and only engages a carousel that has data-hijacked,
+       so a carousel missing this wrapper (as this one was) just falls
+       back to plain auto-drift/drag, no forced scroll at all. Wrapped it
+       in the same .scroll-hijack/.scroll-hijack-sticky structure as
+       index.html's last carousel, with data-hijacked added, so it picks
+       up the identical pin-and-drive-sideways behavior. No trailing
+       band link here (index.html has one to About) since this page goes
+       straight to its own footer either way -- the wrapper doesn't
+       require one. -->
+  <div class="scroll-hijack">
+    <div class="scroll-hijack-sticky">
+      <div class="carousel" data-carousel data-hijacked aria-label="More from Studio Fritz">
+        <div class="carousel-track">
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:0.800"><img src="images/showroom/int-6.webp" alt="Studio Fritz workshop"></div>
+            <figcaption>About the Maker</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:0.738">
+              <video autoplay muted loop playsinline>
+                <source src="images/home/union-sq-carousel.mp4" type="video/mp4">
+              </video>
+            </div>
+            <figcaption>Union Square, San Francisco</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:0.818"><img src="images/showroom/dsc-1307.webp" alt="Studio Fritz studio interior"></div>
+            <figcaption>About the Studio</figcaption>
+          </figure>
+          <figure class="tile">
+            <div class="tile-media" style="aspect-ratio:1.463"><img src="images/showroom/dsc-1311.webp" alt="Studio Fritz collaboration installation"></div>
+            <figcaption>Collaborate</figcaption>
+          </figure>
         </div>
-        <figcaption>Union Square, San Francisco</figcaption>
-      </figure>
-      <figure class="tile">
-        <div class="tile-media" style="aspect-ratio:0.818"><img src="images/showroom/dsc-1307.webp" alt="Studio Fritz studio interior"></div>
-        <figcaption>About the Studio</figcaption>
-      </figure>
-      <figure class="tile">
-        <div class="tile-media" style="aspect-ratio:1.463"><img src="images/showroom/dsc-1311.webp" alt="Studio Fritz collaboration installation"></div>
-        <figcaption>Collaborate</figcaption>
-      </figure>
+      </div>
     </div>
   </div>
 

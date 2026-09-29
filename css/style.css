@@ -1585,18 +1585,18 @@ body.page-custom .carousel{ background: var(--white); }
 .gallery-img.is-entering-prev{ transform: translateX(-22px); opacity:0; }
 
 .product-nav-arrows{
-  /* Eliza (10th pass, 2026-09-29): "arrows not moved" -- the 9th-pass
-     shift (607u -> 645u) kept the same small clearance directly above
-     thumb-cove3, so visually the arrows still read as "in the same
-     spot relative to the box" even though the raw coordinate changed.
-     Also thumb-cove3 is auto-width now (see above), so anchoring the
-     arrows off its variable right edge doesn't work anyway. Moved them
-     to a clearly different spot instead: centered under the hero image,
-     in the open strip between the boxes' shared bottom edge (823u) and
-     .product-desc (880u) -- a standard "controls below the main image"
-     position, and far from the thumbnails, the stamp, and the divider
-     line itself. */
-  position:absolute; left: calc(697 * var(--u)); top: calc(838 * var(--u));
+  /* Eliza (11th pass, 2026-09-29): pointed me to the actual Figma
+     reference for this -- arrows sit in the seam between hero's
+     bottom-right corner and the right-hand thumbnail, resting right
+     above the divider line, not above cove3 (9th pass) and not
+     centered under hero (10th pass). hero's right edge is 966u,
+     thumb-cove3's left edge is a fixed 989u regardless of its own
+     auto-width (see thumb-cove3 above) -- only a 23u gap between them,
+     narrower than the arrow group's own ~45u width, so this is
+     centered on that seam and slightly overlaps the empty (no
+     background) corner of each box rather than being squeezed to fit;
+     nothing is visually cut since neither box has a visible edge. */
+  position:absolute; left: calc(955 * var(--u)); top: calc(806 * var(--u));
   height: calc(17 * var(--u));
   display:flex; align-items:center; gap: calc(13 * var(--u));
 }
