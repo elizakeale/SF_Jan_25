@@ -1464,8 +1464,20 @@ body.page-custom .carousel{ background: var(--white); }
   letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
 }
 
-.product-photo{ position:relative; margin:0; background: var(--cream); overflow:hidden; }
-.product-photo img{ width:100%; height:100%; object-fit:contain; display:block; } /* higher specificity than .gallery-img alone (class+tag beats class) -- kept in sync with it above so this legacy rule can't silently win and re-crop everything */
+.product-photo{ position:relative; margin:0; }
+.product-photo img{ width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; } /* higher specificity than .gallery-img alone (class+tag beats class) -- kept in sync with it above so this legacy rule can't silently win and re-crop everything */
+/* Eliza (8th pass, 2026-09-29): "bottom aligned to orange line and remove
+   orange background... get rid of these preset containers." The fixed
+   .product-photo background + overflow:hidden read as a separate colored
+   card/container sitting behind each photo -- visible wherever
+   object-fit:contain leaves letterbox space, since the four boxes below
+   all share the same bottom edge (823u, exactly .product-divider-1's own
+   top) but that letterbox space was being centered top+bottom instead of
+   pushed entirely above the photo. Dropped the background (no container
+   fill left visible) and moved every gallery photo's object-position to
+   center bottom, so whatever letterbox gap remains collects at the top of
+   the box and the photo's own bottom edge always sits flush on the
+   divider line, hero included (hero already did this). */
 /* Each box below keeps its own Figma-authored size/aspect-ratio -- that's
    a property of the BOX, not of whichever photo currently rotates into
    it -- but no longer a per-box object-position: see the comment above
@@ -1521,20 +1533,12 @@ body.page-custom .carousel{ background: var(--white); }
    a multi-box jump needs more time than a single step so it doesn't
    blur past the intervening photos). */
 .gallery-img{
-  /* Eliza (7th pass, 2026-09-29): "what if each image needs to be fitted
-     to its dimensions? not force cropped." Every previous pass in this
-     thread was still fundamentally object-fit:cover -- always filling the
-     box completely, always cutting off whatever doesn't fit, with the only
-     question being WHERE to cut. That's the wrong shape of fix for photos
-     whose composition doesn't match a box's aspect ratio at all (a
-     landscape shot rotating through a tall portrait box, say): no crop
-     position is right, because a crop is the wrong operation. Switched to
-     object-fit:contain -- the full photo always shows, letterboxed on
-     whichever axis doesn't match, against .product-photo's own background
-     (--cream) rather than empty white. Nothing is ever cut off regardless
-     of which photo lands in which box, so this needs no per-photo tuning
-     at all and can't drift out of date the way the cover-based fix did. */
-  width:100%; height:100%; object-fit:contain; object-position:center; display:block;
+  /* object-fit:contain -- see .product-photo above for why (no forced
+     crop), and object-position:center bottom so the visible photo's own
+     bottom edge sits flush on the divider line regardless of how much
+     letterbox space contain leaves, matching every box's shared bottom
+     edge (823u). */
+  width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block;
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(.65,0,.35,1);
   -webkit-user-drag:none; user-select:none; -webkit-user-select:none;
