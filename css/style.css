@@ -1523,7 +1523,7 @@ body.page-custom .carousel{ background: var(--white); }
    height-reduced (object-fit:contain still won't crop it). cove3's cap
    is generous -- that column has the whole rest of the page to use. */
 .product-thumb-5 .gallery-img, .product-thumb-cove2 .gallery-img{ max-width: calc(241 * var(--u)); }
-.product-thumb-cove3 .gallery-img{ max-width: calc(430 * var(--u)); }
+.product-thumb-cove3 .gallery-img{ max-width: calc(300 * var(--u)); } /* tightened alongside the 12th-pass nav-arrow move: keeps this box's worst case (real max found so far ~260u) safely clear of the arrows' new fixed position at the page's right margin */
 
 /* Eliza: "arrows look different from figma and should allow me to go
    left and right through pics" -- the site rule is every arrow icon
@@ -1585,18 +1585,19 @@ body.page-custom .carousel{ background: var(--white); }
 .gallery-img.is-entering-prev{ transform: translateX(-22px); opacity:0; }
 
 .product-nav-arrows{
-  /* Eliza (11th pass, 2026-09-29): pointed me to the actual Figma
-     reference for this -- arrows sit in the seam between hero's
-     bottom-right corner and the right-hand thumbnail, resting right
-     above the divider line, not above cove3 (9th pass) and not
-     centered under hero (10th pass). hero's right edge is 966u,
-     thumb-cove3's left edge is a fixed 989u regardless of its own
-     auto-width (see thumb-cove3 above) -- only a 23u gap between them,
-     narrower than the arrow group's own ~45u width, so this is
-     centered on that seam and slightly overlaps the empty (no
-     background) corner of each box rather than being squeezed to fit;
-     nothing is visually cut since neither box has a visible edge. */
-  position:absolute; left: calc(955 * var(--u)); top: calc(806 * var(--u));
+  /* Eliza (12th pass, 2026-09-29): "arrows are overlapping with the
+     product image, should have a fixed position on far right, safe and
+     far from the next closest image so they dont ever overlap." The
+     11th-pass seam position was a real reference point but it was
+     never a safe one -- a box that touches or nearly touches two
+     rotating photos is exactly what overlaps whenever either photo's
+     rendered width comes close to filling its box. Anchored from the
+     RIGHT edge of .product-gallery instead of pinning near either box,
+     so the arrows sit in fixed, dead space near the page's right
+     margin -- see thumb-cove3's own max-width cap below (tightened to
+     300u alongside this) for why 80u of clearance here is enough even
+     in that box's worst realistic case. */
+  position:absolute; right: calc(80 * var(--u)); top: calc(806 * var(--u));
   height: calc(17 * var(--u));
   display:flex; align-items:center; gap: calc(13 * var(--u));
 }
