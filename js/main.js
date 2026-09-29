@@ -1017,10 +1017,12 @@
       var sectionRect = section.getBoundingClientRect(); // viewport-relative, live
       var stampH = stamp.offsetHeight;
 
-      // Where the stylesheet's own calc(594*u)/calc(1301*u) puts it,
-      // expressed in the current viewport.
-      var naturalTopViewport = sectionRect.top + 594 * uPx;
-      var naturalLeftViewport = sectionRect.left + 1301 * uPx;
+      // Where the stylesheet's own calc(847*u)/calc(46*u) puts it,
+      // expressed in the current viewport. (9th pass: moved from
+      // 594/1301 to 847/46 -- bottom-left under the divider line now,
+      // see .product-stamp-soft in style.css.)
+      var naturalTopViewport = sectionRect.top + 847 * uPx;
+      var naturalLeftViewport = sectionRect.left + 46 * uPx;
 
       // Where it should land once done floating: just above the section's
       // own bottom edge, in .product-section's OWN coordinate space (its

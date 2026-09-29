@@ -1478,14 +1478,28 @@ body.page-custom .carousel{ background: var(--white); }
    center bottom, so whatever letterbox gap remains collects at the top of
    the box and the photo's own bottom edge always sits flush on the
    divider line, hero included (hero already did this). */
-/* Each box below keeps its own Figma-authored size/aspect-ratio -- that's
-   a property of the BOX, not of whichever photo currently rotates into
-   it -- but no longer a per-box object-position: see the comment above
-   .gallery-img for why. */
+/* Eliza (9th pass, 2026-09-29): "fix the size of the images as they
+   move, so that one product image is always showing up same size EXCEPT
+   when it's the feature one." Each of the 3 non-hero boxes used to have
+   its OWN fixed size (162x271 portrait, 228x152 landscape, 285x190
+   landscape) -- so the same rotating photo visibly grew/shrunk/changed
+   shape depending on which slot it landed in, even though every box
+   uses the same object-fit:contain treatment. Now all 3 non-hero slots
+   share one size (228x152 -- cove2's original box, already the most
+   "typical" landscape ratio for these photos) so a photo reads as the
+   same size regardless of rotation. thumb-5 moves off its own old
+   portrait footprint (left46/top552) to stack directly above cove2
+   (same left, 24u gap) instead of sitting beside it -- there isn't
+   enough width left of hero (474u) to fit two 228-wide boxes
+   side-by-side the way the old 162-wide thumb-5 did. cove3 keeps its
+   own left (989u, right of hero) but shrinks to match; its top moves
+   down to stay bottom-aligned with everything else at 823u. Hero is
+   explicitly exempted ("the feature one") and keeps its own larger
+   492x591 box untouched. */
 .product-hero{  position:absolute; left: calc(474 * var(--u)); top: calc(232 * var(--u)); width: calc(492 * var(--u)); aspect-ratio: 492/591; }
-.product-thumb-5{     position:absolute; left: calc(46 * var(--u));  top: calc(552 * var(--u)); width: calc(162 * var(--u)); aspect-ratio: 162/271; }
 .product-thumb-cove2{ position:absolute; left: calc(233 * var(--u)); top: calc(671 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; }
-.product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(633 * var(--u)); width: calc(285 * var(--u)); aspect-ratio: 285/190; }
+.product-thumb-5{     position:absolute; left: calc(233 * var(--u)); top: calc(495 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; } /* stacked directly above thumb-cove2 -- same left/width, 24u gap (495+152+24=671) */
+.product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(671 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; }
 
 /* Eliza: "arrows look different from figma and should allow me to go
    left and right through pics" -- the site rule is every arrow icon
@@ -1547,7 +1561,10 @@ body.page-custom .carousel{ background: var(--white); }
 .gallery-img.is-entering-prev{ transform: translateX(-22px); opacity:0; }
 
 .product-nav-arrows{
-  position:absolute; left: calc(995 * var(--u)); top: calc(607 * var(--u));
+  /* Eliza (9th pass): moved down to match thumb-cove3's new top (671u,
+     was 633u) so the arrows keep the same small clearance sitting just
+     above that box instead of drifting into open space above it. */
+  position:absolute; left: calc(995 * var(--u)); top: calc(645 * var(--u));
   height: calc(17 * var(--u));
   display:flex; align-items:center; gap: calc(13 * var(--u));
 }
@@ -1571,7 +1588,16 @@ body.page-custom .carousel{ background: var(--white); }
      there against the white section background. .55 keeps it a soft
      background accent (not competing with the real content) while
      actually being visible. */
-  position:absolute; left: calc(1301 * var(--u)); top: calc(594 * var(--u));
+  /* Eliza (9th pass, 2026-09-29): "shifting stamp to bottom left under
+     the orange line as its starting point so it doesn't overlap with
+     the arrows." Old spot (left1301/top594) sat right beside the old
+     nav arrows/cove3 corner -- now that those boxes resized, moved the
+     stamp's natural/starting position to the bottom-left instead: under
+     .product-divider-1 (top:823u), in the space thumb-5 vacated when it
+     moved to stack above cove2. productStampFloat() in main.js mirrors
+     these same 46/847 constants for its own natural-position math (the
+     float/pin-to-viewport behavior itself is unchanged). */
+  position:absolute; left: calc(46 * var(--u)); top: calc(847 * var(--u));
   width: calc(126 * var(--u)); margin:0; opacity:.55; pointer-events:none;
 }
 .product-stamp-soft img{ width:100%; height:auto; display:block; }
