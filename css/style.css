@@ -1465,7 +1465,7 @@ body.page-custom .carousel{ background: var(--white); }
 }
 
 .product-photo{ position:relative; margin:0; }
-.product-photo img{ width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; } /* higher specificity than .gallery-img alone (class+tag beats class) -- kept in sync with it above so this legacy rule can't silently win and re-crop everything */
+.product-photo img{ height:100%; width:auto; object-fit:contain; object-position:center bottom; display:block; } /* higher specificity than .gallery-img alone (class+tag beats class) -- kept in sync with it above so this legacy rule can't silently win and re-crop everything. width:auto (10th pass) so non-hero photos render at their own natural aspect within a fixed HEIGHT rather than being letterboxed inside a fixed box -- see .product-thumb-cove2 etc below and .product-hero .gallery-img for the hero's own fixed-box override. */
 /* Eliza (8th pass, 2026-09-29): "bottom aligned to orange line and remove
    orange background... get rid of these preset containers." The fixed
    .product-photo background + overflow:hidden read as a separate colored
@@ -1496,10 +1496,34 @@ body.page-custom .carousel{ background: var(--white); }
    down to stay bottom-aligned with everything else at 823u. Hero is
    explicitly exempted ("the feature one") and keeps its own larger
    492x591 box untouched. */
+/* Eliza (10th pass, 2026-09-29): "things look weird -- one image out
+   of place" against the 9th pass. Giving the 3 non-hero boxes an equal
+   WIDTH+HEIGHT was the wrong equal-ness: object-fit:contain then
+   letterboxes any photo whose own aspect doesn't match 228:152, so a
+   tall/narrow photo (e.g. cove-table-2.webp, real aspect 0.6) rendered
+   as a thin sliver floating in a mostly-empty invisible box while a
+   228:152-ish photo filled its box edge to edge -- visually wildly
+   different sizes despite identical boxes, which is exactly what "same
+   size" was supposed to fix. Switched to a fixed HEIGHT (152u) with
+   auto WIDTH instead: every photo now renders at the same height
+   (that's the visual "same size" that actually reads to the eye) and
+   its width follows its own natural aspect, so nothing is letterboxed
+   and nothing is cropped. Checked every photo across all 7 product
+   pages against these boxes' available width before shipping this
+   (widest is bluff-table-1.webp at aspect 1.71 -> ~260u, which is why
+   the left slots carry a max-width safety below: without it that one
+   photo would run past .product-hero's left edge (474u)). */
 .product-hero{  position:absolute; left: calc(474 * var(--u)); top: calc(232 * var(--u)); width: calc(492 * var(--u)); aspect-ratio: 492/591; }
-.product-thumb-cove2{ position:absolute; left: calc(233 * var(--u)); top: calc(671 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; }
-.product-thumb-5{     position:absolute; left: calc(233 * var(--u)); top: calc(495 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; } /* stacked directly above thumb-cove2 -- same left/width, 24u gap (495+152+24=671) */
-.product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(671 * var(--u)); width: calc(228 * var(--u)); aspect-ratio: 228/152; }
+.product-thumb-cove2{ position:absolute; left: calc(233 * var(--u)); top: calc(671 * var(--u)); height: calc(152 * var(--u)); width:auto; }
+.product-thumb-5{     position:absolute; left: calc(233 * var(--u)); top: calc(495 * var(--u)); height: calc(152 * var(--u)); width:auto; } /* stacked directly above thumb-cove2 -- same left, 24u gap (495+152+24=671) */
+.product-thumb-cove3{ position:absolute; left: calc(989 * var(--u)); top: calc(671 * var(--u)); height: calc(152 * var(--u)); width:auto; }
+/* Safety cap, not a design size: the left column has ~241u before
+   .product-hero's left edge (474-233); without this an unusually wide
+   photo would overlap hero instead of just being slightly
+   height-reduced (object-fit:contain still won't crop it). cove3's cap
+   is generous -- that column has the whole rest of the page to use. */
+.product-thumb-5 .gallery-img, .product-thumb-cove2 .gallery-img{ max-width: calc(241 * var(--u)); }
+.product-thumb-cove3 .gallery-img{ max-width: calc(430 * var(--u)); }
 
 /* Eliza: "arrows look different from figma and should allow me to go
    left and right through pics" -- the site rule is every arrow icon
@@ -1533,7 +1557,7 @@ body.page-custom .carousel{ background: var(--white); }
    every box (not just the hero) can visibly participate; .gallery-img
    below is the shared per-box enter/exit motion. */
 .product-hero{ overflow:hidden; background: var(--white); }
-.product-hero .gallery-img{ object-fit:contain; object-position:center bottom; } /* full image, uncropped, bottom-aligned to .product-divider-1 -- see .product-hero above */
+.product-hero .gallery-img{ width:100%; height:100%; object-fit:contain; object-position:center bottom; } /* hero keeps its own fixed box (the "feature" exemption) and fills it, unlike the auto-width thumbs below -- full image, uncropped, bottom-aligned to .product-divider-1, see .product-hero above */
 
 /* Each box's own photo change: a short slide-and-fade rather than an
    instant swap, so the eye can follow content actually moving rather
@@ -1552,7 +1576,7 @@ body.page-custom .carousel{ background: var(--white); }
      bottom edge sits flush on the divider line regardless of how much
      letterbox space contain leaves, matching every box's shared bottom
      edge (823u). */
-  width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block;
+  height:100%; width:auto; object-fit:contain; object-position:center bottom; display:block;
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(.65,0,.35,1);
   -webkit-user-drag:none; user-select:none; -webkit-user-select:none;
