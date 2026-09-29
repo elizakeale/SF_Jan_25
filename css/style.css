@@ -1585,10 +1585,18 @@ body.page-custom .carousel{ background: var(--white); }
 .gallery-img.is-entering-prev{ transform: translateX(-22px); opacity:0; }
 
 .product-nav-arrows{
-  /* Eliza (9th pass): moved down to match thumb-cove3's new top (671u,
-     was 633u) so the arrows keep the same small clearance sitting just
-     above that box instead of drifting into open space above it. */
-  position:absolute; left: calc(995 * var(--u)); top: calc(645 * var(--u));
+  /* Eliza (10th pass, 2026-09-29): "arrows not moved" -- the 9th-pass
+     shift (607u -> 645u) kept the same small clearance directly above
+     thumb-cove3, so visually the arrows still read as "in the same
+     spot relative to the box" even though the raw coordinate changed.
+     Also thumb-cove3 is auto-width now (see above), so anchoring the
+     arrows off its variable right edge doesn't work anyway. Moved them
+     to a clearly different spot instead: centered under the hero image,
+     in the open strip between the boxes' shared bottom edge (823u) and
+     .product-desc (880u) -- a standard "controls below the main image"
+     position, and far from the thumbnails, the stamp, and the divider
+     line itself. */
+  position:absolute; left: calc(697 * var(--u)); top: calc(838 * var(--u));
   height: calc(17 * var(--u));
   display:flex; align-items:center; gap: calc(13 * var(--u));
 }
