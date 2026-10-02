@@ -2819,20 +2819,27 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 .intro-f-vert-bar{
   position:absolute; top:calc(58 / 612 * 100%);
   left:calc((117.5 / 612 * 100%) - (1 * var(--u)));
-  width:calc(2 * var(--u)); height:calc(((612 - 58) / 612 * 100%) + 92vh);
+  width:calc(2 * var(--u)); height:calc(((612 - 58) / 612 * 100%) + 126vh - 280px);
   background: var(--white); /* matches .intro-f line's 2pt stroke */
   opacity:0; transform: translateY(140vh);
   /* Eliza 2026-10-02: "vertical line should come down up, not up down" --
      was translateY(-140vh) (rises INTO place by dropping down from above
      the top edge); flipped to a positive offset so it travels up from
-     below the bottom edge instead, landing in the same spot. Also widened
-     the bleed from 60vh to 92vh -- measured live (Playwright) that the
-     old value left 145-240px of bare orange between the bar's bottom and
-     the fold at every reference viewport (1440x900, 1512x823, 1280x800)
-     because .intro-marks' scale(.5) halves every vh value inside it, so
-     the bar needs roughly double the nominal bleed to actually reach the
-     edge it's meant to bleed to. 92vh was the value that landed the
-     bottom flush with the fold at all three. */
+     below the bottom edge instead, landing in the same spot.
+     2026-10-02 (follow-up): 92vh was tuned ONLY against ~900px-tall
+     viewports and still left a growing gap at taller common desktop
+     heights -- measured live (Playwright, bounding boxes) at six sizes:
+     900px tall landed within 2px of the fold, but 982px tall left 15px
+     and 1080px tall left 32px of floating gap below the bar, because the
+     bar's height is a straight vh fraction while its vertical position
+     carries a separate fixed-px offset -- the two only line up at one
+     specific height. 126vh is the slope that cancels that height
+     dependence out entirely (derived from the measured per-viewport
+     numbers, not guessed), so the bar's bottom now runs slightly PAST
+     the fold by a roughly constant amount at every height instead of
+     drifting further short of it the taller the viewport gets -- a small
+     constant overshoot (harmless, it's bled off-screen) beats a growing
+     floating gap. */
   transition: opacity .9s ease, transform 1.5s cubic-bezier(.16,.84,.44,1) .36s;
 }
 .intro-f-wrap.is-joining .intro-f-vert-bar{ opacity:1; transform: translateY(0); }
