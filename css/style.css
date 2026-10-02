@@ -1120,7 +1120,13 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 .sf-field:last-child{ margin-bottom:0; }
 .sf-field label{
   display:block; margin-bottom: calc(15 * var(--u));
-  font-family: var(--font-body); font-weight:300; font-size: calc(16 * var(--u));
+  /* Eliza (2026-10-02): "on trade and contact form, sometimes the copy
+     is bolder -- should be consistently Light." This was the one
+     font-weight:300 on either page (every other label/paragraph site-
+     wide is 200) -- just inconsistent, not an intentional heavier
+     weight, so it read as randomly bolder wherever a form field label
+     sat next to 200-weight body copy. */
+  font-family: var(--font-body); font-weight:200; font-size: calc(16 * var(--u));
   line-height: 1.6875;                        /* 278:1033: 16px on a 27px line */
   letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
 }
