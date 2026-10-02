@@ -1410,7 +1410,7 @@ body.page-custom{
 .custom-intro p + p{ margin-top: 1.7em; }
 
 .custom-cta{
-  position:absolute; left: calc(319 * var(--u)); top: calc(540 * var(--u));
+  position:absolute; left: calc(319 * var(--u)); top: calc(580 * var(--u));
   width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
@@ -1599,7 +1599,7 @@ body.page-custom .carousel{ background: var(--white); }
      the RIGHT edge of .product-section (arrows now live outside
      .product-gallery entirely, as a sibling, so the new flex row never
      affects them) -- far from any photo regardless of gallery state. */
-  position:absolute; right: calc(80 * var(--u)); top: calc(806 * var(--u));
+  position:absolute; right: calc(80 * var(--u)); top: calc(797 * var(--u));
   height: calc(17 * var(--u));
   display:flex; align-items:center; gap: calc(13 * var(--u));
 }
