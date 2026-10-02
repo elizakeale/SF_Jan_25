@@ -548,7 +548,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    caption are wrapped in this anchor rather than the <figure> itself, so
    the flex sizing above (which keys off .tile) is untouched. */
 .tile-media{
-  position:relative; overflow:hidden;
+  position:relative; overflow:hidden; display:block; width:max-content;
   /* Figma's 389 tile on a 1440 frame is 27.01vw, so 27vw reproduces the
      design exactly at the reference width AND keeps scaling past it --
      Eliza on her iMac: "there's excessive room left on the right... can we
@@ -557,8 +557,19 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      scroll-hijack to have anything to do. */
   height: 27vw; min-height:220px; max-height:560px;
 }
+/* Eliza: "it's def still showing cropped vertically -- you should be
+   shrinking it to height of the carousel rather than cropping it
+   vertically." Was a hand-tuned aspect-ratio box per tile (inline style on
+   each .tile-media) + object-fit:cover, which crops whenever a photo's
+   real aspect ratio doesn't exactly match the number that was tuned for
+   it. Now the image is in normal flow at the tile's fixed height with
+   width:auto -- it scales to that height at its own true aspect ratio, no
+   cropping, and .tile-media's width:max-content above follows it so the
+   tile itself is exactly as wide as the scaled photo. The per-tile inline
+   aspect-ratio hints stay in the HTML as width/height-style metadata but
+   no longer force a crop box. */
 .tile-media img, .tile-media video{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  position:static; display:block; height:100%; width:auto; max-width:none;
   pointer-events:none;
 }
 .carousel .tile figcaption{
