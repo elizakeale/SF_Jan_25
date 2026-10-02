@@ -1219,13 +1219,6 @@
 
       function mod(n) { return ((n % 4) + 4) % 4; }
 
-      function applyData() {
-        imgs.forEach(function (img, i) {
-          img.setAttribute('src', data[i].src);
-          img.setAttribute('alt', data[i].alt);
-        });
-      }
-
       // Rotates the 4 photos' DATA by k boxes (newData[j] = data[(j+k)%4]) --
       // k=1 is the "next" shift described above; k=3 (i.e. -1) is "prev".
       function rotateBy(k) {
@@ -1234,40 +1227,81 @@
       }
 
       var swapping = false;
-      // Eliza (2026-10-02): "more graceful... a more gradual fade in and
-      // out" -- slower, eased transitions (was a flat .22s ease) and a
-      // softer exit offset so the crossfade reads as a gentle dissolve
-      // rather than a quick snap.
+      // Eliza (2026-10-02): "can we make the time on all white during
+      // fade 0? so that there's never just all white, even if it means
+      // the new image starts to come in as the old image fades away."
+      // The previous version was sequential, not a crossfade -- every
+      // photo faded ALL THE WAY to opacity 0 (a blank beat), only THEN
+      // did the src swap and fade back in. There's only one <img> per
+      // box (the src is what rotates), so a true overlap needs a second
+      // layer: clone each img showing the OLD photo on top, drop the NEW
+      // photo straight onto the real (now-hidden-under-the-clone) img
+      // underneath, then fade the clone out and the real img in at the
+      // same time. The clone is position:absolute (.product-photo is the
+      // positioned ancestor) so it sits exactly over the live img without
+      // disturbing the box's own layout.
+      var DURATION = 300;
       function swap(k, dirSign) {
         if (swapping || mod(k) === 0) return;
         swapping = true;
         var exitOffset = dirSign * -16; // "next" photos exit left, "prev" exit right
-        imgs.forEach(function (img) {
-          img.style.transition = 'opacity .26s cubic-bezier(.4,0,.2,1), transform .26s cubic-bezier(.4,0,.2,1)';
+        var oldData = data.slice();
+        rotateBy(k);
+        var newData = data;
+
+        var clones = imgs.map(function (img, i) {
+          var clone = img.cloneNode(false);
+          clone.removeAttribute('data-gallery-thumb');
+          clone.setAttribute('src', oldData[i].src);
+          clone.setAttribute('alt', '');
+          clone.style.position = 'absolute';
+          clone.style.inset = '0';
+          clone.style.margin = '0';
+          clone.style.pointerEvents = 'none';
+          clone.style.opacity = '1';
+          clone.style.transform = 'translateX(0)';
+          clone.style.transition = 'none';
+          img.parentElement.appendChild(clone);
+          return clone;
+        });
+
+        // Real img becomes the NEW photo right away, starting from the
+        // entry side at opacity 0 -- it's fully hidden under the clone,
+        // so this is invisible until the crossfade below begins.
+        imgs.forEach(function (img, i) {
+          img.setAttribute('src', newData[i].src);
+          img.setAttribute('alt', newData[i].alt);
+          img.style.transition = 'none';
           img.style.opacity = '0';
-          img.style.transform = 'translateX(' + exitOffset + 'px)';
+          img.style.transform = 'translateX(' + (-exitOffset) + 'px)';
+        });
+
+        // Force a synchronous layout flush so the "before" state set
+        // above (clone at full opacity/rest position, real img at
+        // opacity 0) is actually committed before switching on
+        // transitions and moving to the "after" state -- without this,
+        // the browser can coalesce both style writes into one frame and
+        // jump straight to the end value instead of animating (confirmed
+        // via instrumented opacity sampling: double-rAF alone left a
+        // freshly-appended clone's computed opacity frozen at its start
+        // value, then it snapped to the end value with no visible tween).
+        clones.forEach(function (clone) { void clone.offsetWidth; });
+        imgs.forEach(function (img) { void img.offsetWidth; });
+
+        clones.forEach(function (clone) {
+          clone.style.transition = 'opacity ' + DURATION + 'ms cubic-bezier(.4,0,.2,1), transform ' + DURATION + 'ms cubic-bezier(.4,0,.2,1)';
+          clone.style.opacity = '0';
+          clone.style.transform = 'translateX(' + exitOffset + 'px)';
+        });
+        imgs.forEach(function (img) {
+          img.style.transition = 'opacity ' + DURATION + 'ms cubic-bezier(.4,0,.2,1), transform ' + DURATION + 'ms cubic-bezier(.4,0,.2,1)';
+          img.style.opacity = '';
+          img.style.transform = '';
         });
         setTimeout(function () {
-          rotateBy(k);
-          applyData();
-          // place incoming photo on the opposite side, instantly (no transition)...
-          imgs.forEach(function (img) {
-            img.style.transition = 'none';
-            img.style.transform = 'translateX(' + (-exitOffset) + 'px)';
-          });
-          // ...then let it transition back to rest, so it reads as entering
-          // from the direction the old photo exited toward.
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              imgs.forEach(function (img) {
-                img.style.transition = 'opacity .26s cubic-bezier(.4,0,.2,1), transform .26s cubic-bezier(.4,0,.2,1)';
-                img.style.opacity = '';
-                img.style.transform = '';
-              });
-              swapping = false;
-            });
-          });
-        }, 240);
+          clones.forEach(function (clone) { clone.remove(); });
+          swapping = false;
+        }, DURATION + 40);
       }
 
       function step(delta) { swap(delta > 0 ? 1 : 3, delta > 0 ? 1 : -1); }
