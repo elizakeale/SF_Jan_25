@@ -1223,7 +1223,7 @@
         swapping = true;
         var exitOffset = dirSign * -16; // "next" photos exit left, "prev" exit right
         imgs.forEach(function (img) {
-          img.style.transition = 'opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1)';
+          img.style.transition = 'opacity .26s cubic-bezier(.4,0,.2,1), transform .26s cubic-bezier(.4,0,.2,1)';
           img.style.opacity = '0';
           img.style.transform = 'translateX(' + exitOffset + 'px)';
         });
@@ -1240,14 +1240,14 @@
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               imgs.forEach(function (img) {
-                img.style.transition = 'opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1)';
+                img.style.transition = 'opacity .26s cubic-bezier(.4,0,.2,1), transform .26s cubic-bezier(.4,0,.2,1)';
                 img.style.opacity = '';
                 img.style.transform = '';
               });
               swapping = false;
             });
           });
-        }, 480);
+        }, 240);
       }
 
       function step(delta) { swap(delta > 0 ? 1 : 3, delta > 0 ? 1 : -1); }
