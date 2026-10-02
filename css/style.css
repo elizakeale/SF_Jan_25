@@ -2697,7 +2697,13 @@ body.page-custom .carousel .tile figcaption{ color: var(--ink); }
 }
 .site-intro.is-done{ opacity:0; pointer-events:none; }
 .site-intro.is-removed{ display:none; }
-body.intro-active{ overflow:hidden; }
+/* Eliza: "user shouldn't be able to scroll down below the fold" during the
+   intro -- the vertical bar deliberately bleeds past it (60vh/40vh), so a
+   plain overflow:hidden on body isn't enough to stop every scroll/touch
+   gesture from nudging the page and revealing the bar's cut-off end.
+   position:fixed is the full lock: it also defeats iOS's rubber-band
+   overscroll, which overflow:hidden alone does not. */
+body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 
 /* Eliza: "it looks too big on macbook 13, scale down the entire
    animation 50%" -- wrap the mark in one positioned box the same
@@ -2720,7 +2726,7 @@ body.intro-active{ overflow:hidden; }
   fill:none; stroke: var(--white); stroke-width: calc(2 * var(--u)); /* Eliza: "thinner, like 1 pt" -- was 9u; then "should be 2pt" */
   vector-effect:non-scaling-stroke;
   opacity:0;
-  transition: opacity .3s ease, transform .5s cubic-bezier(.16,.84,.44,1);
+  transition: opacity .9s ease, transform 1.5s cubic-bezier(.16,.84,.44,1); /* Eliza: "slow down the animation 200%" -- all intro durations/delays *3 */
 }
 
 /* Phase 1 start state: off past the viewport edge (big vw offset
@@ -2745,18 +2751,18 @@ body.intro-active{ overflow:hidden; }
 
 /* Phase 1 -- joins: arrive at position, still overshoot length. */
 .intro-f-wrap.is-joining .intro-f-top{ opacity:1; transform: translateX(0) scaleX(1.35); }
-.intro-f-wrap.is-joining .intro-f-mid{ opacity:1; transform: translateX(0) scaleX(1.35); transition-delay: .06s, .06s; }
+.intro-f-wrap.is-joining .intro-f-mid{ opacity:1; transform: translateX(0) scaleX(1.35); transition-delay: .18s, .18s; }
 
 /* Phase 2 -- shortens into place, outside in: scaleX relaxes to 1,
    anchored at the inner end, so only the outer tip moves. Top bar
    first, mid bar close behind (same stagger shape as the old draw). */
 .intro-f-wrap.is-drawn .intro-f-top{
   transform: translateX(0) scaleX(1);
-  transition: opacity .3s ease, transform .3s cubic-bezier(.4,0,.2,1);
+  transition: opacity .9s ease, transform .9s cubic-bezier(.4,0,.2,1);
 }
 .intro-f-wrap.is-drawn .intro-f-mid{
   transform: translateX(0) scaleX(1);
-  transition: opacity .3s ease, transform .3s cubic-bezier(.4,0,.2,1) .12s;
+  transition: opacity .9s ease, transform .9s cubic-bezier(.4,0,.2,1) .36s;
 }
 
 /* Eliza: the vertical stroke read as "cut off weird into 2 pieces" when it
@@ -2773,7 +2779,7 @@ body.intro-active{ overflow:hidden; }
   width:calc(2 * var(--u)); height:calc(((612 - 58) / 612 * 100%) + 60vh);
   background: var(--white); /* matches .intro-f line's 2pt stroke */
   opacity:0; transform: translateY(-140vh);
-  transition: opacity .3s ease, transform .5s cubic-bezier(.16,.84,.44,1) .12s;
+  transition: opacity .9s ease, transform 1.5s cubic-bezier(.16,.84,.44,1) .36s;
 }
 .intro-f-wrap.is-joining .intro-f-vert-bar{ opacity:1; transform: translateY(0); }
 

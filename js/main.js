@@ -945,9 +945,12 @@
       return;
     }
 
-    at(0,    function () { fWrap.classList.add('is-joining'); });   // phase 1: fly in + join, ~.62s (vertical bar's .5s transition starts .12s in)
-    at(650,  function () { fWrap.classList.add('is-drawn'); });     // phase 2: shorten outside-in, ~.42s total (top .3s, mid .3s delayed .12s)
-    at(1570, finish);                                               // brief hold, then fade out (.45s)
+    at(0,    function () { fWrap.classList.add('is-joining'); });   // phase 1: fly in + join, ~1.86s (vertical bar's 1.5s transition starts .36s in)
+    at(1950, function () { fWrap.classList.add('is-drawn'); });     // phase 2: shorten outside-in, ~1.26s total (top .9s, mid .9s delayed .36s)
+    at(4710, finish);                                               // brief hold, then fade out (.45s)
+    // Eliza: "slow down the animation 200%" -- every wait above and every
+    // CSS transition duration/delay in .intro-f-wrap's rules (style.css) is
+    // the original value * 3.
   })();
 
   /* ---------------- catalogue: column parallax drift ----------------
