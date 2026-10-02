@@ -877,24 +877,21 @@
 
 
   /* ---------------- SITE INTRO (index.html only, Figma "intro" /
-     "intro - end state" frames) ----------------
-     Eliza 2026-09-27: replaced the raster stamp's whole-piece fade with
-     her real vector trace (StampFile_ForClaude.svg / StampInkscape.svg),
-     drawn on in the order she gave, by name, matching the file's own
-     Inkscape layer labels: Horizontal 1, Horizontal 2, Vertical, Bottom
-     Point, R, Number 28, Number 9, Number 4, Number 7, Circle -- see the
-     .stamp-part rules in css/style.css for how each one reveals (wipe for
-     the straight strokes, fade+scale for the numerals and the closing
-     ring). All ten are driven by one class flip (.intro-stamp.is-drawn),
-     staggered purely through each part's own transition-delay -- the same
-     pattern the modern F below it already uses, just with more parts.
-     Once the stamp finishes drawing (~1.45s in), the modern F fades in and
-     draws directly OVER it (right to left: top bar, lower bar, then the
-     vertical stroke top-down as a single continuous bar --
-     .intro-f-vert-bar -- bleeding off the bottom) -- both marks visible
-     together, on purpose (Eliza: "trying to show the connection"). Only
-     once the F has fully drawn does the stamp let go, fading away on its
-     own over a slower .8s -- whole orange screen fades out.
+     "intro - joins" / "intro - end state" frames) ----------------
+     Eliza 2026-10-02: "get rid of the stamp entirely, change to just
+     the modern F. I want it to draw in from the outer perimeters,
+     joining together, and then the top 2 horizontal lines shortening
+     into place, outside in." Two class flips on #introF drive the
+     whole thing now -- see the .intro-f-wrap rules in css/style.css
+     for exactly what each phase animates:
+       .is-joining -- phase 1: top bar, mid bar and vertical bar fly
+         in from past the actual edge of the viewport (right, left
+         and top respectively) and land in position together, still
+         at an overshoot length.
+       .is-drawn -- phase 2: the two horizontal bars shrink from that
+         overshoot down to true length, anchored at the end nearest
+         the vertical bar, so the motion reads as the outer tip
+         retracting inward ("outside in").
      Plays once per tab (sessionStorage) since it's a first-visit
      flourish, not something a returning-within-session visitor
      should sit through on every reload. Click/tap/Escape/Enter skips
@@ -910,7 +907,6 @@
 
     var SEEN_KEY = 'sfIntroSeen';
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var stamp = document.getElementById('introStamp');
     var fWrap = document.getElementById('introF');
     var timers = [];
     var done = false;
@@ -923,9 +919,8 @@
       timers.forEach(clearTimeout);
       timers.length = 0;
       // Snap every stage to its end state before fading out, so a skip
-      // never leaves a half-drawn line visible for a frame.
-      stamp.classList.add('is-drawn', 'is-hidden');
-      fWrap.classList.add('is-visible', 'is-drawn');
+      // never leaves a half-joined/half-shortened mark visible for a frame.
+      fWrap.classList.add('is-joining', 'is-drawn');
       el.classList.add('is-done');
       document.body.classList.remove('intro-active');
       try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (err) {}
@@ -945,20 +940,14 @@
     if (reduce) {
       // No stagewise draw -- just present the finished mark briefly,
       // long enough to read as an intentional beat, then reveal the site.
-      stamp.classList.add('is-drawn');
-      at(150, function () { stamp.classList.add('is-hidden'); fWrap.classList.add('is-visible', 'is-drawn'); });
+      fWrap.classList.add('is-joining', 'is-drawn');
       at(500, finish);
       return;
     }
 
-    at(0,    function () { stamp.classList.add('is-drawn'); });         // stamp draws on, part by part: ~1.02s total (sped up 30% per Eliza)
-    at(1065, function () {                                              // F fades in OVER the still-visible stamp: .35s
-      fWrap.classList.add('is-visible');
-      stamp.classList.add('is-accents-hidden');                         // ...and the ring + R/rule bar dissolve at the same instant, so they're not competing with the F for attention
-    });
-    at(1165, function () { fWrap.classList.add('is-drawn'); });         // F draw: ~.552s total (incl. vertical bar, sped up 25% per Eliza again), finishes ~1717
-    at(1787, function () { stamp.classList.add('is-hidden'); });       // stamp lets go, alone, once the F has fully drawn: .8s
-    at(2737, finish);                                                   // brief hold, then fade out (.45s)
+    at(0,    function () { fWrap.classList.add('is-joining'); });   // phase 1: fly in + join, ~.62s (vertical bar's .5s transition starts .12s in)
+    at(650,  function () { fWrap.classList.add('is-drawn'); });     // phase 2: shorten outside-in, ~.42s total (top .3s, mid .3s delayed .12s)
+    at(1570, finish);                                               // brief hold, then fade out (.45s)
   })();
 
   /* ---------------- catalogue: column parallax drift ----------------

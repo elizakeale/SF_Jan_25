@@ -2654,26 +2654,43 @@ body.page-custom .carousel .tile figcaption{ color: var(--ink); }
 /* ============================================================
    SITE INTRO (index.html only) -- full-screen orange loader that
    plays once per tab session before the homepage, per Figma's
-   "intro" / "intro - end state" frames.
+   "intro" / "intro - joins" / "intro - end state" frames.
 
-   The stamp's own art (images/logos/stamp/*) is a scanned
-   illustration auto-traced into 600+ tiny fragment paths with no
-   separable components -- a first pass hand-redrew it as separate
-   oval/numeral/cross pieces so they could draw in sequence, but
-   Eliza found that hand-redrawn draw-in "looks weird" and asked for
-   simpler, self-created components or -- her explicitly-accepted
-   fallback -- showing the raw stamp asset appear as a whole instead.
-   Taking that fallback: the real stamp-white.svg now just fades +
-   scales in as one piece (.intro-stamp, no internal sequencing),
-   then the modern F logomark -- which already IS three clean lines
-   in the shipped asset -- draws in over the same spot, right to
-   left, top bar then lower bar then the vertical stroke top-down as
-   one continuous bar (.intro-f-vert-bar) that bleeds off the bottom
-   of the screen. The whole orange screen then fades out.
-   Timing/sequencing lives in js/main.js (search "SITE INTRO");
-   reduced-motion collapses this to a quick fade via the
-   *{ transition-duration } rule below. Click/tap or Escape skips
-   straight to the end. ============================================================ */
+   Eliza 2026-10-02: "get rid of the stamp entirely, change to just
+   the modern F. I want it to draw in from the outer perimeters,
+   joining together, and then the top 2 horizontal lines shortening
+   into place, outside in." The stamp (.intro-stamp, the traced
+   circular woodworker's mark) is removed outright -- see git history
+   for the old 600+-path asset and its per-part draw sequence if it's
+   ever needed again. Two phases now, both driven off one wrapper
+   (.intro-f-wrap):
+
+   Phase 1 -- "draws in from the outer perimeters, joining together"
+   (.is-joining): the top bar, mid bar and vertical bar each start
+   translated off past the actual edge of the viewport -- top bar
+   from the right, mid bar from the left, vertical bar from the top,
+   so they visibly converge from three different directions -- and
+   slide into their assembled position together. The horizontal bars
+   are already at an OVERSHOOT length at this point (wider than their
+   true final length), so the shape that "joins" together reads as a
+   slightly oversized cross, not the final compact F.
+
+   Phase 2 -- "top 2 horizontal lines shortening into place, outside
+   in" (.is-drawn): once joined, the two horizontal bars shrink from
+   their overshoot length down to true length via scaleX, anchored
+   (transform-origin) at their INNER end -- the end nearest the
+   vertical bar -- so the visible motion is the OUTER tip retracting
+   inward, i.e. "outside in." The vertical bar does not take part in
+   this phase; it already landed at full/final height in phase 1.
+
+   Plays once per tab (sessionStorage) since it's a first-visit
+   flourish. Click/tap/Escape/Enter skips straight to the end.
+   Reduced motion collapses it to a quick fade -- the durations below
+   are wall-clock waits between class toggles in js/main.js (search
+   "SITE INTRO"), kept separate from the CSS transition durations
+   (which the site's global prefers-reduced-motion rule already
+   zeroes), so a reduced-motion visitor doesn't sit through a silent
+   version of the full timeline. ============================================================ */
 .site-intro{
   position:fixed; inset:0; z-index:200; background: var(--orange);
   cursor:pointer; transition: opacity .45s ease;
@@ -2683,194 +2700,102 @@ body.page-custom .carousel .tile figcaption{ color: var(--ink); }
 body.intro-active{ overflow:hidden; }
 
 /* Eliza: "it looks too big on macbook 13, scale down the entire
-   animation 50%" -- rather than hand-halving every vh/vw/px value
-   tuned into the stamp and F below (and losing their careful mutual
-   alignment), wrap both marks in one positioned box the same size as
-   the intro screen and scale THAT by half, anchored to viewport
-   center so the whole composition just shrinks in place. */
+   animation 50%" -- wrap the mark in one positioned box the same
+   size as the intro screen and scale THAT by half, anchored to
+   viewport center, so the whole composition just shrinks in place
+   without hand-halving every value tuned into the F below. */
 .intro-marks{ position:absolute; inset:0; transform: scale(.5); transform-origin: 50% 50%; }
 
-/* Eliza 2026-09-27: real vector trace supplied (StampFile_ForClaude.svg /
-   StampInkscape.svg, Assets/Stamps), replacing the raster fallback above's
-   whole-piece fade. Inlined directly in index.html (not <img src=...>) so
-   its own named layers -- Horizontal 1/2, Vertical, Bottom Point, R, Number
-   28/9/4/7, Circle, exactly as Eliza's Inkscape file labels them -- can be
-   targeted individually below and drawn on in that order, the same way the
-   modern F draws in via clip-path/opacity + staggered transition-delay
-   rather than one uniform fade. Container itself no longer fades/scales as
-   a block -- it's visible immediately and empty until its parts reveal. */
-.intro-stamp{
-  position:absolute; top:20vh; left:50%;
-  transform:translateX(-50%);
-  width:min(24vw, 230px); display:block;
-  /* Eliza 2026-09-27: "have the F come in over the stamp ... then have
-     stamp fade away gracefully" -- was a quick .35s crossfade timed to
-     start the instant the F appeared (no overlap). Now the F draws in
-     directly on top of the still-visible stamp (see js/main.js's SITE
-     INTRO timeline) and only afterward does the stamp itself dissolve,
-     alone, over a slower .8s -- the "gracefully" part -- so the two marks
-     visibly share the same spot before the stamp lets go. */
-  transition: opacity .8s ease;
-}
-.intro-stamp.is-hidden{ opacity:0; }
-.intro-stamp svg{ display:block; width:100%; height:auto; overflow:visible; }
-
-.intro-stamp .stamp-part{
-  transition-property: clip-path, -webkit-clip-path, opacity, transform;
-  transition-timing-function: ease;
-  transition-duration: 0s; /* each part sets its own duration once .is-drawn is on */
-}
-
-/* Horizontal 1, Horizontal 2, R (the divider rule): thin wide strokes,
-   drawn left -> right. */
-.intro-stamp .stamp-h1,
-.intro-stamp .stamp-h2,
-.intro-stamp .stamp-rule{
-  clip-path: inset(0 100% 0 0);
-  -webkit-clip-path: inset(0 100% 0 0);
-}
-.intro-stamp.is-drawn .stamp-h1{
-  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .126s; transition-delay: 0s;
-}
-.intro-stamp.is-drawn .stamp-h2{
-  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .126s; transition-delay: .063s;
-}
-.intro-stamp.is-drawn .stamp-rule{
-  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .126s; transition-delay: .392s;
-}
-
-/* Vertical + Bottom Point: the descending stroke, drawn top -> bottom
-   (Bottom Point continues where Vertical leaves off). */
-.intro-stamp .stamp-vert,
-.intro-stamp .stamp-bottom{
-  clip-path: inset(0 0 100% 0);
-  -webkit-clip-path: inset(0 0 100% 0);
-}
-.intro-stamp.is-drawn .stamp-vert{
-  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .224s; transition-delay: .126s;
-}
-.intro-stamp.is-drawn .stamp-bottom{
-  clip-path: inset(0 0 0 0); -webkit-clip-path: inset(0 0 0 0);
-  transition-duration: .112s; transition-delay: .322s;
-}
-
-/* Numerals: Eliza 2026-09-27: "can we actually omit the #s?" -- the
-   28/9/4/7 date-stamp numerals are omitted from the intro entirely rather
-   than just skipped in the draw sequence, since they're still part of the
-   same inlined SVG (used elsewhere as the plain stamp asset) and would
-   otherwise flash in unstyled at their raw opacity:1. */
-.intro-stamp .stamp-num28,
-.intro-stamp .stamp-num9,
-.intro-stamp .stamp-num4,
-.intro-stamp .stamp-num7{
-  display:none;
-}
-
-/* Circle: the outer ring, stamped last as the flourish that completes the
-   mark -- fades + settles from a slight zoom-out rather than a directional
-   wipe, since it wraps the whole piece rather than running in one line.
-   Same translate-preserving fix as the numerals above. */
-.intro-stamp .stamp-circle{
-  opacity:0; transform: translate(-57.240463px, -79.063366px) scale(.94);
-  transform-box: fill-box; transform-origin: center;
-}
-.intro-stamp.is-drawn .stamp-circle{ opacity:1; transform: translate(-57.240463px, -79.063366px) scale(1); transition-duration:.35s; transition-delay:.665s; }
-
-/* Eliza 2026-09-27: "circle should go away AS the modern F comes on to
-   reduce visual distraction"; 2026-09-27 (later): "get rid of the R at the
-   same time as the circle" -- js/main.js flips this class the instant the
-   F starts fading in (same moment as fWrap.is-visible), so the ring and
-   the R/rule bar both dissolve right as the F appears rather than
-   lingering until the whole stamp lets go later. Higher specificity (4
-   classes vs. 3) than the is-drawn rules above wins regardless of source
-   order. */
-.intro-stamp.is-drawn.is-accents-hidden .stamp-circle,
-.intro-stamp.is-drawn.is-accents-hidden .stamp-rule{
-  opacity:0;
-  transition-duration:.3s; transition-delay:0s;
-}
 /* Centred on the F glyph's own vertical stroke (at x=117.5 of its 612-wide
    viewBox), not the box -- the F is a left-weighted letterform, not a
    symmetric mark, so centring the box would centre empty space instead of
-   the stroke that's meant to land on the stamp's own vertical cross-bar.
-   top is tuned so the two marks roughly coincide (see the sizing comment
-   in js/main.js's SITE INTRO section for the numbers). */
+   the stroke the mark is actually built around. */
 .intro-f-wrap{
-  /* Eliza 2026-09-27: "F is coming in too low, over R rather than F" --
-     now that the F draws in directly over the still-visible stamp, its own
-     top+mid bars need to land level with the stamp's Horizontal 1/2 (its
-     own top double-bar), not several stamp-heights lower at the Rule bar.
-     32vh put the F's top bar right on top of the stamp's Rule (measured:
-     F top bar landed at y=314px vs the stamp's H1 at y=245px in a 900px-
-     tall viewport); 24.3vh is that same 69px correction applied to top,
-     tuned at the 1440x900 reference the rest of this section already uses. */
   position:absolute; top:24.3vh; left:50%; transform: translateX(calc(-117.5 / 612 * 100%));
-  width:min(30vw, 300px); opacity:0; transition: opacity .35s ease;
+  width:min(30vw, 300px);
 }
-.intro-f-wrap.is-visible{ opacity:1; }
 .intro-f{ display:block; width:100%; overflow:visible; }
 
 .intro-f line{
   fill:none; stroke: var(--white); stroke-width: calc(2 * var(--u)); /* Eliza: "thinner, like 1 pt" -- was 9u; then "should be 2pt" */
   vector-effect:non-scaling-stroke;
+  opacity:0;
+  transition: opacity .3s ease, transform .5s cubic-bezier(.16,.84,.44,1);
 }
-.intro-f-top { stroke-dasharray:517; stroke-dashoffset:517; transition: stroke-dashoffset .254s ease; }         /* Eliza: "speed up the modern F 25%" again -- .338s * .75 */
-.intro-f-mid { stroke-dasharray:390.5; stroke-dashoffset:390.5; transition: stroke-dashoffset .254s ease .101s; }  /* .338s/.135s * .75, again */
-/* Eliza 2026-09-26: "still crossing over on the 2nd line/sticking out" -- the
-   real logomark's own mid bar (113-508) pokes 4.5u left of the vertical
-   stroke's centreline (117.5), which is invisible at logomark scale but
-   read as an overshoot blown up here. Per her reference, the mid bar now
-   stops flush at the centreline (x2=117.5 in index.html) instead of
-   crossing it -- length drops from 395 to 390.5, dasharray follows. */
-.intro-f-wrap.is-drawn .intro-f-top,
-.intro-f-wrap.is-drawn .intro-f-mid{ stroke-dashoffset:0; }
 
-/* Eliza: the vertical stroke read as "cut off weird into 2 pieces" -- it
-   used to be an SVG <line> for the portion inside the F's own box plus a
-   separate HTML div for the "tail" bleeding off the bottom of the screen,
-   drawn with two different transitions (different durations, and via two
-   totally different mechanisms -- stroke-dashoffset vs height) that never
-   quite read as one motion. Replaced both with a single HTML bar spanning
-   from the stroke's start (y=58 of the 612-tall box, as a % of the box)
-   down through the box AND the 60vh bleed in one continuous height
-   transition, so it's one unbroken "part 2" beat after the two horizontal
-   bars, not two. left is centred on the stroke's own centreline (117.5 of
-   612) minus half the bar's width, same centring math .intro-f-wrap
-   already uses for the whole mark. */
+/* Phase 1 start state: off past the viewport edge (big vw offset
+   survives the .intro-marks .5 scale above) and at overshoot length
+   (scaleX > 1). transform-origin sits at each line's INNER end (the
+   end nearest the vertical bar) so phase 2's scaleX-down reads as
+   the OUTER tip retracting, not the whole line sliding. */
+.intro-f-top{
+  transform-box: fill-box; transform-origin: 0% 50%;
+  transform: translateX(160vw) scaleX(1.35);
+}
+.intro-f-mid{
+  transform-box: fill-box; transform-origin: 0% 50%;
+  transform: translateX(-160vw) scaleX(1.35);
+}
+/* Eliza 2026-09-26: "still crossing over on the 2nd line/sticking out" --
+   the real logomark's own mid bar (113-508) pokes 4.5u left of the
+   vertical stroke's centreline (117.5), invisible at logomark scale but
+   read as an overshoot blown up here. Per her reference, the mid bar
+   stops flush at the centreline (x2=117.5 in index.html) instead of
+   crossing it. */
+
+/* Phase 1 -- joins: arrive at position, still overshoot length. */
+.intro-f-wrap.is-joining .intro-f-top{ opacity:1; transform: translateX(0) scaleX(1.35); }
+.intro-f-wrap.is-joining .intro-f-mid{ opacity:1; transform: translateX(0) scaleX(1.35); transition-delay: .06s, .06s; }
+
+/* Phase 2 -- shortens into place, outside in: scaleX relaxes to 1,
+   anchored at the inner end, so only the outer tip moves. Top bar
+   first, mid bar close behind (same stagger shape as the old draw). */
+.intro-f-wrap.is-drawn .intro-f-top{
+  transform: translateX(0) scaleX(1);
+  transition: opacity .3s ease, transform .3s cubic-bezier(.4,0,.2,1);
+}
+.intro-f-wrap.is-drawn .intro-f-mid{
+  transform: translateX(0) scaleX(1);
+  transition: opacity .3s ease, transform .3s cubic-bezier(.4,0,.2,1) .12s;
+}
+
+/* Eliza: the vertical stroke read as "cut off weird into 2 pieces" when it
+   was an SVG <line> plus a separate bleed div -- one HTML bar spans from
+   the stroke's start (y=58 of the 612-tall box, as a %) down through the
+   box AND the 60vh bleed below the fold, in one piece. It joins in phase 1
+   (translates down from above the top edge into place, already at full
+   height) and takes no part in phase 2. left is centred on the stroke's
+   own centreline (117.5 of 612) minus half the bar's width, same centring
+   math .intro-f-wrap already uses for the whole mark. */
 .intro-f-vert-bar{
   position:absolute; top:calc(58 / 612 * 100%);
-  left:calc((117.5 / 612 * 100%) - (1 * var(--u))); /* recentred for the 2u width below */
-  width:calc(2 * var(--u)); height:0; background: var(--white); /* matches .intro-f line's 2pt stroke */
-  transition: height .338s ease .214s; /* Eliza: "speed up the modern F 25%" again -- .45s/.285s * .75 */
+  left:calc((117.5 / 612 * 100%) - (1 * var(--u)));
+  width:calc(2 * var(--u)); height:calc(((612 - 58) / 612 * 100%) + 60vh);
+  background: var(--white); /* matches .intro-f line's 2pt stroke */
+  opacity:0; transform: translateY(-140vh);
+  transition: opacity .3s ease, transform .5s cubic-bezier(.16,.84,.44,1) .12s;
 }
-.intro-f-wrap.is-drawn .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 60vh); }
+.intro-f-wrap.is-joining .intro-f-vert-bar{ opacity:1; transform: translateY(0); }
 
 /* Eliza (14th pass, 2026-10-02): "on macbook 13 inch, a common device,
    the vertical bar is squished and cut off -- things need to shift up
-   and the vertical bar needs to always be fully visible." .intro-stamp
-   / .intro-f-wrap's top offsets and the vert-bar's 60vh bleed are all
-   tuned in vh against a ~900px-tall reference viewport; a 13" MacBook is
-   SHORT, not narrow (its width is well past the 1152px mobile
-   breakpoint below, so it was hitting the full desktop layout), so the
-   same vh math eats a much bigger share of a shorter screen and the
-   bar's bleed runs past the fold. Height-based query, independent of
-   the width one below: shift the whole mark up and shrink the bleed so
-   the full draw-in always fits inside a short desktop viewport. */
+   and the vertical bar needs to always be fully visible." .intro-f-wrap's
+   top offset and the vert-bar's bleed are tuned in vh against a ~900px-
+   tall reference viewport; a 13" MacBook is SHORT, not narrow (its width
+   is well past the 1152px mobile breakpoint below, so it was hitting the
+   full desktop layout), so the same vh math eats a much bigger share of a
+   shorter screen and the bar's bleed runs past the fold. Height-based
+   query, independent of the width one below: shift the mark up and
+   shrink the bleed (and the vertical fly-in distance, so it still clears
+   its own travel without a visible jump) so the full draw-in always fits
+   inside a short desktop viewport. */
 @media (min-width: 1153px) and (max-height: 850px){
-  .intro-stamp{ top:12vh; }
   .intro-f-wrap{ top:15vh; }
-  .intro-f-wrap.is-drawn .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 40vh); }
+  .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 40vh); transform: translateY(-100vh); }
 }
 
 @media (max-width: 1152px){
-  .intro-stamp{ top:16vh; }
-  .intro-f-wrap{ top:19.7vh; }
-  .intro-stamp{ width:min(38vw, 150px); }
-  .intro-f-wrap{ width:min(46vw, 190px); }
+  .intro-f-wrap{ top:19.7vh; width:min(46vw, 190px); }
 }
 
 @media (prefers-reduced-motion: reduce){
