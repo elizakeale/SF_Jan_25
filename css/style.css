@@ -307,7 +307,18 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    Static/pinned by default (stays put while the page scrolls beneath it) — see the
    Stamp behavior rule in the project plan. Only About and Mobile Hamburger deviate. */
 .stamp{
-  position: fixed; left: var(--edge); top:55%; z-index:55; /* was 60.7% -- shifted up so it clears the "Download Summer 2026 Catalogue" button at initial landing on short viewports (Eliza 2026-09-26) */
+  /* Eliza (15th pass): "never have the floating stamp push up over the
+     nav bar, should hide under it on all pages -- rule." This was a
+     literal z-index bug, not a positioning one: the stamp was stacked
+     at 55, above .wordmark-header's 50, so on any scroll position where
+     their boxes overlapped the stamp painted OVER the header instead of
+     being hidden by it. Dropped below the header (matching the pattern
+     already used for #mobileMenu's own z-index:45 "under the header's
+     50" a bit further down) so the header always wins the stack
+     regardless of scroll position -- true on every page, not just this
+     one, since .page-stamp/.catalogue-stamp were already correctly
+     under it (z-index 5 / 1) and only this one was ever wrong. */
+  position: fixed; left: var(--edge); top:55%; z-index:45; /* was 60.7% -- shifted up so it clears the "Download Summer 2026 Catalogue" button at initial landing on short viewports (Eliza 2026-09-26) */
   width: calc(142 * var(--u)); /* scaled down 25% from 190px per Eliza's 2026-09-14 note */
   opacity:1;
   pointer-events:none;
@@ -766,6 +777,15 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .site-footer .newsletter .accent:hover{
   background: var(--orange-light); border-color: var(--orange-light); color: var(--white);
 }
+/* Eliza (15th pass): "ENTER YOUR EMAIL is too big in footer." Scoped to
+   the footer specifically (not the mobile-menu newsletter, which is a
+   different, smaller context and wasn't flagged) rather than touching
+   the shared --fs-input every other form field on the site uses. */
+.site-footer .newsletter input{ font-size: calc(14 * var(--u)); }
+/* Same white-on-orange swap .inquire-modal already does for this
+   component on a dark background -- the default --ink would be nearly
+   unreadable on the footer's orange fill. */
+.site-footer .sf-field-error{ color: var(--white); }
 
 @media (max-width: 1152px){
   .footer-links{ position:static; min-height:auto; display:flex; flex-wrap:wrap; gap: var(--sp-32); }
@@ -1743,7 +1763,13 @@ body.page-custom .carousel{ background: var(--white); }
 .catalogue-intro p + p{ margin-top: 1.7em; }
 
 .catalogue-download{
-  position:absolute; left: calc(1076 * var(--u)); top: calc(394 * var(--u));
+  /* z-index:3, above .catalogue-grid's 2 -- found while testing tonight's
+     other changes: the grid (position:absolute, same stacking level by
+     default as this button) silently sat ON TOP of this button wherever
+     their boxes overlapped, intercepting every click. Pre-existing bug,
+     not caused by anything in this pass -- the button LOOKED clickable
+     but never was. */
+  position:absolute; z-index:3; left: calc(1076 * var(--u)); top: calc(394 * var(--u));
   display:flex; align-items:center; justify-content:space-between; gap: calc(12 * var(--u));
   width: calc(324 * var(--u)); min-height: calc(33 * var(--u));
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
@@ -1752,7 +1778,15 @@ body.page-custom .carousel{ background: var(--white); }
   letter-spacing:.05em; text-transform:uppercase;
   transition: background .18s ease;
 }
-.catalogue-download:hover{ background: var(--orange-light); }
+/* Eliza (15th pass): "button should invert on hover" -- same full
+   inversion as .product-cta-inquire (white fill, orange outline, text
+   + arrow swap to the orange asset), not the lighter-tint treatment
+   this had before. border is set in the resting state too (orange on
+   orange, invisible until hover) so box-sizing:border-box keeps the
+   size identical on both states -- no 1px jump. */
+.catalogue-download{ border: 1px solid var(--orange); }
+.catalogue-download:hover{ background: var(--white); color: var(--orange); }
+.catalogue-download:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .catalogue-download img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); flex:none; }
 
 /* Soft floating orange seal between the download button and the image

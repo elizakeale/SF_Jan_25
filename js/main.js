@@ -66,9 +66,19 @@
      what matters is just where that section BEGINS, not its height, so
      both cases use the same formula. */
   (function pageStampFloat() {
-    var stamp = document.querySelector('.page-stamp');
+    // Eliza (15th pass): "orange stamp [on catalogue] should float over
+    // the page contents, but then staying static before footer and not
+    // rolling up overlapping with nav bar -- same as stamp on homepage."
+    // .catalogue-stamp was never wired into this at all (just a plain
+    // position:absolute sitting in normal flow, no float/pin). Folded in
+    // here rather than duplicated: the function only ever reads the
+    // stamp's OWN existing CSS position (via getBoundingClientRect) and
+    // overrides it with inline fixed/absolute, so it doesn't care which
+    // class supplied that position -- .catalogue-stamp's own left/top/
+    // width/opacity rules in style.css are untouched and still apply.
+    var stamp = document.querySelector('.page-stamp, .catalogue-stamp');
     var included = stamp && document.body.matches(
-      '.page-contact, .page-custom, .page-showroom, .page-trade, .page-faq'
+      '.page-contact, .page-custom, .page-showroom, .page-trade, .page-faq, .page-catalogue'
     );
     if (!included) return;
     var target = document.querySelector('.scroll-hijack') || document.querySelector('.carousel');
@@ -637,7 +647,12 @@
    field as the visitor fixes things. */
 (function contactForms() {
   var forms = document.querySelectorAll('form[data-endpoint]');
-  if (!forms.length) return;
+  // NOTE: no early return here even when forms.length is 0 -- the
+  // newsletter-form wiring further down (every page's footer, not just
+  // contact/trade) needs fieldErrorEl/showFieldError/clearFieldError
+  // from this same closure and must still run on a page with no
+  // data-endpoint form at all. The forms.forEach below is already a
+  // no-op on an empty NodeList, so skipping it costs nothing.
 
   function fieldErrorEl(field) {
     var wrap = field.closest('.sf-field') || field.parentElement;
@@ -713,6 +728,43 @@
         }
         notice.scrollIntoView({ block: 'nearest' });
       }
+    });
+  });
+
+
+  /* Eliza (15th pass): "ENTER YOUR EMAIL [in the footer] is too big, and
+     'Please enter...' should show up native below it, not like alt text
+     -- same format as forms when errors are made." The newsletter form
+     (header hamburger + every page's footer, same markup repeated) had
+     neither novalidate nor data-endpoint, so submit never reached any
+     JS at all -- the browser's own floating validity bubble fired and
+     .sf-field-error above never got a chance to run. Same
+     show/clear-on-submit wiring as the contact/trade forms, just
+     without the mailto-fallback notice (nothing to be "unwired" about --
+     there's no backend promise being made here, just "please fill this
+     in"). fieldErrorEl()'s fallback (wrap = field.parentElement when
+     there's no .sf-field ancestor) is exactly the newsletter input's
+     actual markup, so no HTML wrapper needed. */
+  var newsletterForms = document.querySelectorAll('form[data-newsletter]');
+  Array.prototype.forEach.call(newsletterForms, function (form) {
+    var fields = form.querySelectorAll('input');
+    Array.prototype.forEach.call(fields, function (field) {
+      field.addEventListener('input', function () {
+        if (!form.classList.contains('is-validated')) return;
+        if (field.validity.valid) clearFieldError(field);
+        else showFieldError(field);
+      });
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      form.classList.add('is-validated');
+      var first = null;
+      Array.prototype.forEach.call(fields, function (field) {
+        if (field.validity.valid) { clearFieldError(field); return; }
+        showFieldError(field);
+        if (!first) first = field;
+      });
+      if (first) first.focus();
     });
   });
 })();
