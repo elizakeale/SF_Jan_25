@@ -918,7 +918,17 @@ body.page-about, body.page-light{ background: var(--white); color: var(--ink); }
 .wordmark-header.is-static .hero-links a{ color: var(--ink); }
 .wordmark-header.is-static .hero-links a:hover{ color: var(--orange); }
 .wordmark-header.is-static .hero-links a[aria-current="page"]{ color: var(--orange); }
-.wordmark-header.is-static .wm-left span{ color: var(--cream); }
+/* Eliza (2026-10-02): "nav bar is still not white... hard to read" --
+   this inherited --cream (the homepage header's STUDIO colour, tuned for
+   sitting transparently over a dark hero photo) but .is-static headers
+   sit on a solid WHITE bar, where cream-on-white is nearly invisible
+   (#ffe7be on #ffffff). Swapped to ink to match the nav links' own
+   resting colour on this background -- FRITZ already correctly used
+   orange, matching the links' hover/active colour, so this now pairs
+   with it the same way ink/orange pairs everywhere else on a white
+   .is-static header instead of carrying over a contrast pairing that
+   only worked against a photo. */
+.wordmark-header.is-static .wm-left span{ color: var(--ink); }
 .wordmark-header.is-static .wm-right span{ color: var(--orange); }
 
 /* Figma 316:357 runs x=304 from y=42 to 2433, with two short horizontals
@@ -2311,10 +2321,18 @@ body.page-custom .carousel .tile figcaption{ color: var(--ink); }
   }
   .wordmark-header.is-static .wm-row-1{ font-size: calc(40 * var(--mu)); }
   .wordmark-header.is-static .hero-links.is-static-nav{ display:none; }  /* hamburger instead */
-  /* At rest: cream STUDIO (338:21 is #ffe7be -- faint on white by design),
-     orange FRITZ, orange hamburger. .nav-toggle's generic mobile rule is
-     white, which would be invisible here until the bar fills in. */
-  .wordmark-header.is-static .wm-left span{ color: var(--cream); }
+  /* Eliza (2026-10-02): "nav bar is still not white... hard to read" --
+     this matched Figma 338:21's own cream STUDIO literally, but #ffe7be on
+     this bar's solid white background renders as near-invisible rather
+     than the deliberate faint accent it reads as in Figma (sitting there
+     against a subtly different surface) -- same desktop fix (see the
+     non-mobile .wordmark-header.is-static .wm-left span rule above), swap
+     to ink so STUDIO is actually legible. FRITZ and the hamburger were
+     already orange, so this now matches the same ink/orange pairing used
+     everywhere else on a white .is-static header. .nav-toggle's generic
+     mobile rule is white, which would be invisible here until the bar
+     fills in -- the explicit orange override below still handles that. */
+  .wordmark-header.is-static .wm-left span{ color: var(--ink); }
   .wordmark-header.is-static .wm-right span{ color: var(--orange); }
   .wordmark-header.is-static .nav-toggle{ color: var(--orange); }
   /* Eliza 2026-10-02: flat white bar, no scroll-driven ramp -- see the

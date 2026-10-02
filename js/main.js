@@ -85,6 +85,7 @@
     if (!target) return;
     var GAP = 24;
     var pinnedTop = null;
+    var pinnedLeft = null;
 
     function desktop() { return window.innerWidth > 1152; }
 
@@ -94,13 +95,15 @@
       // absolute position, not a stale fixed/absolute value from before.
       stamp.style.position = '';
       stamp.style.top = '';
+      stamp.style.left = '';
       var r = stamp.getBoundingClientRect();
       pinnedTop = r.top + window.scrollY; // scroll-invariant: viewport Y at scrollY 0
+      pinnedLeft = r.left;
     }
 
     function render() {
       if (!desktop()) {
-        stamp.style.position = ''; stamp.style.top = '';
+        stamp.style.position = ''; stamp.style.top = ''; stamp.style.left = '';
         return;
       }
       if (pinnedTop === null) measure();
@@ -109,15 +112,31 @@
       if (window.scrollY >= releaseScrollY) {
         stamp.style.position = 'absolute';
         stamp.style.top = (target.offsetTop - stampH - GAP) + 'px';
+        // Eliza (2026-10-02): "stamp is in wrong spot on catalogue and
+        // shifts midway." Root cause: .catalogue-stamp's own containing
+        // block (.catalogue-section) is centered with a max-width cap, so
+        // its left edge isn't the viewport's left edge on any screen
+        // wider than that cap. `top` already got this right -- pinnedTop
+        // is captured from the element's OWN rendered position before
+        // switching to fixed, so vertical stays continuous -- but `left`
+        // was never touched at all, so while pinned/fixed the stylesheet's
+        // left:847u resolved against the viewport (uncapped, flush left)
+        // instead of the centered section, then visibly snapped sideways
+        // by the cap's own side margin the moment it released back into
+        // absolute mode. Clearing the inline override here lets the
+        // stylesheet's own left:847u (correct for .catalogue-section's
+        // frame) take over again, same pattern as top.
+        stamp.style.left = '';
       } else {
         stamp.style.position = 'fixed';
         stamp.style.top = pinnedTop + 'px';
+        stamp.style.left = pinnedLeft + 'px';
       }
     }
 
     var ticking = false;
     function onScroll() { if (!ticking) { requestAnimationFrame(function () { ticking = false; render(); }); ticking = true; } }
-    function onResize() { pinnedTop = null; measure(); render(); }
+    function onResize() { pinnedTop = null; pinnedLeft = null; measure(); render(); }
 
     measure();
     render();
