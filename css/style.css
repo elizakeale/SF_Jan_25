@@ -870,16 +870,27 @@ body.page-about, body.page-light{ background: var(--white); color: var(--ink); }
   /* Eliza 2026-10-02: "nav bar is not floating on all non-homepage pages!
      should behave like homepage nav bar after it appears." Was
      position:absolute (scrolls away with the page) by deliberate earlier
-     choice; now fixed, same as the homepage's own header and as this
-     same selector's mobile override already does below -- desktop was the
-     only breakpoint left scrolling away. <main> still starts at page 0
+     choice; now fixed, same as the homepage's own header -- desktop was
+     the only breakpoint left scrolling away. <main> still starts at page 0
      (unchanged) since both absolute and fixed are equally out of flow;
-     only the scroll behavior changes. js/main.js's staticHeader() now
-     drives the same --hdr-bg-a solid-background ramp here on desktop
-     that it already did on mobile. */
+     only the scroll behavior changes.
+     Eliza 2026-10-02 (follow-up): the --hdr-bg-a orange ramp this first
+     reused from the homepage read as "weird" here -- is-static's own link
+     colour is always dark ink (it has no collapsed-state swap to white,
+     unlike the homepage bar), so the ramp just produced dark text on a
+     solid orange bar partway through. These pages have no video/hero to
+     cross-fade out of in the first place, so there's nothing for a ramp to
+     justify: flat solid white, no fade, no colour-swap -- "does not
+     require complexity." */
   position:fixed; top:0; left:0; right:0; z-index:50;
   padding: var(--sp-8) var(--edge) calc(24 * var(--u));
+  background: var(--white);
 }
+/* Kill the shared .wordmark-header::before orange-ramp layer for static
+   headers -- it's --hdr-bg-a driven and js/main.js's staticHeader() no
+   longer sets that variable at all, but this makes the independence
+   explicit rather than relying on the variable simply staying at 0. */
+.wordmark-header.is-static::before{ display:none; }
 .wordmark-header.is-static .wm-row-1{ font-size: calc(100 * var(--u)); }
 /* 316:278-283: the same two axes as the homepage — 679 and 1048, column 3
    right-aligned. Expressed the same way so the pages can't drift apart. */
@@ -2268,6 +2279,7 @@ body.page-custom .carousel .tile figcaption{ color: var(--ink); }
     position:fixed; padding: calc(4 * var(--mu)) var(--edge) 0;
     height: calc(81 * var(--mu)); display:flex; align-items:flex-start;
     justify-content:space-between;
+    background: var(--white);
   }
   .wordmark-header.is-static .wm-row-1{ font-size: calc(40 * var(--mu)); }
   .wordmark-header.is-static .hero-links.is-static-nav{ display:none; }  /* hamburger instead */
@@ -2277,18 +2289,10 @@ body.page-custom .carousel .tile figcaption{ color: var(--ink); }
   .wordmark-header.is-static .wm-left span{ color: var(--cream); }
   .wordmark-header.is-static .wm-right span{ color: var(--orange); }
   .wordmark-header.is-static .nav-toggle{ color: var(--orange); }
-  /* On scroll js/main.js ramps --hdr-bg-a 0 -> 1 over the first 12% of a
-     viewport height, exactly as on the homepage. ::before fades the orange
-     in and .wm-mark's two images cross-fade, both already keyed to that
-     variable; these are the two marks that would otherwise be left orange
-     on orange. STUDIO needs no rule -- cream reads at both ends.
-     (Plain rule first as the fallback where color-mix is missing.) */
-  .wordmark-header.is-static.is-collapsed .wm-right span,
-  .wordmark-header.is-static.is-collapsed .nav-toggle{ color: var(--white); }
-  .wordmark-header.is-static.is-collapsed .wm-right span,
-  .wordmark-header.is-static.is-collapsed .nav-toggle{
-    color: color-mix(in srgb, var(--white) calc(var(--hdr-bg-a, 0) * 100%), var(--orange));
-  }
+  /* Eliza 2026-10-02: flat white bar, no scroll-driven ramp -- see the
+     desktop .wordmark-header.is-static comment for why. STUDIO/FRITZ/the
+     hamburger keep their at-rest colours (set above) at every scroll
+     position; no collapsed-state override needed. */
   .about-rule{ display:none; }                                           /* not in the mobile frame */
 
   body.page-about main{ padding-top: calc(81 * var(--mu)); }
@@ -2837,6 +2841,28 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 @media (min-width: 1153px) and (max-height: 850px){
   .intro-f-wrap{ top:15vh; }
   .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 40vh); transform: translateY(-100vh); }
+
+  /* Eliza 2026-10-02: "fix above the fold vertical bar on macbook pro 13
+     inch... set rule for all responsiveness that it needs to shift
+     paragraphs and bar up above the fold so user can see it on landing."
+     .hero-content's `top: 60.1%` is a fixed fraction of hero height, but
+     the stack below it (paragraphs -> nav links -> .scroll-cue) scales
+     with WIDTH via --u, not height -- so on a viewport that's wide enough
+     for --u to sit near its max but short enough that 100vh is tight (the
+     13" MacBook Pro class, ~800-850px tall), the stack's real height
+     outgrows the room `top: 60.1%` leaves below it and the cue's bottom
+     edge lands past the fold. Measured live at 1512x823 (current 13"
+     MacBook Pro, browser chrome included): the cue's bottom overshot the
+     viewport by ~12px.
+     Anchoring from the BOTTOM instead of the top fixes this at the source
+     rather than hand-tuning one top% per breakpoint: the cue is the last
+     flow child of .hero-content, so pinning .hero-content's own bottom a
+     fixed distance above the hero's bottom edge (== the viewport's bottom
+     edge, since .hero is exactly 100vh once this fix lets it be) holds
+     the cue a constant, guaranteed-visible distance off the fold no
+     matter how tall the paragraph block wraps or how --u scales the rest
+     of the stack. */
+  .hero-content{ top:auto; bottom: calc(40 * var(--u)); }
 }
 
 @media (max-width: 1152px){

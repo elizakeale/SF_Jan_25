@@ -804,38 +804,30 @@
    is position:fixed at every width (see .wordmark-header.is-static in
    css/style.css) and this same ramp drives it on desktop too. */
 (function staticHeader() {
+  // Eliza 2026-10-02: the scroll-driven orange background ramp this used
+  // to drive (shared with the homepage's own header) made is-static bars
+  // fade to solid orange behind permanently-dark-ink nav text -- "nav
+  // looks weird... does not require complexity." These pages have no
+  // hero/video to cross-fade out of, so the header is just a flat solid
+  // white bar at every scroll position now (see css/style.css) and this
+  // only has to publish its own height for --hdr-h (used by #warranty's
+  // scroll-margin and the FAQ sticky offset elsewhere).
   var header = document.querySelector('.wordmark-header.is-static');
   if (!header) return;
 
-  var MOBILE_BG_FADE = 0.12;   // same number header() uses; keep them in step
   var root = document.documentElement;
-  var lastA = -1, lastH = -1, ticking = false;
+  var lastH = -1;
 
-  function render() {
-    ticking = false;
-
-    var fade = window.innerHeight * MOBILE_BG_FADE;
-    var a = Math.max(0, Math.min(1, window.scrollY / fade));
-    /* Write only on change. Past the ramp the value is constant, so the
-       common case does no DOM work at all -- and the height is read only
-       after a reset, never paired with a style write on a scroll frame. */
-    if (a !== lastA) {
-      lastA = a;
-      header.style.setProperty('--hdr-bg-a', a);
-      header.classList.toggle('is-collapsed', a > 0);
-    }
-    if (lastH === -1) {
-      lastH = header.offsetHeight;
-      root.style.setProperty('--hdr-h', lastH + 'px');
+  function publishHeight() {
+    var h = header.offsetHeight;
+    if (h !== lastH) {
+      lastH = h;
+      root.style.setProperty('--hdr-h', h + 'px');
     }
   }
 
-  function onScroll() {
-    if (!ticking) { ticking = true; requestAnimationFrame(render); }
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', function () { lastA = -1; lastH = -1; onScroll(); });
-  render();
+  window.addEventListener('resize', function () { lastH = -1; publishHeight(); });
+  publishHeight();
 })();
 
   /* ---------------- mobile menu (Figma 242:177) ----------------
