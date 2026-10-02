@@ -959,11 +959,13 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
+  border: 1px solid var(--orange);
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
-.about-cta:hover{ background: var(--orange-light); }
+.about-cta:hover{ background: var(--white); color: var(--orange); }
+.about-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .about-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
 
 /* The band link under the carousel stays mobile-only on About too: 338:15
@@ -1090,12 +1092,13 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   width: calc(204 * var(--u)); min-height: calc(33 * var(--u));
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(11 * var(--u)) 0 calc(17 * var(--u));
-  background: var(--orange); color: var(--white); border:0; cursor:pointer;
+  background: var(--orange); color: var(--white); border: 1px solid var(--orange); cursor:pointer;
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
-.sf-submit:hover{ background: var(--orange-light); }
+.sf-submit:hover{ background: var(--white); color: var(--orange); }
+.sf-submit:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .sf-submit img{ width: calc(10 * var(--u)); height: calc(10 * var(--u)); }
 
 /* Shown by js/main.js only while no endpoint is wired up, so the form
@@ -1181,8 +1184,9 @@ body.inquire-modal-open{ overflow:hidden; }
 .inquire-modal .sf-field-error{ color: var(--white); }
 .inquire-modal .sf-note{ color: var(--white); }
 .inquire-modal .sf-unwired{ color: var(--ink); }
-.inquire-modal .sf-submit{ background: var(--white); color: var(--orange); }
-.inquire-modal .sf-submit:hover{ background: var(--cream); }
+.inquire-modal .sf-submit{ background: var(--white); color: var(--orange); border: 1px solid var(--orange); }
+.inquire-modal .sf-submit:hover{ background: var(--orange); color: var(--white); }
+.inquire-modal .sf-submit:hover img{ content: url("../images/logos/arrows/arrow-white.svg"); }
 
 /* ============================================================
    SHOWROOM (278:1574 desktop / 370:462 mobile)
@@ -1244,12 +1248,8 @@ body.page-showroom{
 .showroom-partner{ top: calc(317 * var(--u)); }
 .showroom-location{ top: calc(982 * var(--u)); }
 
-/* 298:182 -- real placed logo, 309,384, 107x79 (see the drift note above). */
-.showroom-logo{
-  position:absolute; left: calc(309 * var(--u)); top: calc(384 * var(--u));
-  width: calc(114 * var(--u)); height: calc(79 * var(--u));
-  object-fit: contain;
-}
+/* 615:563 -- VISIT button, replaces the overlapping Furnish logo (Eliza, 2026-10-02) */
+.showroom-cta.showroom-visit{ top: calc(450 * var(--u)); }
 
 /* 298:185 -- a plain corner-rule accent; see the drift note above. */
 .showroom-accent{
@@ -1279,11 +1279,13 @@ body.page-showroom{
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
+  border: 1px solid var(--orange);
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
-.showroom-cta:hover{ background: var(--orange-light); }
+.showroom-cta:hover{ background: var(--white); color: var(--orange); }
+.showroom-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .showroom-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
 
 /* the four-tile strip (278:1576-1583) bleeds past the frame at 1887 wide
@@ -1349,11 +1351,13 @@ body.page-faq .page-stamp{ left: calc(1218 * var(--u)); top: calc(266 * var(--u)
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
+  border: 1px solid var(--orange);
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
-.faq-cta:hover{ background: var(--orange-light); }
+.faq-cta:hover{ background: var(--white); color: var(--orange); }
+.faq-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .faq-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
 
 /* the four-tile strip bleeds past the frame, same as Showroom's -- see
@@ -1411,11 +1415,13 @@ body.page-custom{
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
+  border: 1px solid var(--orange);
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
-.custom-cta:hover{ background: var(--orange-light); }
+.custom-cta:hover{ background: var(--white); color: var(--orange); }
+.custom-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .custom-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
 
 /* second stamp -- Custom is the one white page long enough to carry two */
@@ -1679,11 +1685,13 @@ body.page-custom .carousel{ background: var(--white); }
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
+  border: 1px solid var(--orange);
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
-.product-cta:hover{ background: var(--orange-light); }
+.product-cta:hover{ background: var(--white); color: var(--orange); }
+.product-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .product-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
 .product-cta-inquire{ top: calc(1325 * var(--u)); border: 1px solid var(--orange); }
 /* Eliza (14th pass): "hovering over INQUIRE TO PURCHASE, have it go
@@ -2377,13 +2385,6 @@ body.page-custom .carousel .tile figcaption{ color: var(--ink); }
   .showroom-section{ height:auto; padding-top: calc(81 * var(--mu)); }
   body.page-showroom .page-rule{ display:none; }
 
-  /* Mobile's own Figma frame (370:462, node 397:194) places this logo at
-     a genuinely different size than desktop's (162x119 vs 107x79) -- not
-     a guess, confirmed via get_metadata on the mobile frame directly. */
-  .showroom-logo{
-    position:static; width: calc(172 * var(--mu)); height: calc(119 * var(--mu));
-    margin: calc(49 * var(--mu)) 0 0 var(--edge);
-  }
   .showroom-col{
     position:static; width:auto; padding: 0 var(--edge);
     font-size: calc(16 * var(--mu));
