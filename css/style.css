@@ -627,7 +627,15 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   letter-spacing:.05em; text-transform:uppercase; gap: var(--sp-8);
 }
 .catalogue-band img{ width:19px; height:20px; } /* Figma 175:1024 */
-.catalogue-band:hover{ color: var(--orange-light); } /* text only -- precisely re-tinting the SVG icon itself via CSS filter isn't reliable, not worth the fragility for a minor icon nuance */
+.catalogue-band:hover{ color: var(--orange-light); }
+/* Eliza (2026-10-02): "any buttons with arrows should lighten both the
+   word + button, not just the word -- make this a global rule." This
+   one used to lighten only the text and leave the arrow icon white --
+   CSS filter re-tinting an inline SVG isn't reliable, but the swap-the-
+   whole-asset technique every other arrow button on the site already
+   uses (content: url(...)) works here just as well, so it gets its own
+   pre-tinted arrow-orange-light.svg instead of a filter. */
+.catalogue-band:hover img{ content: url("../images/logos/arrows/arrow-orange-light.svg"); }
 
 /* ---------- feature product block ---------- */
 .feature-product{ position:relative; background: var(--orange); }
@@ -638,6 +646,11 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   text-decoration:none;
 }
 .feature-arrow img{ width:60%; height:60%; }
+/* Eliza (2026-10-02): same global "arrow buttons lighten on hover" rule --
+   this one is icon-only (no text to lighten in the first place), but it
+   sits on the same orange background as .catalogue-band, so it gets the
+   identical light-orange swap for consistency rather than being left out. */
+.feature-arrow:hover img{ content: url("../images/logos/arrows/arrow-orange-light.svg"); }
 
 /* ---------- footer ----------
    Per Figma (get_design_context, node 175:1004, footer region): the
@@ -1514,13 +1527,28 @@ body.page-custom{
   letter-spacing:.05em; text-transform:uppercase; color: var(--ink); line-height:1.4;
 }
 .custom-feature-copy, .custom-feature-quote, .custom-feature-attr{
-  position:absolute; margin:0;
+  position:absolute; margin:0; font-size: var(--fs-body);
   font-family: var(--font-body); font-weight:200; line-height:1.7;
   letter-spacing:.05em; text-transform:uppercase; color: var(--ink); text-align:justify;
 }
+/* Eliza (2026-10-02): "copy on 2 pars should be same size, constanzia too
+   far down -- do it like you did for the Interior Architects section
+   below it." The shared rule above only ever set font-size on
+   .custom-feature-copy, leaving .custom-feature-quote and
+   .custom-feature-attr to fall back to whatever ambient size they
+   inherited -- fine for the Interior Architects section because it
+   always overrides all three inline (15px, matching its own Figma node),
+   but the .WORLD section above it never did, so its quote paragraph (and
+   therefore "Constanzia...") rendered at the wrong size and reflowed
+   taller than Figma's 16px box, pushing the fixed-position attribution
+   line visually far below where the quote actually ended. Moving
+   font-size onto the shared selector gives every instance a matching
+   16px baseline (Figma's own value for the .WORLD copy/quote/attr) while
+   the Interior Architects section's existing inline 15px overrides still
+   win as before -- nothing about that section changes. */
 .custom-feature-copy p, .custom-feature-quote p{ margin:0; }
 .custom-feature-copy p + p, .custom-feature-quote p + p{ margin-top: 1.7em; }
-.custom-feature-copy{ left: calc(328 * var(--u)); width: calc(442 * var(--u)); font-size: var(--fs-body); }
+.custom-feature-copy{ left: calc(328 * var(--u)); width: calc(442 * var(--u)); }
 .custom-feature-divider{ display:none; }
 
 body.page-custom .carousel{ background: var(--white); }
