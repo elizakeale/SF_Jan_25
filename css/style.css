@@ -512,6 +512,12 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .mobile-menu{ display:none; }
 .band-about{ display:none; }
 
+/* ---------- utility ---------- */
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
 /* ---------- carousels ---------- */
 .carousel{ position:relative; overflow:hidden; background: var(--orange); }
 .carousel-track{
