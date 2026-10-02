@@ -1337,6 +1337,25 @@
         }
       });
 
+      // Eliza: "there is some glitch when i drag scroll only (not when
+      // clicking the arrows) where it changes photo and then changes
+      // photo again after (so 2 photos later)." Root cause: a trackpad
+      // click-drag fires pointer events (handled below) AND, on release,
+      // residual trackpad momentum/gesture recognition on some
+      // devices/browsers also fires a handful of `wheel` events for the
+      // same physical swipe -- so BOTH endDrag() and the wheel handler
+      // called step() for one gesture, advancing two photos instead of
+      // one. Clicking the arrow buttons never touches either listener,
+      // which is why it only ever showed up on drag. Fixed with one
+      // lock shared between both paths instead of wheel's own separate
+      // one: whichever fires first for a gesture wins, and the other is
+      // ignored for the same cooldown window.
+      var gestureLocked = false;
+      function lockGesture() {
+        gestureLocked = true;
+        setTimeout(function () { gestureLocked = false; }, 500);
+      }
+
       function endDrag(e) {
         if (!dragging || e.pointerId !== pointerId) return;
         dragging = false;
@@ -1344,6 +1363,8 @@
         var dx = e.clientX - startX;
         var dy = e.clientY - startY;
         if (Math.abs(dx) > THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
+          if (gestureLocked) return;
+          lockGesture();
           step(dx < 0 ? 1 : -1);
         }
       }
@@ -1358,16 +1379,15 @@
       // trackpad two-finger swipe fires wheel events, not pointer
       // events, so the drag handling above never saw it. Treat a
       // mostly-horizontal wheel gesture the same as a drag: advance one
-      // step, then ignore further wheel deltas briefly so one swipe
-      // doesn't fire through several boxes at once.
-      var wheelLocked = false;
+      // step, then ignore further wheel deltas (and any drag-triggered
+      // step) briefly so one swipe doesn't fire through several boxes,
+      // or double up with the pointer path above, at once.
       gallery.addEventListener('wheel', function (e) {
         if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
         e.preventDefault();
-        if (wheelLocked) return;
-        wheelLocked = true;
+        if (gestureLocked) return;
+        lockGesture();
         step(e.deltaX > 0 ? 1 : -1);
-        setTimeout(function () { wheelLocked = false; }, 500);
       }, { passive: false });
     });
   })();
