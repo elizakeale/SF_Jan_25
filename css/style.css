@@ -329,7 +329,19 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   intrinsic viewBox. */
 
 /* ---------- hero ---------- */
-.hero{ position:relative; min-height:100vh; background: var(--ink); overflow:hidden; }
+/* Eliza: "vertical bar is still cut off on homepage" -- the scroll-cue
+   (.scroll-cue, the hairline under the hero nav) sits in normal flow
+   right after the nav, so its bottom edge is wherever the hero's own
+   content stack happens to land, not a fixed fraction of hero height.
+   On a short viewport (13" MacBook-class, ~768-800px tall) the content
+   stack runs past the vh-capped hero box before the cue's pulse animation
+   even finishes, and overflow:hidden here was clipping it -- confirmed by
+   measuring .scroll-cue's bounding rect against .hero's at several real
+   viewport heights (768/720/800px all overshot by 9-12px; 900px+ did
+   not). Nothing else in .hero needs clipping: the video/poster and the
+   ::after gradient are already inset:0 + 100% width/height, so they can't
+   overflow their own box regardless. */
+.hero{ position:relative; min-height:100vh; background: var(--ink); }
 .hero video, .hero .poster{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
 }
