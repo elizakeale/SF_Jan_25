@@ -1332,20 +1332,27 @@
       // Eliza: "there is some glitch when i drag scroll only (not when
       // clicking the arrows) where it changes photo and then changes
       // photo again after (so 2 photos later)." Root cause: a trackpad
-      // click-drag fires pointer events (handled below) AND, on release,
-      // residual trackpad momentum/gesture recognition on some
-      // devices/browsers also fires a handful of `wheel` events for the
-      // same physical swipe -- so BOTH endDrag() and the wheel handler
-      // called step() for one gesture, advancing two photos instead of
-      // one. Clicking the arrow buttons never touches either listener,
-      // which is why it only ever showed up on drag. Fixed with one
-      // lock shared between both paths instead of wheel's own separate
-      // one: whichever fires first for a gesture wins, and the other is
-      // ignored for the same cooldown window.
+      // click-drag fires pointer events (handled below) AND, both DURING
+      // the drag and for a while AFTER release, residual trackpad
+      // momentum/gesture recognition on some devices/browsers also fires
+      // `wheel` events for the same physical gesture -- so endDrag() and
+      // the wheel handler could both call step() for one gesture.
+      // A single shared time-based cooldown (first version of this fix)
+      // wasn't enough on its own: a real click-drag can easily run past a
+      // short cooldown window before the user releases, so the wheel
+      // path's lock had already expired by the time pointerup fired its
+      // own step(). Two separate measures now, not one:
+      //   1. While `dragging` is true, wheel deltaX is ignored outright --
+      //      the pointer path owns the gesture until release, so a wheel
+      //      event firing mid-drag can never sneak a step in first.
+      //   2. After EITHER path fires a step, a cooldown (long enough to
+      //      cover typical trackpad inertia, not just the gesture itself)
+      //      blocks the other path from firing its own step for the same
+      //      physical swipe.
       var gestureLocked = false;
       function lockGesture() {
         gestureLocked = true;
-        setTimeout(function () { gestureLocked = false; }, 500);
+        setTimeout(function () { gestureLocked = false; }, 900);
       }
 
       function endDrag(e) {
@@ -1372,12 +1379,12 @@
       // events, so the drag handling above never saw it. Treat a
       // mostly-horizontal wheel gesture the same as a drag: advance one
       // step, then ignore further wheel deltas (and any drag-triggered
-      // step) briefly so one swipe doesn't fire through several boxes,
-      // or double up with the pointer path above, at once.
+      // step) for the cooldown window so one swipe doesn't fire through
+      // several boxes, or double up with the pointer path above.
       gallery.addEventListener('wheel', function (e) {
         if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
         e.preventDefault();
-        if (gestureLocked) return;
+        if (dragging || gestureLocked) return;
         lockGesture();
         step(e.deltaX > 0 ? 1 : -1);
       }, { passive: false });

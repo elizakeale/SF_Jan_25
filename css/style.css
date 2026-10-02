@@ -2819,9 +2819,20 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 .intro-f-vert-bar{
   position:absolute; top:calc(58 / 612 * 100%);
   left:calc((117.5 / 612 * 100%) - (1 * var(--u)));
-  width:calc(2 * var(--u)); height:calc(((612 - 58) / 612 * 100%) + 60vh);
+  width:calc(2 * var(--u)); height:calc(((612 - 58) / 612 * 100%) + 92vh);
   background: var(--white); /* matches .intro-f line's 2pt stroke */
-  opacity:0; transform: translateY(-140vh);
+  opacity:0; transform: translateY(140vh);
+  /* Eliza 2026-10-02: "vertical line should come down up, not up down" --
+     was translateY(-140vh) (rises INTO place by dropping down from above
+     the top edge); flipped to a positive offset so it travels up from
+     below the bottom edge instead, landing in the same spot. Also widened
+     the bleed from 60vh to 92vh -- measured live (Playwright) that the
+     old value left 145-240px of bare orange between the bar's bottom and
+     the fold at every reference viewport (1440x900, 1512x823, 1280x800)
+     because .intro-marks' scale(.5) halves every vh value inside it, so
+     the bar needs roughly double the nominal bleed to actually reach the
+     edge it's meant to bleed to. 92vh was the value that landed the
+     bottom flush with the fold at all three. */
   transition: opacity .9s ease, transform 1.5s cubic-bezier(.16,.84,.44,1) .36s;
 }
 .intro-f-wrap.is-joining .intro-f-vert-bar{ opacity:1; transform: translateY(0); }
@@ -2833,14 +2844,25 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
    tall reference viewport; a 13" MacBook is SHORT, not narrow (its width
    is well past the 1152px mobile breakpoint below, so it was hitting the
    full desktop layout), so the same vh math eats a much bigger share of a
-   shorter screen and the bar's bleed runs past the fold. Height-based
-   query, independent of the width one below: shift the mark up and
-   shrink the bleed (and the vertical fly-in distance, so it still clears
-   its own travel without a visible jump) so the full draw-in always fits
-   inside a short desktop viewport. */
+   shorter screen. Height-based query, independent of the width one
+   below: shift the mark up so the full draw-in always fits inside a
+   short desktop viewport.
+   Eliza (follow-up, same day): "still squished -- should look like
+   [the Figma end-state reference], full bleed to the bottom of the
+   fold." The first pass here fixed layout overflow by SHRINKING the
+   bleed (40vh, down from the base rule's 60vh at the time) -- which
+   stopped it running past the fold, but also stopped it reaching the
+   fold at all, the opposite problem. Both numbers measured live
+   (Playwright, not guessed): the base rule's own bleed was independently
+   retuned from 60vh to 92vh for the same reason (see .intro-f-vert-bar
+   above), and this override needs its own larger value rather than
+   inheriting that ratio, since .intro-f-wrap's `top` is also different
+   here (15vh vs the base rule's 24.3vh) -- 100vh is what landed the
+   bar's bottom edge flush with (fractionally past, for a guaranteed
+   full bleed) the fold at both 1512x823 and 1280x800. */
 @media (min-width: 1153px) and (max-height: 850px){
   .intro-f-wrap{ top:15vh; }
-  .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 40vh); transform: translateY(-100vh); }
+  .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 100vh); transform: translateY(100vh); }
 
   /* Eliza 2026-10-02: "fix above the fold vertical bar on macbook pro 13
      inch... set rule for all responsiveness that it needs to shift
