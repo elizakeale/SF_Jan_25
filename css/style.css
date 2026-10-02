@@ -2847,27 +2847,32 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 .intro-f-vert-bar{
   position:absolute; top:calc(58 / 612 * 100%);
   left:calc((117.5 / 612 * 100%) - (1 * var(--u)));
-  width:calc(2 * var(--u)); height:calc(((612 - 58) / 612 * 100%) + 126vh - 280px);
+  width:calc(2 * var(--u));
+  height:calc(((612 - 58) / 612 * 100%) + 125.7vh - min(30vw, 300px));
   background: var(--white); /* matches .intro-f line's 2pt stroke */
   opacity:0; transform: translateY(140vh);
   /* Eliza 2026-10-02: "vertical line should come down up, not up down" --
      was translateY(-140vh) (rises INTO place by dropping down from above
      the top edge); flipped to a positive offset so it travels up from
      below the bottom edge instead, landing in the same spot.
-     2026-10-02 (follow-up): 92vh was tuned ONLY against ~900px-tall
-     viewports and still left a growing gap at taller common desktop
-     heights -- measured live (Playwright, bounding boxes) at six sizes:
-     900px tall landed within 2px of the fold, but 982px tall left 15px
-     and 1080px tall left 32px of floating gap below the bar, because the
-     bar's height is a straight vh fraction while its vertical position
-     carries a separate fixed-px offset -- the two only line up at one
-     specific height. 126vh is the slope that cancels that height
-     dependence out entirely (derived from the measured per-viewport
-     numbers, not guessed), so the bar's bottom now runs slightly PAST
-     the fold by a roughly constant amount at every height instead of
-     drifting further short of it the taller the viewport gets -- a small
-     constant overshoot (harmless, it's bled off-screen) beats a growing
-     floating gap. */
+     2026-10-02 (follow-up): the previous empirically-tuned "126vh" value
+     was fit to six measured viewport sizes (768-1080px tall) and still
+     fell short on an iMac outside that range -- replaced with an EXACT
+     closed-form derivation instead of another empirical fit.
+     .intro-marks (this element's transformed ancestor) has inset:0, so
+     its own untransformed layout box is exactly 100vw x 100vh; its
+     `transform: scale(.5)` around 50%/50% then means any descendant's
+     LAYOUT position Y maps to a VISUAL position of
+     centerY + .5*(Y - centerY) = 50vh + .5*(Y - 50vh). Setting that equal
+     to the true viewport bottom (100vh) and solving for Y gives
+     Y = 150vh -- so for the bar's bottom edge to land exactly on the
+     real fold, its layout-space bottom must sit at 150vh from the top of
+     .intro-marks, independent of viewport height by construction (no
+     fitting, no sample sizes). That bottom edge = .intro-f-wrap's own
+     `top` (24.3vh) + .intro-f-wrap's own height (min(30vw,300px), same
+     cap this element's own width/height % terms are already relative
+     to) + this bar's added vh term -- so the added term is
+     150vh - 24.3vh - min(30vw,300px) = 125.7vh - min(30vw,300px). */
   transition: opacity .9s ease, transform 1.5s cubic-bezier(.16,.84,.44,1) .36s;
 }
 .intro-f-wrap.is-joining .intro-f-vert-bar{ opacity:1; transform: translateY(0); }
@@ -2892,12 +2897,15 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
    retuned from 60vh to 92vh for the same reason (see .intro-f-vert-bar
    above), and this override needs its own larger value rather than
    inheriting that ratio, since .intro-f-wrap's `top` is also different
-   here (15vh vs the base rule's 24.3vh) -- 100vh is what landed the
-   bar's bottom edge flush with (fractionally past, for a guaranteed
-   full bleed) the fold at both 1512x823 and 1280x800. */
+   here (15vh vs the base rule's 24.3vh) -- 100vh was what landed the
+   bar's bottom edge flush with the fold at 1512x823 and 1280x800, but
+   those were only two sample points again, same mistake as the base
+   rule. Replaced with the same exact closed-form derivation (see
+   .intro-f-vert-bar above): 150vh - 15vh (this query's own `top`) -
+   min(30vw,300px) = 135vh - min(30vw,300px). */
 @media (min-width: 1153px) and (max-height: 850px){
   .intro-f-wrap{ top:15vh; }
-  .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 100vh); transform: translateY(100vh); }
+  .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 135vh - min(30vw, 300px)); transform: translateY(100vh); }
 
   /* Eliza 2026-10-02: "fix above the fold vertical bar on macbook pro 13
      inch... set rule for all responsiveness that it needs to shift
@@ -2924,6 +2932,14 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 
 @media (max-width: 1152px){
   .intro-f-wrap{ top:19.7vh; width:min(46vw, 190px); }
+  /* Eliza (2026-10-02, same pass as the iMac fix above): mobile never had
+     its own .intro-f-vert-bar override, so it was silently inheriting the
+     desktop base rule's bleed math -- which assumes .intro-f-wrap's own
+     height is min(30vw,300px) (the desktop cap), but mobile's wrap is
+     min(46vw,190px) instead. Same exact derivation, this query's own
+     top (19.7vh) and width cap (46vw,190px):
+     150vh - 19.7vh - min(46vw,190px) = 130.3vh - min(46vw,190px). */
+  .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 130.3vh - min(46vw, 190px)); }
 }
 
 @media (prefers-reduced-motion: reduce){
