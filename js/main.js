@@ -1155,21 +1155,23 @@
     });
   })();
 
-  /* ---------------- product gallery: fixed photos, moving "hero" size
-     state -----------------------------------------------------------
-     Eliza (13th pass, 2026-09-29), 8-point redesign: photos no longer
-     rotate between boxes -- each of the 4 positions keeps its own photo
-     permanently. What moves on "next"/"prev" (or a thumbnail click) is
-     WHICH position is currently enlarged (.is-hero, see style.css for
-     the actual sizes/animation) -- the previously-active position drops
-     back to the shared compact height at the same moment. VISUAL_ORDER
-     below is left-to-right on screen (matches the `order` values in
-     style.css: thumb-5, cove2, hero, cove3) -- "next"/"prev" and the
-     drag/wheel gestures below all move one step through that same
-     visual order, so they always feel like moving right/left along the
-     row. Product pages only (.product-gallery), desktop only: mobile
-     shows all 4 photos at once in a stacked column already (see
-     style.css), so there's nothing to toggle there. */
+  /* ---------------- product gallery: fixed boxes, rotating photos ----
+     Eliza (2026-10-02): "images should swap into each other's places
+     right to left" -- replaces the previous resize-in-place toggle.
+     The 4 boxes keep fixed positions and fixed roles (VISUAL_ORDER
+     below is left-to-right on screen, matching the `order` values in
+     style.css: thumb-5, cove2, hero, cove3) -- .product-hero (3rd
+     position) is now PERMANENTLY the single enlarged box; is-hero
+     never moves again. What changes on "next"/"prev"/a thumbnail
+     click is WHICH PHOTO's image sits in each box: the whole set of 4
+     photos rotates one step through the 4 boxes (a literal left shift
+     on "next" -- box 1's photo moves to box 4, box 2's to box 1, box
+     3's to box 2, box 4's to box 3/hero -- and the mirror shift on
+     "prev"), with a brief crossfade + slide so the motion reads as
+     passing through rather than teleporting. Product pages only
+     (.product-gallery), desktop only: mobile shows all 4 photos at
+     once in a stacked column already (see style.css), so there's
+     nothing to rotate there. */
   (function productGallery() {
     var galleries = document.querySelectorAll('.product-gallery');
     function desktop() { return window.innerWidth > 1152; }
@@ -1186,40 +1188,88 @@
       if (!desktop()) return; // mobile: leave every box at its own fixed size
 
       // Left-to-right visual order (matches `order` in style.css).
-      var order = [thumb5, cove2, hero, cove3];
-      function mod(n) { return ((n % order.length) + order.length) % order.length; }
+      var boxes = [thumb5, cove2, hero, cove3];
+      var HERO_INDEX = 2; // .product-hero's position in `boxes` -- always the enlarged box now
+      hero.classList.add('is-hero'); // permanent: no longer toggled between boxes
 
-      var activeIndex = order.indexOf(hero); // rule 4: hero starts largest
+      var imgs = boxes.map(function (b) { return b.querySelector('.gallery-img'); });
+      var data = imgs.map(function (img) {
+        return { src: img.getAttribute('src'), alt: img.getAttribute('alt') };
+      });
 
-      function setActive(index) {
-        activeIndex = mod(index);
-        order.forEach(function (item, i) {
-          item.classList.toggle('is-hero', i === activeIndex);
+      function mod(n) { return ((n % 4) + 4) % 4; }
+
+      function applyData() {
+        imgs.forEach(function (img, i) {
+          img.setAttribute('src', data[i].src);
+          img.setAttribute('alt', data[i].alt);
         });
       }
-      setActive(activeIndex); // sync in case the HTML's default ever drifts
 
-      function step(delta) { setActive(activeIndex + delta); }
+      // Rotates the 4 photos' DATA by k boxes (newData[j] = data[(j+k)%4]) --
+      // k=1 is the "next" shift described above; k=3 (i.e. -1) is "prev".
+      function rotateBy(k) {
+        var next = imgs.map(function (_, j) { return data[mod(j + k)]; });
+        data = next;
+      }
+
+      var swapping = false;
+      function swap(k, dirSign) {
+        if (swapping || mod(k) === 0) return;
+        swapping = true;
+        var exitOffset = dirSign * -24; // "next" photos exit left, "prev" exit right
+        imgs.forEach(function (img) {
+          img.style.transition = 'opacity .22s ease, transform .22s ease';
+          img.style.opacity = '0';
+          img.style.transform = 'translateX(' + exitOffset + 'px)';
+        });
+        setTimeout(function () {
+          rotateBy(k);
+          applyData();
+          // place incoming photo on the opposite side, instantly (no transition)...
+          imgs.forEach(function (img) {
+            img.style.transition = 'none';
+            img.style.transform = 'translateX(' + (-exitOffset) + 'px)';
+          });
+          // ...then let it transition back to rest, so it reads as entering
+          // from the direction the old photo exited toward.
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              imgs.forEach(function (img) {
+                img.style.transition = 'opacity .22s ease, transform .22s ease';
+                img.style.opacity = '';
+                img.style.transform = '';
+              });
+              swapping = false;
+            });
+          });
+        }, 220);
+      }
+
+      function step(delta) { swap(delta > 0 ? 1 : 3, delta > 0 ? 1 : -1); }
 
       if (prevBtn) prevBtn.addEventListener('click', function () { step(-1); });
       if (nextBtn) nextBtn.addEventListener('click', function () { step(1); });
 
-      // Clicking any thumbnail makes it the hero directly.
+      // Clicking any thumbnail rotates the set so that photo lands in the hero box.
       Array.prototype.forEach.call(gallery.querySelectorAll('[data-gallery-thumb]'), function (thumb) {
-        var i = order.indexOf(thumb);
+        var i = boxes.indexOf(thumb);
         if (i === -1) return;
-        thumb.addEventListener('click', function () { setActive(i); });
+        thumb.addEventListener('click', function () {
+          var k = mod(i - HERO_INDEX);
+          swap(k, k === 1 ? 1 : -1);
+        });
       });
 
       // Eliza: "we should also be able to drag left and right on the
       // product carousel." Pointer Events cover mouse + touch + pen in
       // one code path; a small distance threshold keeps an ordinary
-      // click/tap from also firing a swipe. Drag only reads from the
-      // currently-active (largest) box, wherever it is.
+      // click/tap from also firing a swipe. Drag always reads from the
+      // hero box now (the one fixed enlarged position).
       var dragging = false, startX = 0, startY = 0, pointerId = null;
       var THRESHOLD = 40;
 
-      function activeEl() { return order[activeIndex]; }
+      function activeEl() { return hero; }
 
       // Belt-and-suspenders alongside draggable="false" + -webkit-user-drag:none
       // in the markup/CSS (see .gallery-img): a real click-drag starting on an
