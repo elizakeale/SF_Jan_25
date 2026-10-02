@@ -202,7 +202,22 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    clock that made this page feel jittery. The footer has no such ramp, so
    it gets the site's usual .18s. */
 .wm-link, .footer-wm a{ text-decoration:none; color:inherit; display:block; }
-.wm-link:hover .wm-left span{ color: var(--white); }
+/* Eliza (14th pass): "STUDIO should turn full orange on hover, for all
+   pages. FRITZ should turn the pale orange, always staying within the 2
+   colour orange monochromatic palette." One shared rule covers every
+   page since .wm-link is the same markup everywhere. Exception: while
+   the header is docked solid orange (.is-collapsed, scrolled state on
+   the homepage), STUDIO reverts to white on hover -- full orange on an
+   already-orange bar would just disappear. */
+/* Specificity note: .wordmark-header.is-static .wm-left span (further
+   down) is (0,3,1), same as a bare ".wm-link:hover .wm-left span" --
+   which lost the tiebreak on source order on every static-header page
+   (every page but the homepage), so hover silently did nothing there.
+   Prefixing .wordmark-header here (matching the FRITZ hover rule below,
+   which already had it and was never affected) bumps this to (0,4,1) so
+   it wins outright regardless of order. */
+.wordmark-header .wm-link:hover .wm-left span{ color: var(--orange); }
+.wordmark-header.is-collapsed .wm-link:hover .wm-left span{ color: var(--white); }
 .wordmark-header .wm-link:hover .wm-right span,
 .wordmark-header.is-collapsed .wm-link:hover .wm-right span{ color: var(--orange-light); }
 .footer-wm span{ transition: color .18s ease; }
@@ -731,16 +746,22 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .newsletter .accent:hover{ background: var(--orange-light); color: var(--white); border-color: var(--orange-light); }
 .newsletter .accent img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); } /* same 14x14 artboard as the input arrow; Figma draws them at equal size */
 
-/* RULE (Eliza 2026-09-28): "download catalogue" buttons should have an
-   orange background in the footer, not transparent -- scoped to
-   .site-footer specifically so the mobile menu's own outline version
-   (see the comment above, its own separate Eliza decision) is untouched.
-   Matches the site's standard solid-CTA convention (.product-cta,
-   .showroom-cta, etc.): var(--orange) fill, var(--orange-light) on
-   hover, white text/icon throughout since both oranges are dark enough
-   for white to stay legible. */
+/* REVERSED (Eliza, 14th pass, 2026-10-02): "catalogue button should be
+   inverted, white lines text arrow" -- back to the same outline style as
+   the base .newsletter .accent rule above (white border, transparent
+   fill, white text), undoing the 2026-09-28 solid-orange-fill decision
+   this replaced. Left as an explicit (now-empty-effect) .site-footer
+   override rather than deleted outright, so this reversal has its own
+   visible history if it ever needs to flip back.
+   Also (Eliza): "aligning text with the button above it and ensuring
+   they're same size -- make this a rule for buttons that are stacked."
+   width:100% here is that rule made explicit: a button stacked directly
+   under another full-width control (the email input, same .newsletter
+   column) always matches that control's width, not just its own content
+   width, so their left/right edges and text inset line up exactly. */
 .site-footer .newsletter .accent{
-  background: var(--orange); border-color: var(--orange); color: var(--white);
+  background:transparent; border-color: var(--white); color: var(--white);
+  width:100%; box-sizing:border-box;
 }
 .site-footer .newsletter .accent:hover{
   background: var(--orange-light); border-color: var(--orange-light); color: var(--white);
@@ -1644,7 +1665,17 @@ body.page-custom .carousel{ background: var(--white); }
 }
 .product-cta:hover{ background: var(--orange-light); }
 .product-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
-.product-cta-inquire{ top: calc(1325 * var(--u)); }
+.product-cta-inquire{ top: calc(1325 * var(--u)); border: 1px solid var(--orange); }
+/* Eliza (14th pass): "hovering over INQUIRE TO PURCHASE, have it go
+   inverted: white fill, orange outline, text and arrow" -- same
+   inversion pattern as the spec-sheet button's hover, just reversed
+   (that one starts outlined and fills orange on hover; this one starts
+   filled and goes outlined on hover), so border is always present
+   (transparent on the resting white-on-orange state would look off --
+   actually resting state already has an orange border matching bg, so
+   the outline doesn't shift the box size when it inverts). */
+.product-cta-inquire:hover{ background: var(--white); color: var(--orange); }
+.product-cta-inquire:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 /* Eliza: "make 'download spec sheet' orange outline, transparent fill,
    orange text" -- using an explicit white fill rather than truly
    transparent (same look here since the section behind it is white, but
@@ -1769,6 +1800,7 @@ body.page-custom .carousel{ background: var(--white); }
   color: var(--ink); transition: color .18s ease;
 }
 .catalogue-item:hover h2{ color: var(--orange); }
+.catalogue-item:hover .catalogue-arrow{ content: url("../images/logos/arrows/arrow-orange.svg"); } /* Eliza (14th pass): "arrows should also turn orange on hover, not just the product name" */
 .catalogue-arrow{
   width: calc(13 * var(--u)); height: calc(13 * var(--u)); margin-left: calc(8 * var(--u));
   display:inline-block; vertical-align:middle;
@@ -2743,6 +2775,23 @@ body.intro-active{ overflow:hidden; }
   transition: height .338s ease .214s; /* Eliza: "speed up the modern F 25%" again -- .45s/.285s * .75 */
 }
 .intro-f-wrap.is-drawn .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 60vh); }
+
+/* Eliza (14th pass, 2026-10-02): "on macbook 13 inch, a common device,
+   the vertical bar is squished and cut off -- things need to shift up
+   and the vertical bar needs to always be fully visible." .intro-stamp
+   / .intro-f-wrap's top offsets and the vert-bar's 60vh bleed are all
+   tuned in vh against a ~900px-tall reference viewport; a 13" MacBook is
+   SHORT, not narrow (its width is well past the 1152px mobile
+   breakpoint below, so it was hitting the full desktop layout), so the
+   same vh math eats a much bigger share of a shorter screen and the
+   bar's bleed runs past the fold. Height-based query, independent of
+   the width one below: shift the whole mark up and shrink the bleed so
+   the full draw-in always fits inside a short desktop viewport. */
+@media (min-width: 1153px) and (max-height: 850px){
+  .intro-stamp{ top:12vh; }
+  .intro-f-wrap{ top:15vh; }
+  .intro-f-wrap.is-drawn .intro-f-vert-bar{ height:calc(((612 - 58) / 612 * 100%) + 40vh); }
+}
 
 @media (max-width: 1152px){
   .intro-stamp{ top:16vh; }
