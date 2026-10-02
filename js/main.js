@@ -450,17 +450,37 @@
     requestAnimationFrame(autoStep);
 
     // drag-to-scroll (mouse + touch, via pointer events)
+    //
+    // Eliza (2026-10-02): "i still cannot click carousel images." Root
+    // cause: setPointerCapture was called unconditionally on pointerdown,
+    // for every click as well as every real drag. Once a pointer is
+    // captured, the browser routes pointerup/mouseup/click for that
+    // pointer to the CAPTURING element (the track) instead of whatever is
+    // actually under the cursor -- so a plain click on a tile's <a> never
+    // reached the link at all; it always landed on .carousel-track, which
+    // has no href. Confirmed via instrumented event log: pointerdown
+    // targeted the tile correctly, but click's target was the track.
+    //
+    // Fix: don't capture on pointerdown. Only capture once pointermove
+    // proves this is a real drag (dragMoved flips true past the existing
+    // 3px threshold), so a genuine drag still tracks reliably even if the
+    // pointer leaves the track, while a plain click is left alone and
+    // hit-tests normally at pointerup -- reaching the tile's link.
+    var pointerId = null;
     track.addEventListener('pointerdown', function (e) {
       dragging = true; dragMoved = false;
       dragStartX = e.clientX;
       dragStartScroll = track.scrollLeft;
+      pointerId = e.pointerId;
       track.classList.add('dragging');
-      track.setPointerCapture(e.pointerId);
     });
     track.addEventListener('pointermove', function (e) {
       if (!dragging) return;
       var dx = e.clientX - dragStartX;
-      if (Math.abs(dx) > 3) dragMoved = true;
+      if (Math.abs(dx) > 3) {
+        if (!dragMoved) track.setPointerCapture(pointerId); // first confirmed drag frame
+        dragMoved = true;
+      }
       setLeft(dragStartScroll - dx);
     });
     function endDrag(e) {
