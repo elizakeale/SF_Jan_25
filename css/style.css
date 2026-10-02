@@ -733,8 +733,11 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   height: calc(35 * var(--u)); /* Figma 404:400 "Rectangle 8": 351x35 */
   padding: 0 calc(40 * var(--u)) 0 calc(13 * var(--u)); /* label inset x=1062 in a box at x=1049 */
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
-  color: var(--ink);
+  color: var(--ink); letter-spacing:.05em; text-transform:uppercase; /* Eliza: "force all caps on enter your email fields, all references" -- placeholder was already hardcoded caps, but the typed value (and the browser's own autofill suggestion) rendered in whatever case the person/their address book used. Pure display transform, same submitted value. */
+  outline:none; /* Eliza: "get rid of black outline when i click it" -- browser default focus ring read as a stray black box on the cream field; focus is still visible via the border below. */
+  border: 1px solid transparent;
 }
+.newsletter input:focus{ border-color: var(--ink); }
 .newsletter input::placeholder{ color: var(--ink); opacity:.7; }
 .newsletter button{
   position:absolute; right: var(--sp-8); top:50%; transform:translateY(-50%);
@@ -1342,9 +1345,9 @@ body.page-showroom .carousel{ background: var(--white); }
    ============================================================ */
 body.page-faq{
   --rule-top: calc(215 * var(--u));
-  --rule-h: calc(2694 * var(--u));   /* 215 -> the white/carousel seam at 2909 */
+  --rule-h: calc(2743 * var(--u));   /* 215 -> the white/carousel seam at 2958, recomputed for the standardized 64u inter-item gap below */
 }
-.faq-section{ position:relative; height: calc(2909 * var(--u)); }
+.faq-section{ position:relative; height: calc(2958 * var(--u)); }
 body.page-faq .page-label{ width: calc(230 * var(--u)); white-space:normal; line-height:1.35; }
 body.page-faq .page-stamp{ left: calc(1218 * var(--u)); top: calc(266 * var(--u)); }
 
@@ -1365,12 +1368,18 @@ body.page-faq .page-stamp{ left: calc(1218 * var(--u)); top: calc(266 * var(--u)
   text-align:justify;
 }
 .faq-still{
-  position:absolute; left: calc(547 * var(--u)); top: calc(2693 * var(--u)); margin:0;
+  /* Eliza: "standardize all vertical spacing between answers" -- the 10
+     questions now flow at a fixed 64u gap (previously each answer's
+     bottom was wherever its own text happened to wrap to, ranging
+     13-115u to the next question). This block's own top is recomputed
+     to follow the last answer by that same rhythm (~104u, same ratio the
+     original Figma coordinates used here). */
+  position:absolute; left: calc(547 * var(--u)); top: calc(2742 * var(--u)); margin:0;
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
 }
 .faq-cta{
-  position:absolute; left: calc(547 * var(--u)); top: calc(2745 * var(--u));
+  position:absolute; left: calc(547 * var(--u)); top: calc(2794 * var(--u));
   width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
