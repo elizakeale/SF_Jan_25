@@ -7,10 +7,10 @@
 <meta name="description" content="Studio Fritz catalogue — solid hardwood furniture, configurable by dimensions, wood species and accent materials.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Estedad:wght@200..900&display=swap">
-<link rel="stylesheet" href="css/style.css">
-<link rel="icon" type="image/svg+xml" href="images/logos/logomark/logomark-orange.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="images/logos/logomark/logomark-orange.png">
-<link rel="apple-touch-icon" href="images/logos/logomark/logomark-orange@2x.png">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="icon" type="image/svg+xml" href="/images/logos/logomark/logomark-orange.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logos/logomark/logomark-orange.png">
+<link rel="apple-touch-icon" href="/images/logos/logomark/logomark-orange@2x.png">
 </head>
 <body class="page-light page-catalogue">
 
@@ -18,23 +18,23 @@
      a static site with no templating, so they are duplicated by necessity --
      index.html stays the canonical copy; changes go there first, then here. -->
 <header class="wordmark-header is-static" id="wmHeader">
-  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+  <a class="wm-link" href="/" aria-label="Studio Fritz — home">
     <div class="wm-col wm-left"><span class="wm-row-1">STUDIO</span></div>
   </a>
-  <a class="wm-mark" href="index.html" aria-label="Studio Fritz — home">
-    <img class="wm-mark-orange" src="images/logos/logomark/logomark-orange.svg" alt="">
-    <img class="wm-mark-white" src="images/logos/logomark/logomark-white.svg" alt="">
+  <a class="wm-mark" href="/" aria-label="Studio Fritz — home">
+    <img class="wm-mark-orange" src="/images/logos/logomark/logomark-orange.svg" alt="">
+    <img class="wm-mark-white" src="/images/logos/logomark/logomark-white.svg" alt="">
   </a>
-  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+  <a class="wm-link" href="/" aria-label="Studio Fritz — home">
     <div class="wm-col wm-right"><span class="wm-row-1">FRITZ</span></div>
   </a>
   <nav class="hero-links is-static-nav" aria-label="Primary">
-    <a href="custom.html">Custom</a>
-    <a href="about.html">About</a>
-    <a href="showroom.html">Showroom</a>
-    <a href="catalogue.html" aria-current="page">Catalogue</a>
-    <a href="contact.html">Contact</a>
-    <a href="trade.html">Trade</a>
+    <a href="/custom">Custom</a>
+    <a href="/about">About</a>
+    <a href="/showroom">Showroom</a>
+    <a href="/catalogue" aria-current="page">Catalogue</a>
+    <a href="/contact">Contact</a>
+    <a href="/trade">Trade</a>
   </nav>
   <button class="nav-toggle" id="navToggle" type="button"
           aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
@@ -46,20 +46,20 @@
   <div class="mm-inner">
     <nav class="mm-links" aria-label="Primary">
       <div class="mm-col mm-col-a">
-        <a href="custom.html">Custom</a>
-        <a href="catalogue.html" aria-current="page">Catalogue</a>
-        <a href="about.html">About</a>
+        <a href="/custom">Custom</a>
+        <a href="/catalogue" aria-current="page">Catalogue</a>
+        <a href="/about">About</a>
       </div>
       <div class="mm-col mm-col-b">
-        <a href="contact.html">Contact</a>
-        <a href="trade.html">Trade</a>
-        <a href="showroom.html">Showroom</a>
+        <a href="/contact">Contact</a>
+        <a href="/trade">Trade</a>
+        <a href="/showroom">Showroom</a>
       </div>
     </nav>
-    <div class="mm-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
+    <div class="mm-stamp" aria-hidden="true"><img src="/images/logos/stamp/stamp-white.svg" alt=""></div>
     <div class="mm-col mm-secondary">
-      <a href="faq.html">Frequently Asked Questions</a>
-      <a href="faq.html#warranty">Lifetime Guarantee</a>
+      <a href="/faq">Frequently Asked Questions</a>
+      <a href="/faq#warranty">Lifetime Guarantee</a>
       <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
       <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
     </div>
@@ -67,9 +67,9 @@
       <label for="mm-email">Sign Up for Newsletter</label>
       <form novalidate data-newsletter onsubmit="return false;">
         <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
-        <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+        <button type="submit" aria-label="Sign up for newsletter"><img src="/images/logos/arrows/arrow-purple.svg" alt=""></button>
       </form>
-      <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
+      <a class="accent" href="/catalogue">Download Summer 2026 Catalogue<img src="/images/logos/arrows/arrow-white.svg" alt=""></a>
     </div>
   </div>
 </div>
@@ -91,13 +91,13 @@
          product page's "Download Spec Sheet". Swap the href for the real
          PDF once Eliza has one. -->
     <a class="catalogue-download" href="mailto:eliza@studiofritz.co?subject=Summer%202026%20Catalogue%20Request">
-      <span>Download Summer 2026 Catalogue</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+      <span>Download Summer 2026 Catalogue</span><span><img src="/images/logos/arrows/arrow-white.svg" alt=""></span>
     </a>
 
     <!-- Figma 244:562 -- soft floating orange seal between the download
          button and the grid, see .catalogue-stamp in style.css for why
          it reuses stamp-orange.svg rather than the real doodle asset. -->
-    <figure class="catalogue-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-orange.svg" alt=""></figure>
+    <figure class="catalogue-stamp" aria-hidden="true"><img src="/images/logos/stamp/stamp-orange.svg" alt=""></figure>
 
     <!-- Three columns at their real Figma boxes (see .catalogue-col),
          each independently drifting a few pixels opposite its neighbours
@@ -115,58 +115,58 @@
          crop isn't in the asset library yet. -->
     <div class="catalogue-grid" data-catalogue-parallax>
       <div class="catalogue-col" data-parallax-dir="1">
-        <a class="catalogue-item" href="product-cove-table.html">
+        <a class="catalogue-item" href="/catalogue/covesidetable">
           <div class="catalogue-item-media">
-            <figure class="catalogue-photo" style="aspect-ratio:455/547"><img src="images/product/cove-table.webp" alt="Cove Side Table"></figure>
-            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/cove-side-table.jpg" alt=""></figure>
+            <figure class="catalogue-photo" style="aspect-ratio:455/547"><img src="/images/product/cove-table.webp" alt="Cove Side Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="/images/home/cove-side-table.jpg" alt=""></figure>
           </div>
-          <h2>Cove Side Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
+          <h2>Cove Side Table<img class="catalogue-arrow" src="/images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
-        <a class="catalogue-item" href="product-portage-chair.html">
+        <a class="catalogue-item" href="/catalogue/portagechair">
           <div class="catalogue-item-media">
-            <figure class="catalogue-photo" style="aspect-ratio:455/551"><img src="images/home/portage-chair.jpg" alt="Portage Chair"></figure>
-            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/portage-chair.jpg" alt=""></figure>
+            <figure class="catalogue-photo" style="aspect-ratio:455/551"><img src="/images/home/portage-chair.jpg" alt="Portage Chair"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="/images/home/portage-chair.jpg" alt=""></figure>
           </div>
-          <h2>Portage Chair<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
+          <h2>Portage Chair<img class="catalogue-arrow" src="/images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
       </div>
       <div class="catalogue-col" data-parallax-dir="-1">
-        <a class="catalogue-item" href="product-point-grey-stool.html">
+        <a class="catalogue-item" href="/catalogue/pointgreystool">
           <div class="catalogue-item-media">
-            <figure class="catalogue-photo" style="aspect-ratio:1.208"><img src="images/home/point-grey-stools.webp" alt="Point Grey Stools"></figure>
-            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/point-grey-stools.webp" alt=""></figure>
+            <figure class="catalogue-photo" style="aspect-ratio:1.208"><img src="/images/home/point-grey-stools.webp" alt="Point Grey Stools"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="/images/home/point-grey-stools.webp" alt=""></figure>
           </div>
-          <h2>Point Grey Stools<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
+          <h2>Point Grey Stools<img class="catalogue-arrow" src="/images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
-        <a class="catalogue-item" href="product-bluff-table.html">
+        <a class="catalogue-item" href="/catalogue/blufftable">
           <div class="catalogue-item-media">
-            <figure class="catalogue-photo" style="aspect-ratio:1.393"><img src="images/home/bluff-table.webp" alt="Bluff Table"></figure>
-            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/bluff-table.webp" alt=""></figure>
+            <figure class="catalogue-photo" style="aspect-ratio:1.393"><img src="/images/home/bluff-table.webp" alt="Bluff Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="/images/home/bluff-table.webp" alt=""></figure>
           </div>
-          <h2>Bluff Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
+          <h2>Bluff Table<img class="catalogue-arrow" src="/images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
-        <a class="catalogue-item" href="product-shoal-coffee-table.html">
+        <a class="catalogue-item" href="/catalogue/shoalcoffeetable">
           <div class="catalogue-item-media">
-            <figure class="catalogue-photo" style="aspect-ratio:1.249"><img src="images/home/shoal-coffee-table.webp" alt="Shoal Coffee Table"></figure>
-            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/shoal-coffee-table.webp" alt=""></figure>
+            <figure class="catalogue-photo" style="aspect-ratio:1.249"><img src="/images/home/shoal-coffee-table.webp" alt="Shoal Coffee Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="/images/home/shoal-coffee-table.webp" alt=""></figure>
           </div>
-          <h2>Shoal Coffee Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
+          <h2>Shoal Coffee Table<img class="catalogue-arrow" src="/images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
       </div>
       <div class="catalogue-col" data-parallax-dir="1">
-        <a class="catalogue-item" href="product-bluff-stool.html">
+        <a class="catalogue-item" href="/catalogue/bluffstool">
           <div class="catalogue-item-media">
-            <figure class="catalogue-photo" style="aspect-ratio:1"><img src="images/home/bluff-stools.jpg" alt="Bluff Stool"></figure>
-            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/bluff-stools.jpg" alt=""></figure>
+            <figure class="catalogue-photo" style="aspect-ratio:1"><img src="/images/home/bluff-stools.jpg" alt="Bluff Stool"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="/images/home/bluff-stools.jpg" alt=""></figure>
           </div>
-          <h2>Bluff Stool<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
+          <h2>Bluff Stool<img class="catalogue-arrow" src="/images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
-        <a class="catalogue-item" href="product-westlake-table.html">
+        <a class="catalogue-item" href="/catalogue/westlaketable">
           <div class="catalogue-item-media">
-            <figure class="catalogue-photo" style="aspect-ratio:1"><img src="images/home/westlake-table.webp" alt="Westlake Table"></figure>
-            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="images/home/westlake-table.webp" alt=""></figure>
+            <figure class="catalogue-photo" style="aspect-ratio:1"><img src="/images/home/westlake-table.webp" alt="Westlake Table"></figure>
+            <figure class="catalogue-photo-sm" aria-hidden="true"><img src="/images/home/westlake-table.webp" alt=""></figure>
           </div>
-          <h2>Westlake Table<img class="catalogue-arrow" src="images/logos/arrows/arrow-purple.svg" alt=""></h2>
+          <h2>Westlake Table<img class="catalogue-arrow" src="/images/logos/arrows/arrow-purple.svg" alt=""></h2>
         </a>
       </div>
     </div>
@@ -175,8 +175,8 @@
       <p>Looking for something more specific?</p>
       <p>Collaborations are some of our favourite projects and give us an opportunity to design for your particular space.</p>
     </div>
-    <a class="catalogue-collaborate" href="custom.html">
-      <span>Collaborate</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+    <a class="catalogue-collaborate" href="/custom">
+      <span>Collaborate</span><span><img src="/images/logos/arrows/arrow-white.svg" alt=""></span>
     </a>
   </section>
 
@@ -202,28 +202,28 @@
       <div class="carousel" data-carousel data-hijacked aria-label="More from Studio Fritz">
         <div class="carousel-track">
           <figure class="tile">
-            <a class="tile-link" href="about.html">
-            <div class="tile-media" style="aspect-ratio:0.800"><img src="images/showroom/int-6.webp" alt="Studio Fritz workshop"></div>
+            <a class="tile-link" href="/about">
+            <div class="tile-media" style="aspect-ratio:0.800"><img src="/images/showroom/int-6.webp" alt="Studio Fritz workshop"></div>
             <figcaption>About the Maker</figcaption>
           </a>
           </figure>
           <figure class="tile">
             <div class="tile-media" style="aspect-ratio:0.738">
               <video autoplay muted loop playsinline>
-                <source src="images/home/union-sq-carousel.mp4" type="video/mp4">
+                <source src="/images/home/union-sq-carousel.mp4" type="video/mp4">
               </video>
             </div>
             <figcaption>Union Square, San Francisco</figcaption>
           </figure>
           <figure class="tile">
-            <a class="tile-link" href="about.html">
-            <div class="tile-media" style="aspect-ratio:0.818"><img src="images/showroom/dsc-1307.webp" alt="Studio Fritz studio interior"></div>
+            <a class="tile-link" href="/about">
+            <div class="tile-media" style="aspect-ratio:0.818"><img src="/images/showroom/dsc-1307.webp" alt="Studio Fritz studio interior"></div>
             <figcaption>About the Studio</figcaption>
           </a>
           </figure>
           <figure class="tile">
-            <a class="tile-link" href="custom.html">
-            <div class="tile-media" style="aspect-ratio:1.463"><img src="images/showroom/dsc-1311.webp" alt="Studio Fritz collaboration installation"></div>
+            <a class="tile-link" href="/custom">
+            <div class="tile-media" style="aspect-ratio:1.463"><img src="/images/showroom/dsc-1311.webp" alt="Studio Fritz collaboration installation"></div>
             <figcaption>Collaborate</figcaption>
           </a>
           </figure>
@@ -234,21 +234,21 @@
 
   <footer class="site-footer" id="about">
     <div class="footer-top">
-      <div class="footer-wm"><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><a class="footer-wm-mark" href="index.html" aria-label="Studio Fritz — home"><img src="images/logos/logomark/logomark-white.svg" alt=""></a><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
+      <div class="footer-wm"><a href="/" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><a class="footer-wm-mark" href="/" aria-label="Studio Fritz — home"><img src="/images/logos/logomark/logomark-white.svg" alt=""></a><a href="/" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
       <div class="footer-links">
         <div class="footer-col">
-          <a href="custom.html">Custom</a>
-          <a href="catalogue.html" aria-current="page">Catalogue</a>
-          <a href="about.html">About</a>
+          <a href="/custom">Custom</a>
+          <a href="/catalogue" aria-current="page">Catalogue</a>
+          <a href="/about">About</a>
         </div>
         <div class="footer-col">
-          <a href="contact.html">Contact</a>
-          <a href="trade.html">Trade</a>
-          <a href="showroom.html">Showroom</a>
+          <a href="/contact">Contact</a>
+          <a href="/trade">Trade</a>
+          <a href="/showroom">Showroom</a>
         </div>
         <div class="footer-col footer-col-wide">
-          <a href="faq.html">Frequently Asked Questions</a>
-          <a href="faq.html#warranty">Lifetime Guarantee</a>
+          <a href="/faq">Frequently Asked Questions</a>
+          <a href="/faq#warranty">Lifetime Guarantee</a>
           <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
           <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
         </div>
@@ -256,9 +256,9 @@
           <label for="nl-email">Sign Up for Newsletter</label>
           <form novalidate data-newsletter onsubmit="return false;">
             <input id="nl-email" type="email" placeholder="ENTER YOUR EMAIL" required>
-            <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+            <button type="submit" aria-label="Sign up for newsletter"><img src="/images/logos/arrows/arrow-purple.svg" alt=""></button>
           </form>
-          <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
+          <a class="accent" href="/catalogue">Download Summer 2026 Catalogue<img src="/images/logos/arrows/arrow-white.svg" alt=""></a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -273,6 +273,6 @@
 
 </main>
 
-<script src="js/main.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>

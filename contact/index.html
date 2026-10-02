@@ -7,10 +7,10 @@
 <meta name="description" content="Get in touch with Studio Fritz, a contemporary fine furniture maker based in Seattle&rsquo;s industrial district.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Estedad:wght@200..900&display=swap">
-<link rel="stylesheet" href="css/style.css">
-<link rel="icon" type="image/svg+xml" href="images/logos/logomark/logomark-orange.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="images/logos/logomark/logomark-orange.png">
-<link rel="apple-touch-icon" href="images/logos/logomark/logomark-orange@2x.png">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="icon" type="image/svg+xml" href="/images/logos/logomark/logomark-orange.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logos/logomark/logomark-orange.png">
+<link rel="apple-touch-icon" href="/images/logos/logomark/logomark-orange@2x.png">
 </head>
 <body class="page-light page-contact">
 
@@ -18,23 +18,23 @@
      a static site with no templating, so they are duplicated by necessity --
      index.html stays the canonical copy; changes go there first, then here. -->
 <header class="wordmark-header is-static" id="wmHeader">
-  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+  <a class="wm-link" href="/" aria-label="Studio Fritz — home">
     <div class="wm-col wm-left"><span class="wm-row-1">STUDIO</span></div>
   </a>
-  <a class="wm-mark" href="index.html" aria-label="Studio Fritz — home">
-    <img class="wm-mark-orange" src="images/logos/logomark/logomark-orange.svg" alt="">
-    <img class="wm-mark-white" src="images/logos/logomark/logomark-white.svg" alt="">
+  <a class="wm-mark" href="/" aria-label="Studio Fritz — home">
+    <img class="wm-mark-orange" src="/images/logos/logomark/logomark-orange.svg" alt="">
+    <img class="wm-mark-white" src="/images/logos/logomark/logomark-white.svg" alt="">
   </a>
-  <a class="wm-link" href="index.html" aria-label="Studio Fritz — home">
+  <a class="wm-link" href="/" aria-label="Studio Fritz — home">
     <div class="wm-col wm-right"><span class="wm-row-1">FRITZ</span></div>
   </a>
   <nav class="hero-links is-static-nav" aria-label="Primary">
-    <a href="custom.html">Custom</a>
-    <a href="about.html">About</a>
-    <a href="showroom.html">Showroom</a>
-    <a href="catalogue.html">Catalogue</a>
-    <a href="contact.html" aria-current="page">Contact</a>
-    <a href="trade.html">Trade</a>
+    <a href="/custom">Custom</a>
+    <a href="/about">About</a>
+    <a href="/showroom">Showroom</a>
+    <a href="/catalogue">Catalogue</a>
+    <a href="/contact" aria-current="page">Contact</a>
+    <a href="/trade">Trade</a>
   </nav>
   <button class="nav-toggle" id="navToggle" type="button"
           aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
@@ -46,20 +46,20 @@
   <div class="mm-inner">
     <nav class="mm-links" aria-label="Primary">
       <div class="mm-col mm-col-a">
-        <a href="custom.html">Custom</a>
-        <a href="catalogue.html">Catalogue</a>
-        <a href="about.html">About</a>
+        <a href="/custom">Custom</a>
+        <a href="/catalogue">Catalogue</a>
+        <a href="/about">About</a>
       </div>
       <div class="mm-col mm-col-b">
-        <a href="contact.html">Contact</a>
-        <a href="trade.html">Trade</a>
-        <a href="showroom.html">Showroom</a>
+        <a href="/contact">Contact</a>
+        <a href="/trade">Trade</a>
+        <a href="/showroom">Showroom</a>
       </div>
     </nav>
-    <div class="mm-stamp" aria-hidden="true"><img src="images/logos/stamp/stamp-white.svg" alt=""></div>
+    <div class="mm-stamp" aria-hidden="true"><img src="/images/logos/stamp/stamp-white.svg" alt=""></div>
     <div class="mm-col mm-secondary">
-      <a href="faq.html">Frequently Asked Questions</a>
-      <a href="faq.html#warranty">Lifetime Guarantee</a>
+      <a href="/faq">Frequently Asked Questions</a>
+      <a href="/faq#warranty">Lifetime Guarantee</a>
       <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
       <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
     </div>
@@ -67,9 +67,9 @@
       <label for="mm-email">Sign Up for Newsletter</label>
       <form novalidate data-newsletter onsubmit="return false;">
         <input id="mm-email" type="email" placeholder="ENTER YOUR EMAIL" required>
-        <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+        <button type="submit" aria-label="Sign up for newsletter"><img src="/images/logos/arrows/arrow-purple.svg" alt=""></button>
       </form>
-      <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
+      <a class="accent" href="/catalogue">Download Summer 2026 Catalogue<img src="/images/logos/arrows/arrow-white.svg" alt=""></a>
     </div>
   </div>
 </div>
@@ -81,7 +81,7 @@
   <section class="page-section">
     <h1 class="page-label">Contact</h1>
     <p class="page-lede">Email us directly at <a href="mailto:contact@studiofritz.co">contact@studiofritz.co</a> or fill out the form below. A member of our team will get back to you in 24&ndash;48 hours.</p>
-    <figure class="page-stamp"><img src="images/logos/stamp/stamp-orange.svg" alt=""></figure>
+    <figure class="page-stamp"><img src="/images/logos/stamp/stamp-orange.svg" alt=""></figure>
 
     <!-- Endpoint lives in ONE place: data-endpoint below. Set it to a
          Formspree/Basin/Netlify URL and js/main.js posts there; until then
@@ -89,7 +89,7 @@
     <form class="sf-form" method="POST" data-endpoint="TODO"
           data-email="contact@studiofritz.co" novalidate>
       <input type="hidden" name="_subject" value="Website enquiry - Contact form">
-      <input type="hidden" name="_next" value="thank-you.html">
+      <input type="hidden" name="_next" value="/thankyou">
       <div class="sf-col-a">
         <p class="sf-field">
           <label for="name">Your Name*</label>
@@ -113,7 +113,7 @@
       <div class="sf-actions">
         <p class="sf-note"></p>
         <button class="sf-submit" type="submit">
-          <span>Submit</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+          <span>Submit</span><span><img src="/images/logos/arrows/arrow-white.svg" alt=""></span>
         </button>
       </div>
     </form>
@@ -127,56 +127,56 @@
       <div class="carousel" data-carousel data-hijacked aria-label="Studio Fritz in use">
         <div class="carousel-track">
           <figure class="tile">
-            <a class="tile-link" href="custom.html">
-            <div class="tile-media" style="aspect-ratio:0.800"><img src="images/contact/carousel-showroom.webp" alt="The Studio Fritz showroom interior"></div>
+            <a class="tile-link" href="/custom">
+            <div class="tile-media" style="aspect-ratio:0.800"><img src="/images/contact/carousel-showroom.webp" alt="The Studio Fritz showroom interior"></div>
             <figcaption>Collaborate</figcaption>
           </a>
           </figure>
           <figure class="tile">
-            <a class="tile-link" href="about.html">
-            <div class="tile-media" style="aspect-ratio:0.817"><img src="images/about/workshop-hands.webp" alt="Hand-finishing a solid wood joint in the workshop"></div>
+            <a class="tile-link" href="/about">
+            <div class="tile-media" style="aspect-ratio:0.817"><img src="/images/about/workshop-hands.webp" alt="Hand-finishing a solid wood joint in the workshop"></div>
             <figcaption>About the Maker</figcaption>
           </a>
           </figure>
           <figure class="tile">
             <div class="tile-media" style="aspect-ratio:0.738">
               <video autoplay muted loop playsinline>
-                <source src="images/home/union-sq-carousel.mp4" type="video/mp4">
+                <source src="/images/home/union-sq-carousel.mp4" type="video/mp4">
               </video>
             </div>
             <figcaption>Union Square, San Francisco</figcaption>
           </figure>
           <figure class="tile">
-            <a class="tile-link" href="about.html">
-            <div class="tile-media" style="aspect-ratio:1.463"><img src="images/about/studio-stools.webp" alt="Solid wood stools in the Studio Fritz workshop"></div>
+            <a class="tile-link" href="/about">
+            <div class="tile-media" style="aspect-ratio:1.463"><img src="/images/about/studio-stools.webp" alt="Solid wood stools in the Studio Fritz workshop"></div>
             <figcaption>About the Studio</figcaption>
           </a>
           </figure>
         </div>
       </div>
-      <a class="catalogue-band band-about" href="about.html">
-        <span>About</span><span><img src="images/logos/arrows/arrow-white.svg" alt=""></span>
+      <a class="catalogue-band band-about" href="/about">
+        <span>About</span><span><img src="/images/logos/arrows/arrow-white.svg" alt=""></span>
       </a>
     </div>
   </div>
 
   <footer class="site-footer" id="about">
     <div class="footer-top">
-      <div class="footer-wm"><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><a class="footer-wm-mark" href="index.html" aria-label="Studio Fritz — home"><img src="images/logos/logomark/logomark-white.svg" alt=""></a><a href="index.html" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
+      <div class="footer-wm"><a href="/" aria-label="Studio Fritz — home"><span class="fw-cream">STUDIO</span></a><a class="footer-wm-mark" href="/" aria-label="Studio Fritz — home"><img src="/images/logos/logomark/logomark-white.svg" alt=""></a><a href="/" aria-label="Studio Fritz — home"><span class="fw-white">FRITZ</span></a></div>
       <div class="footer-links">
         <div class="footer-col">
-          <a href="custom.html">Custom</a>
-          <a href="catalogue.html">Catalogue</a>
-          <a href="about.html">About</a>
+          <a href="/custom">Custom</a>
+          <a href="/catalogue">Catalogue</a>
+          <a href="/about">About</a>
         </div>
         <div class="footer-col">
-          <a href="contact.html">Contact</a>
-          <a href="trade.html">Trade</a>
-          <a href="showroom.html">Showroom</a>
+          <a href="/contact">Contact</a>
+          <a href="/trade">Trade</a>
+          <a href="/showroom">Showroom</a>
         </div>
         <div class="footer-col footer-col-wide">
-          <a href="faq.html">Frequently Asked Questions</a>
-          <a href="faq.html#warranty">Lifetime Guarantee</a>
+          <a href="/faq">Frequently Asked Questions</a>
+          <a href="/faq#warranty">Lifetime Guarantee</a>
           <a href="mailto:eliza@studiofritz.co">Press / eliza@studiofritz.co</a>
           <a href="https://instagram.com/studiofritz_">IG / @studiofritz_</a>
         </div>
@@ -184,9 +184,9 @@
           <label for="nl-email">Sign Up for Newsletter</label>
           <form novalidate data-newsletter onsubmit="return false;">
             <input id="nl-email" type="email" placeholder="ENTER YOUR EMAIL" required>
-            <button type="submit" aria-label="Sign up for newsletter"><img src="images/logos/arrows/arrow-purple.svg" alt=""></button>
+            <button type="submit" aria-label="Sign up for newsletter"><img src="/images/logos/arrows/arrow-purple.svg" alt=""></button>
           </form>
-          <a class="accent" href="catalogue.html">Download Summer 2026 Catalogue<img src="images/logos/arrows/arrow-white.svg" alt=""></a>
+          <a class="accent" href="/catalogue">Download Summer 2026 Catalogue<img src="/images/logos/arrows/arrow-white.svg" alt=""></a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -201,6 +201,6 @@
 
 </main>
 
-<script src="js/main.js"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>
