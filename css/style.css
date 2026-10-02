@@ -1738,7 +1738,17 @@ body.page-custom .carousel{ background: var(--white); }
 .product-cta-spec:hover{ background: var(--orange); color: var(--white); }
 .product-cta-spec:hover img{ content: url("../images/logos/arrows/arrow-white.svg"); }
 
-.product-swatches{ position:absolute; left: calc(1006 * var(--u)); top: calc(1450 * var(--u)); display:flex; gap: calc(27 * var(--u)); }
+.product-swatches{
+  /* Eliza (2026-10-02): "image 3: layout got messed up" -- the real copy
+     ("Available in the following wood species:") is longer than whatever
+     Figma had at this column width (399u) and wraps to 2 lines, but this
+     top offset was set assuming a single line, so the wrapped second line
+     ("...SPECIES:") rendered UNDER the swatch row instead of above it.
+     Pushed down by the wrapped line's own height (~30px at 1440) plus a
+     touch of breathing room, so it clears the wrap at any viewport since
+     both scale together via --u. */
+  position:absolute; left: calc(1006 * var(--u)); top: calc(1485 * var(--u)); display:flex; gap: calc(27 * var(--u));
+}
 .product-swatch{ width: calc(73 * var(--u)); text-align:right; } /* Eliza: "walnut, cherry, price adjusted etc should be right aligned" */
 .product-swatch-chip{ display:block; width:100%; aspect-ratio:1; }
 /* Eliza sent real macro photos of the three wood species (Drive:
