@@ -1214,12 +1214,16 @@
       }
 
       var swapping = false;
+      // Eliza (2026-10-02): "more graceful... a more gradual fade in and
+      // out" -- slower, eased transitions (was a flat .22s ease) and a
+      // softer exit offset so the crossfade reads as a gentle dissolve
+      // rather than a quick snap.
       function swap(k, dirSign) {
         if (swapping || mod(k) === 0) return;
         swapping = true;
-        var exitOffset = dirSign * -24; // "next" photos exit left, "prev" exit right
+        var exitOffset = dirSign * -16; // "next" photos exit left, "prev" exit right
         imgs.forEach(function (img) {
-          img.style.transition = 'opacity .22s ease, transform .22s ease';
+          img.style.transition = 'opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1)';
           img.style.opacity = '0';
           img.style.transform = 'translateX(' + exitOffset + 'px)';
         });
@@ -1236,14 +1240,14 @@
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
               imgs.forEach(function (img) {
-                img.style.transition = 'opacity .22s ease, transform .22s ease';
+                img.style.transition = 'opacity .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1)';
                 img.style.opacity = '';
                 img.style.transform = '';
               });
               swapping = false;
             });
           });
-        }, 220);
+        }, 480);
       }
 
       function step(delta) { swap(delta > 0 ? 1 : 3, delta > 0 ? 1 : -1); }

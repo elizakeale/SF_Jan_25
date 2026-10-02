@@ -754,7 +754,8 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    white arrow icon legible against the fill (a white icon on a white-invert
    hover would disappear), and matches the site's general hover convention
    of turning --orange-light rather than inverting. */
-.newsletter .accent:hover{ background: var(--orange-light); color: var(--white); border-color: var(--orange-light); }
+.newsletter .accent:hover{ background: var(--white); color: var(--orange); border-color: var(--white); }
+.newsletter .accent:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .newsletter .accent img{ width: calc(14 * var(--u)); height: calc(14 * var(--u)); } /* same 14x14 artboard as the input arrow; Figma draws them at equal size */
 
 /* REVERSED (Eliza, 14th pass, 2026-10-02): "catalogue button should be
@@ -775,8 +776,9 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   width:100%; box-sizing:border-box;
 }
 .site-footer .newsletter .accent:hover{
-  background: var(--orange-light); border-color: var(--orange-light); color: var(--white);
+  background: var(--white); border-color: var(--white); color: var(--orange);
 }
+.site-footer .newsletter .accent:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 /* Eliza (15th pass): "ENTER YOUR EMAIL is too big in footer." Scoped to
    the footer specifically (not the mobile-menu newsletter, which is a
    different, smaller context and wasn't flagged) rather than touching
@@ -1544,6 +1546,14 @@ body.page-custom .carousel{ background: var(--white); }
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
+  /* Eliza (2026-10-02): "too cramped on other products" -- now that photo
+     CONTENT rotates through fixed-size boxes instead of boxes resizing
+     (see productGallery() in js/main.js), each product's own photo aspect
+     ratios decide how much width the 4 boxes actually take up, so
+     space-between alone could leave barely any gap for a product whose
+     photos run wide. `gap` is a floor underneath space-between -- items
+     never sit closer than this regardless of their own widths. */
+  gap: calc(24 * var(--u));
 }
 
 .product-photo{
@@ -1805,7 +1815,7 @@ body.page-custom .carousel{ background: var(--white); }
    Eliza if she wants the real hand-drawn seal swapped in later. */
 .catalogue-stamp{
   position:absolute; left: calc(847 * var(--u)); top: calc(446 * var(--u));
-  width: calc(126 * var(--u)); margin:0; opacity:.55; pointer-events:none; z-index:1;
+  width: calc(126 * var(--u)); margin:0; opacity:.55; pointer-events:none; z-index:5;
 }
 .catalogue-stamp img{ width:100%; height:auto; display:block; }
 
@@ -1834,13 +1844,18 @@ body.page-custom .carousel{ background: var(--white); }
    horizontal margin, not flush like the pics" -- the photos deliberately
    bleed to the page edge (see .catalogue-col above), but the caption text
    underneath should sit at the standard --edge inset like body copy
-   elsewhere on the site, not flush with the photo's own edge. */
+   elsewhere on the site, not flush with the photo's own edge.
+   Eliza (2026-10-02): that --edge inset only actually applies to column 1,
+   which is the one that bleeds to the page's own left edge -- columns 2
+   and 3 are already inset by their own left/right position (see
+   .catalogue-col above) and were getting double-indented. Scoped below. */
 .catalogue-item h2{
-  margin: calc(16 * var(--u)) 0 0; padding: 0 var(--edge);
+  margin: calc(16 * var(--u)) 0 0;
   font-family: var(--font-body); font-weight:200;
   font-size: calc(20 * var(--u)); letter-spacing:.05em; text-transform:uppercase;
   color: var(--ink); transition: color .18s ease;
 }
+.catalogue-col:nth-child(1) .catalogue-item h2{ padding: 0 var(--edge); }
 .catalogue-item:hover h2{ color: var(--orange); }
 .catalogue-item:hover .catalogue-arrow{ content: url("../images/logos/arrows/arrow-orange.svg"); } /* Eliza (14th pass): "arrows should also turn orange on hover, not just the product name" */
 .catalogue-arrow{
@@ -1864,11 +1879,13 @@ body.page-custom .carousel{ background: var(--white); }
   width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
   background: var(--orange); color: var(--white); text-decoration:none;
+  border: 1px solid var(--orange);
   font-family: var(--font-body); font-weight:200; font-size: calc(14 * var(--u));
   letter-spacing:.05em; text-transform:uppercase;
-  transition: background .18s ease;
+  transition: background .18s ease, color .18s ease;
 }
-.catalogue-collaborate:hover{ background: var(--orange-light); }
+.catalogue-collaborate:hover{ background: var(--white); color: var(--orange); }
+.catalogue-collaborate:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .catalogue-collaborate img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); flex:none; }
 
 
