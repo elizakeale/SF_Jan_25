@@ -867,10 +867,17 @@ body.page-about, body.page-light{ background: var(--white); color: var(--ink); }
    this is now structurally the homepage bar, just never animated: same
    markup, same axes, one static variant on top. */
 .wordmark-header.is-static{
-  /* Absolute, not relative: Figma's y-coordinates for this page are
-     page-absolute (the label is at 266), so <main> has to start at page 0.
-     Absolute rather than fixed because the bar scrolls away here. */
-  position:absolute; top:0; left:0; right:0; z-index:50;
+  /* Eliza 2026-10-02: "nav bar is not floating on all non-homepage pages!
+     should behave like homepage nav bar after it appears." Was
+     position:absolute (scrolls away with the page) by deliberate earlier
+     choice; now fixed, same as the homepage's own header and as this
+     same selector's mobile override already does below -- desktop was the
+     only breakpoint left scrolling away. <main> still starts at page 0
+     (unchanged) since both absolute and fixed are equally out of flow;
+     only the scroll behavior changes. js/main.js's staticHeader() now
+     drives the same --hdr-bg-a solid-background ramp here on desktop
+     that it already did on mobile. */
+  position:fixed; top:0; left:0; right:0; z-index:50;
   padding: var(--sp-8) var(--edge) calc(24 * var(--u));
 }
 .wordmark-header.is-static .wm-row-1{ font-size: calc(100 * var(--u)); }

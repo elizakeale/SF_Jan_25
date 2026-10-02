@@ -789,37 +789,30 @@
   });
 })();
 
-/* ------------- white supporting pages: the bar turns orange on mobile -----
+/* ------------- white supporting pages: the bar floats + turns orange -----
    header() above owns the homepage's multiply/dock sequence and bails on
    any page with no hero, so about.html and every other white page got no
-   scroll behaviour at all. On mobile they want exactly one piece of it:
-   the orange ramping in over the first 12% of a viewport height. Same
-   constant and same driver as the homepage -- once --hdr-bg-a moves,
-   FRITZ, the logomark and the hamburger cross-fade on it for free, with
-   no rule of their own and no CSS transition ticking on a second clock
-   beside the scroll. Desktop is untouched: the static bar stays white. */
+   scroll behaviour of its own: the orange ramping in over the first 12%
+   of a viewport height. Same constant and same driver as the homepage --
+   once --hdr-bg-a moves, FRITZ, the logomark and the hamburger cross-fade
+   on it for free, with no rule of their own and no CSS transition ticking
+   on a second clock beside the scroll.
+   Eliza 2026-10-02: "nav bar is not floating on all non-homepage pages!
+   should behave like homepage nav bar after it appears." Previously this
+   ramp only ran on mobile and desktop's bar was position:absolute (scrolls
+   away, per an earlier deliberate choice) with none of it -- now the bar
+   is position:fixed at every width (see .wordmark-header.is-static in
+   css/style.css) and this same ramp drives it on desktop too. */
 (function staticHeader() {
   var header = document.querySelector('.wordmark-header.is-static');
   if (!header) return;
 
   var MOBILE_BG_FADE = 0.12;   // same number header() uses; keep them in step
   var root = document.documentElement;
-  var lastA = -1, lastH = -1, wasMobile = null, ticking = false;
+  var lastA = -1, lastH = -1, ticking = false;
 
   function render() {
     ticking = false;
-
-    if (window.innerWidth > 1152) {
-      if (wasMobile !== false) {          // only on the crossing, not every frame
-        wasMobile = false;
-        header.style.removeProperty('--hdr-bg-a');
-        header.classList.remove('is-collapsed');
-        root.style.removeProperty('--hdr-h');
-        lastA = -1; lastH = -1;
-      }
-      return;
-    }
-    wasMobile = true;
 
     var fade = window.innerHeight * MOBILE_BG_FADE;
     var a = Math.max(0, Math.min(1, window.scrollY / fade));
