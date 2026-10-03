@@ -26,13 +26,17 @@
      every Figma number in this file still reads as itself. Clamped so it
      stops shrinking around 1150 -- which is exactly where mobile now takes
      over, so there is no range where this has stopped scaling but the
-     window is still narrowing -- and stops growing around 2000, which is
-     the knob for how large the composition gets on a big display.
+     window is still narrowing -- and stops growing at 2px (a ~2880-wide
+     window), which is the knob for how large the composition gets on a big
+     display. Was 1.4px (~2016 wide); Eliza (2026-10-03): on a wide window the
+     Custom photos stopped short of the right edge and the copy sat too far
+     left -- the 1440u composition no longer filled the window. Raised so it
+     keeps scaling like Figma's frame up to a 5K-class display.
 
      Two things deliberately do NOT use it: hairlines/borders (a .8px
      border renders fuzzy) and the mobile block below 1152px, which has its
      own scale token (--mu, one Figma pixel at the 402 mobile frame). ------------------------------ */
-  --u: clamp(0.8px, 0.0694vw, 1.4px);
+  --u: clamp(0.8px, 0.0694vw, 2px);
 
   --sp-4: calc(4 * var(--u));  --sp-8: calc(8 * var(--u));
   --sp-12: calc(12 * var(--u)); --sp-16: calc(16 * var(--u));
@@ -467,7 +471,15 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      on screen; base opacity raised (.55 -> .7) and a glow added on the
      pulse beat so the animation is actually visible against the hero
      video, not just a 1px hairline flickering slightly brighter. */
-  margin: calc(18 * var(--u)) 0 0 calc(41 * var(--u));
+  /* Eliza 2026-10-03: "sitting too high" vs Figma 321:508 -- back to Figma's
+     49u gap (755 - CATALOGUE's bottom at 706); the 18u above was the
+     earlier "too low" nudge, which overshot. */
+  /* Clamped rather than a flat 49u: on a tall window the line follows
+     Figma (49u under the nav, ending ~22u above the hero's bottom); the
+     middle term is that bottom-edge limit (measured: the stack runs
+     ~334u + 60.1% of the hero tall), so a short window falls back to 18u
+     instead of pushing the line past the fold (the old "cut off" bug). */
+  margin: clamp(calc(18 * var(--u)), calc(39.9vh - 334 * var(--u)), calc(49 * var(--u))) 0 0 calc(41 * var(--u));
   width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.7); /* width stays a real 1px -- hairlines don't scale */
   pointer-events:none; animation: scrollCuePulse 2.5s ease-out .6s infinite both;
   transform-origin: top center;
@@ -1019,7 +1031,10 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
    the composition is reviewable before the assets land */
 .about-portrait{ left: calc(22 * var(--u));   top: calc(311 * var(--u));  width: calc(386 * var(--u)); aspect-ratio: 386 / 622; }
 .about-hands{    left: calc(1048 * var(--u)); top: calc(841 * var(--u));  width: calc(371 * var(--u)); aspect-ratio: 371 / 454; }
-.about-stools{   left: calc(797 * var(--u));  top: calc(485 * var(--u));  width: calc(427 * var(--u)); aspect-ratio: 427 / 292; }
+/* top 485 -> 575: the site's About copy has an extra closing paragraph
+   Figma's column doesn't, so at Figma's y the photo butted the last line.
+   Eliza 2026-10-03: "too close to the copy". */
+.about-stools{   left: calc(797 * var(--u));  top: calc(575 * var(--u));  width: calc(427 * var(--u)); aspect-ratio: 427 / 292; }
 .about-portrait, .about-hands, .about-stools{ background: var(--cream); }
 
 /* 244:467 — the soft orange mark, with its caption to the LEFT of it
@@ -1152,6 +1167,16 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   color: var(--ink); opacity:.45; text-transform:uppercase; letter-spacing:.05em;
 }
 .sf-field input:focus, .sf-field textarea:focus{ outline:none; border-color: var(--orange); }
+/* Contact (278:1058): the message box is 169 tall, not Trade's 288, so the
+   new showroom/designer field (648:11/648:12) lands on y=725 -- the same
+   row as ITEM(S) OF INTEREST -- and both columns end together on 815. */
+@media (min-width:1153px){
+  body.page-contact .sf-field textarea{ height: calc(169 * var(--u)); }
+}
+@media (min-width:1153px){
+  body.page-contact label[for="designer"]{ white-space:nowrap; font-size: calc(14 * var(--u)); line-height: calc(27 * var(--u)); } /* 16u runs ~770 wide against a 705 column; 14u keeps it on one line so the input stays on ITEM(S) OF INTEREST's row */
+}
+
 /* Only after a submit attempt, so nothing is flagged on arrival. */
 .sf-form.is-validated input:invalid,
 .sf-form.is-validated textarea:invalid{ border-color: var(--orange); }
@@ -1382,7 +1407,10 @@ body.page-showroom{
 /* the four-tile strip (278:1576-1583) bleeds past the frame at 1887 wide
    on a 1440 canvas -- the same draggable overflow every other carousel on
    the site uses, just here on white instead of orange. */
-body.page-showroom .carousel{ background: var(--white); }
+/* Eliza (2026-10-03): white caption strip between the carousel and the
+   orange footer read as a gap -- bottom carousel stays orange here too
+   (captions go white, as on Catalogue/Home). */
+body.page-showroom .carousel{ background: var(--orange); }
 
 /* ============================================================
    FAQ (278:1707 desktop / 370:543 mobile)
@@ -1573,7 +1601,7 @@ body.page-custom{
 .custom-feature-copy{ left: calc(328 * var(--u)); width: calc(442 * var(--u)); }
 .custom-feature-divider{ display:none; }
 
-body.page-custom .carousel{ background: var(--white); }
+body.page-custom .carousel{ background: var(--orange); }
 
 /* ============================================================
    PRODUCT — COVE TABLE (232:400 desktop / 342:858 mobile)
@@ -2020,9 +2048,7 @@ body.page-custom .carousel{ background: var(--white); }
    carousel," with a Figma reference showing them present in --ink, so
    recolor instead of hiding. Mobile keeps its own no-per-tile-captions
    rule below (Figma's mobile frames genuinely omit them). */
-body.page-showroom .carousel .tile figcaption,
-body.page-faq .carousel .tile figcaption,
-body.page-custom .carousel .tile figcaption{ color: var(--ink); }
+body.page-faq .carousel .tile figcaption{ color: var(--ink); }
 
 /* ============================================================
    MOBILE — built from Figma's 402-wide frames:
