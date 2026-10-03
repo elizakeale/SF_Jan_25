@@ -643,43 +643,52 @@
         lastTop = -1; lastVH = -1;     // force a real measure on the way back
         return;
       }
-      var top = stickyTop();
+      /* Runway no longer depends on the sticky offset. It used to
+         (vh - top - paneH), and `top` moves while the header docks -- so
+         the wrapper's height, and with it the document height, changed
+         DURING a fast scroll, which nudged the scroll position and read
+         as the pane jiggling/freezing. Using the bare viewport minus pane
+         makes it a function of window size only. */
       var vh = window.innerHeight;
-      // cheap early-out: skips the layout-forcing offsetHeight read on the
-      // ~every scroll event where nothing relevant has moved
-      if (!dirty && top === lastTop && vh === lastVH) return;
-      dirty = false; lastTop = top; lastVH = vh;
+      if (!dirty && vh === lastVH) return;
+      dirty = false; lastVH = vh;
       var paneH = pane.offsetHeight;
-      var strip = vh - top - paneH;
-      wrap.style.height = (paneH + Math.max(strip, RUNWAY_MIN)) + 'px';
+      wrap.style.height = (paneH + Math.max(vh - paneH, RUNWAY_MIN)) + 'px';
     }
     function remeasure() { dirty = true; sizeRunway(); }
     remeasure();
     window.addEventListener('resize', remeasure);
     window.addEventListener('load', remeasure);
 
-    // Pinned == the pane has reached its sticky offset AND the wrapper
-    // still has runway left below it. Both edges matter: the first is the
-    // "flush with the nav bar" moment Eliza asked for, the second is what
-    // hands the page back instead of trapping it.
-    function pinned() {
-      var r = pane.getBoundingClientRect();
-      return r.top <= lastTop + 1 &&
-             wrap.getBoundingClientRect().bottom > r.bottom + 1;
+    /* Progress through the runway, in px: 0 before the pane pins, runway
+       length once it releases. The carousel is moved by the CHANGE in this
+       number, not by the raw scroll delta while "pinned" -- so a fast flick
+       or an End-key jump that crosses the whole pinned stretch between two
+       scroll events still moves the carousel by the full runway (it used
+       to sample as never-pinned and leave the carousel static). */
+    function progress() {
+      var top = stickyTop();
+      var pinY = window.scrollY + wrap.getBoundingClientRect().top - top;
+      var len = Math.max(0, wrap.offsetHeight - pane.offsetHeight);
+      return Math.min(len, Math.max(0, window.scrollY - pinY));
     }
+    var lastP = progress();
+    wrap.style.overflowAnchor = 'none';
 
     window.addEventListener('scroll', function () {
       sizeRunway();
-      var y = window.scrollY, dy = y - lastY;
-      lastY = y;
-      if (mobile() || !dy || !pinned()) return;
+      lastY = window.scrollY;
+      var p = progress(), dp = p - lastP;
+      lastP = p;
+      if (mobile() || !dp) return;
       target.setPaused(true);
-      target.setLeft(target.track.scrollLeft + dy * GAIN);
+      target.setLeft(target.track.scrollLeft + dp * GAIN);
       clearTimeout(idleTimer);
       // drift picks back up shortly after the scroll stops, so the
       // carousel is never sitting dead
       idleTimer = setTimeout(function () { target.setPaused(false); }, 250);
     }, { passive: true });
+    window.addEventListener('resize', function () { lastP = progress(); });
   }
 })();
 /* ---------------- contact / trade forms ----------------------------------
@@ -1058,6 +1067,7 @@
     function run() {
       if (window.innerWidth <= 1152) {
         section.style.setProperty('--s1', '0px'); section.style.setProperty('--s2', '0px');
+        section.style.height = ''; var sw0 = section.querySelector('.product-swatches'); if (sw0) sw0.style.top = '';
         return;
       }
       var u = uRef.getBoundingClientRect().width / 2;
@@ -1068,6 +1078,31 @@
       var s2 = desc.offsetHeight + 114 * u - 396 * u;
       section.style.setProperty('--s1', s1.toFixed(2) + 'px');
       section.style.setProperty('--s2', s2.toFixed(2) + 'px');
+
+      /* GLOBAL RULE (Eliza, 2026-10-03): space below the lowest content
+         equals the space above it, so the content is vertically centred in
+         the white slice between divider 2 and the carousel. "Above" is the
+         real measured gap (divider 2 -> first content row); "below" is
+         that same number under whatever ends up lowest (config list,
+         swatch labels, or the CTAs). Replaces the old fixed 1811u height,
+         which left a different amount of white on every page. */
+      var sw = section.querySelector('.product-swatches');
+      var cfg = section.querySelector('.product-config');
+      var d2 = section.querySelector('.product-divider-2');
+      if (sw) {
+        sw.style.top = '';              // measure cfg with the CSS default first
+        var cr = cfg.getBoundingClientRect();
+        sw.style.top = (cr.bottom - section.getBoundingClientRect().top + 32 * u) + 'px';   // 32u between the last bullet and the swatches
+      }
+      var st = section.getBoundingClientRect().top;
+      var first = section.querySelector('.product-dims');
+      var gapAbove = (first && d2) ? first.getBoundingClientRect().top - d2.getBoundingClientRect().bottom : 61 * u;
+      var low = 0;
+      ['.product-dims', '.product-price', '.product-config', '.product-cta-inquire', '.product-cta-spec', '.product-swatches'].forEach(function (q) {
+        var e = section.querySelector(q);
+        if (e) low = Math.max(low, e.getBoundingClientRect().bottom - st);
+      });
+      if (low) section.style.height = (low + gapAbove).toFixed(1) + 'px';
     }
     window.addEventListener('resize', run);
     window.addEventListener('load', run);
@@ -1252,6 +1287,86 @@
      (.product-gallery), desktop only: mobile shows all 4 photos at
      once in a stacked column already (see style.css), so there's
      nothing to rotate there. */
+  /* ---------------- product gallery: keep-out zone around the long F ----
+     GLOBAL RULE (Eliza, 2026-10-03): "no image should sit so close to the
+     modern F." No photo edge may come within CLEAR (40u -- the same as the
+     page's own left margin) of the F's vertical rule. A photo that
+     straddles the rule outright is left alone (that's a layout choice, not
+     a near-miss).
+
+     Photo widths come from their own aspect ratios and rotate with the
+     arrows, so this can't be a fixed number in CSS: it re-runs on load,
+     resize, and every time a photo's src changes. Right of the F it pushes
+     the box over with margin-left; left of the F it caps the photo's
+     width; if that pushes the row past its right edge, the hero photo
+     gives up the overflow (contain, so it only gets slightly smaller). */
+  (function productClearance() {
+    var gallery = document.querySelector('.product-gallery');
+    var rule = document.querySelector('.product-accent-v');
+    if (!gallery || !rule || !document.body.classList.contains('page-product')) return;
+    var CLEAR = 40;
+    var busy = false;
+    function run() {
+      if (busy) return; busy = true;
+      var boxes = Array.prototype.slice.call(gallery.querySelectorAll('.product-photo'));
+      gallery.style.justifyContent = '';
+      boxes.forEach(function (b) { b.style.marginLeft = ''; var i = b.querySelector('.gallery-img'); if (i) { i.style.transition = 'none'; i.style.maxWidth = ''; } });
+      if (window.innerWidth > 1152 && boxes.length) {
+        var f = rule.getBoundingClientRect(), u = f.width / 2, c = CLEAR * u;
+        if (u) {
+          boxes.sort(function (a, b) { return (+getComputedStyle(a).order) - (+getComputedStyle(b).order); });
+          boxes = boxes.filter(function (b) { return b.getBoundingClientRect().width > 0; });
+          // 1. photos just LEFT of the rule: cap their width so their right edge keeps clear.
+          boxes.forEach(function (b) {
+            var r = b.getBoundingClientRect(), img = b.querySelector('.gallery-img');
+            if (img && r.left < f.left && r.right > f.left - c + 1 && r.right <= f.right) img.style.maxWidth = Math.max(0, f.left - c - r.left) + 'px';
+          });
+          // 2. photos just RIGHT of the rule: lay the row out explicitly (left to right,
+          // each box at its natural spot unless that spot is inside the keep-out zone).
+          var gr = gallery.getBoundingClientRect();
+          var nat = boxes.map(function (b) { return b.getBoundingClientRect().left; });
+          var need = nat.some(function (l) { return l >= f.left && l < f.right + c - 1; });
+          if (need) {
+            var gap = 24 * u, heroImg = gallery.querySelector('.product-hero .gallery-img');
+            gallery.style.justifyContent = 'flex-start';
+            for (var round = 0; round < 3; round++) {
+              var cursor = gr.left, over = 0;
+              boxes.forEach(function (b, i) {
+                var w = b.getBoundingClientRect().width, left = nat[i];
+                if (left >= f.left && left < f.right + c - 1) left = f.right + c;
+                var g = i > 0 ? gap : 0;        // the row's own flex gap sits between boxes
+                left = Math.max(left, cursor + g);
+                b.style.marginLeft = (left - cursor - g) + 'px';
+                cursor = left + w;
+              });
+              over = cursor - gr.right;
+              if (over <= 0.5 || !heroImg) break;
+              heroImg.style.maxWidth = Math.max(0, heroImg.getBoundingClientRect().width - over) + 'px';
+            }
+          }
+        }
+      }
+      busy = false;
+    }
+    var lastSig = '';
+    function sig() {
+      return window.innerWidth + '|' + Array.prototype.map.call(gallery.querySelectorAll('.gallery-img'), function (i) {
+        return i.currentSrc + ':' + i.naturalWidth + 'x' + i.naturalHeight;
+      }).join(',');
+    }
+    function soon() { requestAnimationFrame(function () { requestAnimationFrame(function () { lastSig = sig(); run(); }); }); }
+    // images can finish decoding at any point (lazy loading, cache) -- poll the signature cheaply
+    // rather than trust a load event we might have registered after the fact.
+    var polls = 0;
+    (function poll() { if (sig() !== lastSig) soon(); if (++polls < 40) setTimeout(poll, 250); })();
+    window.addEventListener('load', soon);
+    window.addEventListener('resize', soon);
+    gallery.addEventListener('load', soon, true);
+    gallery.addEventListener('transitionend', function (e) { if (e.propertyName === 'height') soon(); });
+    if (window.MutationObserver) new MutationObserver(soon).observe(gallery, { attributes: true, attributeFilter: ['src'], subtree: true });
+    soon();
+  })();
+
   (function productGallery() {
     var galleries = document.querySelectorAll('.product-gallery');
     function desktop() { return window.innerWidth > 1152; }
