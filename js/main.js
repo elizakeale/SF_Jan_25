@@ -280,7 +280,7 @@
       lastTop = navRestTop();
       nav.style.top = lastTop + 'px';
       // the pre-footer carousel sticks below the bar, not under it
-      document.documentElement.style.setProperty('--hdr-h', barBottom() + 'px');
+      document.documentElement.style.setProperty('--hdr-h', Math.floor(barBottom()) + 'px');
       pinned = true;
     }
 
@@ -838,7 +838,9 @@
   var lastH = -1;
 
   function publishHeight() {
-    var h = header.offsetHeight;
+    // floor, never round up: a fractional header (e.g. 197.6px) rounded UP leaves a
+    // sub-pixel row of the pane's orange background showing under the bar.
+    var h = Math.floor(header.getBoundingClientRect().height);
     if (h !== lastH) {
       lastH = h;
       root.style.setProperty('--hdr-h', h + 'px');
@@ -1246,12 +1248,21 @@
       var section = gallery.closest('.product-section') || gallery.parentElement;
       var prevBtn = section ? section.querySelector('[data-gallery-prev]') : null;
       var nextBtn = section ? section.querySelector('[data-gallery-next]') : null;
-      if (!hero || !cove2 || !cove3 || !thumb5) return;
+      // Pages supply 1-4 distinct photos (never repeated to fill space); any
+      // missing slot's <figure> is simply absent from the markup.
+      if (!hero) return;
       if (!desktop()) return; // mobile: leave every box at its own fixed size
 
       // Left-to-right visual order (matches `order` in style.css).
-      var boxes = [thumb5, cove2, hero, cove3];
-      var HERO_INDEX = 2; // .product-hero's position in `boxes` -- always the enlarged box now
+      var boxes = [thumb5, cove2, hero, cove3].filter(Boolean);
+      var N = boxes.length;
+      var HERO_INDEX = boxes.indexOf(hero); // .product-hero's position in `boxes` -- always the enlarged box now
+      if (N < 2) {
+        var navWrap = section && section.querySelector('.product-nav-arrows');
+        if (navWrap) navWrap.style.display = 'none';
+        hero.classList.add('is-hero');
+        return;
+      }
       hero.classList.add('is-hero'); // permanent: no longer toggled between boxes
 
       var imgs = boxes.map(function (b) { return b.querySelector('.gallery-img'); });
@@ -1259,7 +1270,7 @@
         return { src: img.getAttribute('src'), alt: img.getAttribute('alt') };
       });
 
-      function mod(n) { return ((n % 4) + 4) % 4; }
+      function mod(n) { return ((n % N) + N) % N; }
 
       // Rotates the 4 photos' DATA by k boxes (newData[j] = data[(j+k)%4]) --
       // k=1 is the "next" shift described above; k=3 (i.e. -1) is "prev".
@@ -1346,7 +1357,7 @@
         }, DURATION + 40);
       }
 
-      function step(delta) { swap(delta > 0 ? 1 : 3, delta > 0 ? 1 : -1); }
+      function step(delta) { swap(delta > 0 ? 1 : N - 1, delta > 0 ? 1 : -1); }
 
       if (prevBtn) prevBtn.addEventListener('click', function () { step(-1); });
       if (nextBtn) nextBtn.addEventListener('click', function () { step(1); });
@@ -1357,7 +1368,7 @@
         if (i === -1) return;
         thumb.addEventListener('click', function () {
           var k = mod(i - HERO_INDEX);
-          swap(k, k === 1 ? 1 : -1);
+          swap(k, k <= N / 2 ? 1 : -1);
         });
       });
 

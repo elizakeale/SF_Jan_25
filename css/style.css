@@ -561,6 +561,11 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .carousel-track.dragging{ cursor:grabbing; scroll-snap-type:none; }
 .carousel .tile{ flex:0 0 auto; margin:0; }
 .tile-link{ display:block; color:inherit; text-decoration:none; cursor:pointer; }
+/* The global :focus-visible ring (2px ink, offset 3) painted as stray black
+   vertical lines at tile edges after a click/drag. Carousel tiles get an
+   inset ring instead, and none for pointer focus. */
+.carousel .tile-link:focus{ outline:none; }
+.carousel .tile-link:focus-visible{ outline: 2px solid var(--white); outline-offset: -6px; }
 /* Eliza (2026-10-02): "make all carousels clickable." Each tile's media +
    caption are wrapped in this anchor rather than the <figure> itself, so
    the flex sizing above (which keys off .tile) is untouched. */
@@ -608,7 +613,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    background matters for the frame or two after a resize, before the
    runway is re-measured -- that strip must never flash cream. */
 .scroll-hijack-sticky{
-  position:sticky; top: var(--hdr-h, 0px); height:auto; overflow:hidden; background: var(--orange);
+  position:sticky; top: calc(var(--hdr-h, 0px) - 1px); height:auto; overflow:hidden; background: var(--orange); /* -1px: tucks under the bar so no sub-pixel line shows */
 } /* round 10 v3: flex-end (v2) just relocated the dead space from below the
      carousel to above it -- still one large, clearly-visible blank block,
      now sitting right under the hero, per Eliza's "big padding gaps are
@@ -1179,8 +1184,19 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 /* Contact (278:1058): the message box is 169 tall, not Trade's 288, so the
    new showroom/designer field (648:11/648:12) lands on y=725 -- the same
    row as ITEM(S) OF INTEREST -- and both columns end together on 815. */
+#interior-architects{ scroll-margin-top: calc(240 * var(--u)); } /* clears the fixed nav when /custom#interior-architects jumps here */
+/* GLOBAL FORM RULE (Eliza, 2026-10-03): the message box always stretches so
+   the bottom field in the right column ends on the same line as the bottom
+   field in the left column -- the grid already makes both columns the same
+   height; the textarea simply absorbs whatever is left. */
 @media (min-width:1153px){
-  body.page-contact .sf-field textarea{ height: calc(169 * var(--u)); }
+  body.page-contact .sf-col-b, body.page-trade .sf-col-b{ display:flex; flex-direction:column; }
+  body.page-contact .sf-col-b .sf-field:has(textarea), body.page-trade .sf-col-b .sf-field:has(textarea){
+    flex: 1 1 auto; display:flex; flex-direction:column; min-height:0;
+  }
+  body.page-contact .sf-col-b .sf-field textarea, body.page-trade .sf-col-b .sf-field textarea{
+    flex: 1 1 auto; height:auto; min-height: calc(169 * var(--u)); resize: none;
+  }
 }
 @media (min-width:1153px){
   body.page-contact label[for="designer"]{ white-space:nowrap; font-size: calc(14 * var(--u)); line-height: calc(27 * var(--u)); } /* 16u runs ~770 wide against a 705 column; 14u keeps it on one line so the input stays on ITEM(S) OF INTEREST's row */
@@ -1638,7 +1654,7 @@ body.page-custom .carousel{ background: var(--orange); }
      frame -- uses the single shared carousel component, so mobile reuses
      it too rather than one-off building a second, inconsistent gallery.
    ============================================================ */
-.product-section{ --s1:0px; --s2:0px; --s: calc(var(--s1) + var(--s2)); position:relative; height: calc(1660 * var(--u) + var(--s)); max-width: calc(1440 * var(--u)); margin: 0 auto; }
+.product-section{ --s1:0px; --s2:0px; --s: calc(var(--s1) + var(--s2)); position:relative; height: calc(1811 * var(--u) + var(--s)); max-width: calc(1440 * var(--u)); margin: 0 auto; }
 
 .product-accent{ position:absolute; background: var(--orange); pointer-events:none; z-index:-1; }
 .product-accent-h1{ left: calc(285 * var(--u)); top: calc(215 * var(--u)); width: calc(163 * var(--u)); height: calc(2 * var(--u)); }
@@ -1782,6 +1798,7 @@ body.page-custom .carousel{ background: var(--orange); }
      float/pin-to-viewport behavior itself is unchanged). */
   position:absolute; left: calc(46 * var(--u)); top: calc(847 * var(--u) + var(--s1));
   width: calc(126 * var(--u)); margin:0; opacity:.55; pointer-events:none;
+  z-index: 5; /* above photos/copy, below the nav bar (z-index 50) -- Eliza 2026-10-03 */
 }
 .product-stamp-soft img{ width:100%; height:auto; display:block; }
 
