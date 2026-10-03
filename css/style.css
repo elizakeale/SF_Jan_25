@@ -1163,7 +1163,7 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 .sf-field input, .sf-field textarea{
   display:block; width:100%; border-radius:0;
   background: rgba(255,255,255,.44);          /* 278:1049 */
-  border: 1px solid var(--orange);            /* Eliza 2026-10-03: cream was too faint */
+  border: 2px solid var(--orange);            /* Eliza 2026-10-03: cream was too faint */
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
   letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
   height: calc(50 * var(--u)); padding: 0 calc(13 * var(--u));
@@ -1638,7 +1638,7 @@ body.page-custom .carousel{ background: var(--orange); }
      frame -- uses the single shared carousel component, so mobile reuses
      it too rather than one-off building a second, inconsistent gallery.
    ============================================================ */
-.product-section{ position:relative; height: calc(1660 * var(--u)); max-width: calc(1440 * var(--u)); margin: 0 auto; }
+.product-section{ --s1:0px; --s2:0px; --s: calc(var(--s1) + var(--s2)); position:relative; height: calc(1660 * var(--u) + var(--s)); max-width: calc(1440 * var(--u)); margin: 0 auto; }
 
 .product-accent{ position:absolute; background: var(--orange); pointer-events:none; z-index:-1; }
 .product-accent-h1{ left: calc(285 * var(--u)); top: calc(215 * var(--u)); width: calc(163 * var(--u)); height: calc(2 * var(--u)); }
@@ -1680,7 +1680,7 @@ body.page-custom .carousel{ background: var(--orange); }
   left: calc(46 * var(--u));
   right: calc(170 * var(--u));
   top: calc(232 * var(--u));
-  height: calc(591 * var(--u));
+  height: calc(591 * var(--u) + var(--s1));
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
@@ -1714,7 +1714,7 @@ body.page-custom .carousel{ background: var(--orange); }
    from the top; a 380u-tall box bottom-aligned to the 823u divider tops
    out at 443u, safely clear -- a full 591u box would top out at 232u,
    which does reach the title). */
-.product-hero.is-hero, .product-thumb-cove3.is-hero{ height: calc(591 * var(--u)); }
+.product-hero.is-hero, .product-thumb-cove3.is-hero{ height: calc(591 * var(--u) + var(--s1)); }
 .product-thumb-5.is-hero, .product-thumb-cove2.is-hero{ height: calc(380 * var(--u)); }
 
 /* Safety max-width caps -- not a design size, just a guard so an
@@ -1748,7 +1748,7 @@ body.page-custom .carousel{ background: var(--orange); }
      .product-divider-1 (top:823) and clipped into the gallery photos --
      moved below the line instead, in the gap before .product-desc
      (top:880), clear of both the divider and the gallery. */
-  position:absolute; right: calc(80 * var(--u)); top: calc(840 * var(--u));
+  position:absolute; right: calc(80 * var(--u)); top: calc(840 * var(--u) + var(--s1));
   height: calc(17 * var(--u));
   display:flex; align-items:center; gap: calc(13 * var(--u));
 }
@@ -1780,7 +1780,7 @@ body.page-custom .carousel{ background: var(--orange); }
      moved to stack above cove2. productStampFloat() in main.js mirrors
      these same 46/847 constants for its own natural-position math (the
      float/pin-to-viewport behavior itself is unchanged). */
-  position:absolute; left: calc(46 * var(--u)); top: calc(847 * var(--u));
+  position:absolute; left: calc(46 * var(--u)); top: calc(847 * var(--u) + var(--s1));
   width: calc(126 * var(--u)); margin:0; opacity:.55; pointer-events:none;
 }
 .product-stamp-soft img{ width:100%; height:auto; display:block; }
@@ -1798,11 +1798,11 @@ body.page-custom .carousel{ background: var(--orange); }
   position:absolute; left:50%; width:100vw; margin-left:-50vw;
   height:1px; margin-top:0; margin-bottom:0; border:0; background: var(--orange);
 } /* Eliza: "product page line should be orange not grey" */
-.product-divider-1{ top: calc(823 * var(--u)); }
-.product-divider-2{ top: calc(1219 * var(--u)); }
+.product-divider-1{ top: calc(823 * var(--u) + var(--s1)); }
+.product-divider-2{ top: calc(1219 * var(--u) + var(--s)); }
 
 .product-desc{
-  position:absolute; left: calc(528 * var(--u)); top: calc(880 * var(--u));
+  position:absolute; left: calc(528 * var(--u)); top: calc(880 * var(--u) + var(--s1));
   width: calc(399 * var(--u)); margin:0;
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
@@ -1812,7 +1812,7 @@ body.page-custom .carousel{ background: var(--orange); }
 .product-desc p + p{ margin-top: 1.7em; }
 
 .product-dims, .product-price, .product-config{
-  position:absolute; top: calc(1280 * var(--u)); width: calc(399 * var(--u)); margin:0;
+  position:absolute; top: calc(1280 * var(--u) + var(--s)); width: calc(399 * var(--u)); margin:0;
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
 }
@@ -1842,7 +1842,7 @@ body.page-custom .carousel{ background: var(--orange); }
 .product-cta:hover{ background: var(--white); color: var(--orange); }
 .product-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .product-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
-.product-cta-inquire{ top: calc(1325 * var(--u)); border: 1px solid var(--orange); }
+.product-cta-inquire{ top: calc(1325 * var(--u) + var(--s)); border: 1px solid var(--orange); }
 /* Eliza (14th pass): "hovering over INQUIRE TO PURCHASE, have it go
    inverted: white fill, orange outline, text and arrow" -- same
    inversion pattern as the spec-sheet button's hover, just reversed
@@ -1859,7 +1859,7 @@ body.page-custom .carousel{ background: var(--orange); }
    won't go invisible-then-wrong-contrast if this button ever sits on a
    non-white background elsewhere). */
 .product-cta-spec{
-  top: calc(1391 * var(--u));
+  top: calc(1391 * var(--u) + var(--s));
   background: var(--white); color: var(--orange);
   border: 1px solid var(--orange);
 }
@@ -1875,7 +1875,7 @@ body.page-custom .carousel{ background: var(--orange); }
      Pushed down by the wrapped line's own height (~30px at 1440) plus a
      touch of breathing room, so it clears the wrap at any viewport since
      both scale together via --u. */
-  position:absolute; left: calc(1006 * var(--u)); top: calc(1485 * var(--u)); display:flex; gap: calc(27 * var(--u));
+  position:absolute; left: calc(1006 * var(--u)); top: calc(1485 * var(--u) + var(--s)); display:flex; gap: calc(27 * var(--u));
 }
 .product-swatch{ width: calc(73 * var(--u)); text-align:right; } /* Eliza: "walnut, cherry, price adjusted etc should be right aligned" */
 .product-swatch-chip{ display:block; width:100%; aspect-ratio:1; }
@@ -2144,13 +2144,18 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .hero::after{ background: linear-gradient(0deg, rgba(20,10,25,.75) 0%, rgba(20,10,25,.05) 55%, transparent 78%); }
   .hero-content{
     position:absolute; z-index:2;
-    top: calc(314 * var(--mu));
+    top: 0; bottom: 0;                      /* spans the hero so paragraph 2 can key off the seam */
     left: calc(17 * var(--mu));
     right: calc(74 * var(--mu));            /* 205:68 is 311 wide, stopping short of the stamp at x=348 */
     padding:0;
   }
-  .hero-intro{ grid-template-columns:1fr; gap: calc(32 * var(--mu)); max-width:none; }
+  /* GLOBAL RULE: paragraph 1 ends just above the hero/orange seam and
+     paragraph 2 always starts below it, whatever the viewport width or
+     line-wrap -- row 1 is exactly the hero's height (p1 bottom-aligned in
+     it), row 2 overflows onto the orange. */
+  .hero-intro{ height:100%; grid-template-columns:1fr; grid-template-rows: 100% auto; row-gap: calc(15 * var(--mu)); max-width:none; }
   .hero-intro p{ font-size: calc(16 * var(--mu)); line-height:1.7; }
+  .hero-intro p:first-child{ align-self:end; padding-bottom: calc(17 * var(--mu)); }
   /* 205:68 is 137 tall across 5 lines = 27.4/line, and 16 x 1.7 = 27.2.
      (205:69's own box reports 74, which can't be right for its 4 lines at
      the same size -- a hand-resized text box. The 5-line one is the
@@ -2543,46 +2548,53 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
      Figma drops both on mobile the way it drops the rule on every white
      page here. Gaps below are true gaps between each element's Figma box
      and the next, same convention as the rest of this block. */
-  .showroom-section{ height:auto; padding-top: calc(81 * var(--mu)); }
+  /* Updated Figma (370:462, Oct 2026): address + VISIT, photo, then the
+     orange logomark (left) and stamp (right, overlapping the photo's
+     bottom edge by 53), studio location, BOOK AN APPOINTMENT, carousel.
+     The blurb paragraph is gone from this frame. Flex column so every
+     gap is a true gap between boxes (Figma: 74 / 74 / 75 / 54 / 76 / 89). */
+  .showroom-section{ height:auto; padding-top: calc(81 * var(--mu)); display:flex; flex-direction:column; }
   body.page-showroom .page-rule{ display:none; }
 
   .showroom-col{
     position:static; width:auto; padding: 0 var(--edge);
     font-size: calc(16 * var(--mu));
   }
-  /* Mobile's frame combines blurb + address as one text block -- shown
-     here only (see the desktop drift note above). */
-  .showroom-blurb{ display:block; }
-  .showroom-partner{ margin-top: calc(34 * var(--mu)); }
+  .showroom-blurb{ display:none; }
+  .showroom-partner{ margin-top: calc(74 * var(--mu)); }
   .showroom-location{ margin-top: calc(54 * var(--mu)); }
-  /* Mobile's own frame (370:462, node 524:91) is 424x283 at left:0 --
-     same landscape box/aspect as desktop's 524:90, just re-measured here
-     directly rather than assumed; it runs slightly past the 402-wide
-     mobile frame edge, a deliberate partial-width bleed, not the
-     full-width stretch every other mobile photo gets. */
   .showroom-portrait{
     position:static; left:auto; top:auto;
-    width: calc(424 * var(--mu)); aspect-ratio: 424 / 283; margin: calc(194 * var(--mu)) 0 0;
+    width: calc(424 * var(--mu)); aspect-ratio: 424 / 283; margin: calc(75 * var(--mu)) 0 0;
   }
   .showroom-interior{ display:none; }
+  /* orange logomark (397:199, 97x97) replaces the old cream corner rule */
   .showroom-accent{
     position:static; width: calc(97 * var(--mu)); height: calc(97 * var(--mu));
-    margin: calc(49 * var(--mu)) 0 0 var(--edge);
+    margin: calc(212 * var(--mu)) 0 0 var(--edge);
+    background: url("../images/logos/logomark/logomark-orange.svg") center/contain no-repeat;
   }
-  .showroom-accent::after{ top: calc(32 * var(--mu)); }
+  .showroom-accent::before, .showroom-accent::after{ display:none; }
   .showroom-cta{
-    position:static; width:auto; margin: calc(76 * var(--mu)) var(--edge) 0;
+    position:static; width:auto; margin: calc(75 * var(--mu)) var(--edge) 0;
     min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
     padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
   }
+  .showroom-cta.showroom-visit{ margin-top: calc(74 * var(--mu)); }
+  .showroom-cta:not(.showroom-visit){ margin-top: calc(76 * var(--mu)); }
   .showroom-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
-  /* 397:213 -- unlike Contact/Trade, Showroom's mobile frame keeps the
-     stamp, just relocated (right-aligned, no caption). */
+  /* 397:213 -- stamp right-aligned, top 53 above the photo's bottom edge;
+     zero layout height so the logomark and it share the same band. */
   body.page-showroom .page-stamp{
-    display:block; position:static; width: calc(185 * var(--mu));
-    margin: calc(39 * var(--mu)) 0 0 calc(210 * var(--mu));
+    display:block; position:static; width: calc(185 * var(--mu)); height:0; z-index:2;
+    margin: calc(-53 * var(--mu)) 0 0 calc(210 * var(--mu));
   }
-  body.page-showroom .carousel{ margin-top: calc(30 * var(--mu)); }
+  .showroom-partner{ order:1; } .showroom-visit{ order:2; } .showroom-portrait{ order:3; }
+  body.page-showroom .page-stamp{ order:4; } .showroom-accent{ order:5; }
+  .showroom-location{ order:6; } .showroom-cta:not(.showroom-visit){ order:7; }
+  body.page-showroom .carousel{ margin-top: calc(89 * var(--mu)); }
+  /* Figma: the white page runs down behind the carousel; orange resumes at the ABOUT band */
+  body.page-showroom .scroll-hijack, body.page-showroom .scroll-hijack-sticky{ background: linear-gradient(var(--white) calc(100% - 32 * var(--mu)), var(--orange) 0); }
   /* ---------- FAQ, mobile (370:543) ----------
      Flow, one consistent gap between items -- see the drift note above. */
   .faq-section{ height:auto; padding-top: calc(81 * var(--mu)); }

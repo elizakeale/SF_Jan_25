@@ -1020,6 +1020,43 @@
      real scroll distance while its section is in view, reading as
      "floating" above the content rather than scrolling at the same
      rate as everything else. Desktop only, same reduced-motion guard. */
+  /* ---------------- productFit: two GLOBAL product-page layout rules ------
+     (1) s1 -- the hero image + its divider must fit below the nav bar and
+         above the fold at the current window height. The gallery is
+         bottom-anchored to divider 1 (823u), so a short window pulls that
+         line (and everything under it) up by s1 <= 0, shrinking only the
+         tall hero photo. Floor: hero never drops below 330u tall.
+     (2) s2 -- the copy band between divider 1 and divider 2 is content-
+         driven: copy height + the same 57u margin above and below (the
+         original gap above the copy), so copy is vertically centred and a
+         two-line description no longer leaves a 396u hole. Everything
+         under divider 2 moves by s1 + s2 (CSS: --s).
+     Desktop only; mobile flows naturally. */
+  (function productFit() {
+    var section = document.querySelector('.product-section');
+    var uRef = document.querySelector('.product-accent-v');
+    var desc = document.querySelector('.product-desc');
+    if (!section || !uRef || !desc || !document.body.classList.contains('page-product')) return;
+    function run() {
+      if (window.innerWidth <= 1152) {
+        section.style.setProperty('--s1', '0px'); section.style.setProperty('--s2', '0px');
+        return;
+      }
+      var u = uRef.getBoundingClientRect().width / 2;
+      if (!u) return;
+      var top = section.getBoundingClientRect().top + window.pageYOffset;
+      var avail = window.innerHeight - top - 24;
+      var s1 = Math.max(-261 * u, Math.min(0, avail - 823 * u));
+      var s2 = desc.offsetHeight + 114 * u - 396 * u;
+      section.style.setProperty('--s1', s1.toFixed(2) + 'px');
+      section.style.setProperty('--s2', s2.toFixed(2) + 'px');
+    }
+    window.addEventListener('resize', run);
+    window.addEventListener('load', run);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+    run();
+  })();
+
   /* ---------------- product stamp: same pin/rest float as the other
      pages' .page-stamp (see pageStampFloat above), not a subtle in-place
      drift -----------------------------------------------------------
@@ -1040,7 +1077,7 @@
      centered and capped at max-width:1440u (see .product-section), so
      the two coordinate systems don't line up -- this version measures
      and pins `left` explicitly too, not just `top`. */
-  /* ---------------- product stamp: same pin/rest float as the other
+/* ---------------- product stamp: same pin/rest float as the other
      pages' .page-stamp AND the homepage's own .stamp -- recomputed fresh
      every frame instead of cached once ---------------------------------
      Eliza (5th pass, 2026-09-28): "stamp still not working." Found the
@@ -1089,7 +1126,8 @@
       // expressed in the current viewport. (9th pass: moved from
       // 594/1301 to 847/46 -- bottom-left under the divider line now,
       // see .product-stamp-soft in style.css.)
-      var naturalTopViewport = sectionRect.top + 847 * uPx;
+      var s1 = parseFloat(section.style.getPropertyValue('--s1')) || 0;
+      var naturalTopViewport = sectionRect.top + 847 * uPx + s1;
       var naturalLeftViewport = sectionRect.left + 46 * uPx;
 
       // Where it should land once done floating: just above the section's
@@ -1100,16 +1138,24 @@
       var restTopInSection = section.offsetHeight - stampH - GAP;
       var restTopViewport = sectionRect.top + restTopInSection;
 
-      if (restTopViewport <= GAP) {
+      // Floats like the other pages' stamps: always on screen. It rides at
+      // its natural spot while that is visible, sits at the bottom of the
+      // viewport while the natural spot is still below the fold, tucks
+      // under the nav bar when scrolled past, and rests above the carousel.
+      var hdr = document.querySelector('.wordmark-header');
+      var hdrBottom = hdr ? hdr.getBoundingClientRect().bottom : 0;
+      var minTop = Math.max(GAP, hdrBottom + GAP);
+      var maxTop = window.innerHeight - stampH - GAP;
+      var floatTop = Math.max(minTop, Math.min(naturalTopViewport, maxTop));
+
+      if (restTopViewport <= floatTop) {
         stamp.style.position = 'absolute';
         stamp.style.top = restTopInSection + 'px';
         stamp.style.left = ''; // back to the stylesheet's section-relative left
-      } else if (naturalTopViewport <= GAP) {
-        stamp.style.position = 'fixed';
-        stamp.style.top = GAP + 'px';
-        stamp.style.left = naturalLeftViewport + 'px';
       } else {
-        stamp.style.position = ''; stamp.style.top = ''; stamp.style.left = '';
+        stamp.style.position = 'fixed';
+        stamp.style.top = floatTop + 'px';
+        stamp.style.left = naturalLeftViewport + 'px';
       }
     }
 
