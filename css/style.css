@@ -374,7 +374,12 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      --u is clamped, so past ~2000px the mark stops moving outward from the
      centre while a raw percentage keeps tracking the viewport, and CUSTOM
      drifts left of it. Same failure the footer's column 3 had, same fix. */
-  left: calc(50% - 41.5 * var(--u)); right: var(--edge); top: 60.1%;
+  left: calc(50% - 41.5 * var(--u)); right: var(--edge);
+  /* Eliza 2026-10-03: the vertical line kept getting squished or cut off
+     because the stack hung from the TOP (60.1%) and grew down with copy
+     wrapping. Anchored from the bottom instead: Figma has the 88u line 22u
+     above the hero's bottom and CATALOGUE ending 49u above the line (706) -- so every gap is fixed whatever the window height. */
+  bottom: calc(22 * var(--u));   /* the cue is the last child, so this is the LINE's distance from the edge */
 }
 /* z-index:2 above makes .hero-content its own stacking context, which
    traps #heroNav's z-index:55 inside it -- so once docked, the nav could
@@ -479,7 +484,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      middle term is that bottom-edge limit (measured: the stack runs
      ~334u + 60.1% of the hero tall), so a short window falls back to 18u
      instead of pushing the line past the fold (the old "cut off" bug). */
-  margin: clamp(calc(18 * var(--u)), calc(39.9vh - 334 * var(--u)), calc(49 * var(--u))) 0 0 calc(41 * var(--u));
+  margin: calc(49 * var(--u)) 0 0 calc(41 * var(--u));
   width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.7); /* width stays a real 1px -- hairlines don't scale */
   pointer-events:none; animation: scrollCuePulse 2.5s ease-out .6s infinite both;
   transform-origin: top center;
@@ -963,6 +968,10 @@ body.page-about, body.page-light{ background: var(--white); color: var(--ink); }
      but 2u never falls below 1.6 so it has the room. */
   width: calc(2 * var(--u)); height: var(--rule-h, calc(2391 * var(--u)));
   background: var(--orange); pointer-events:none;
+  /* Eliza 2026-10-03 (global): the long F rule always sits BEHIND page
+     content -- never over copy; photos (positioned, later in the tree)
+     paint over it, which is allowed. */
+  z-index:-1;
 }
 /* STANDING RULE (Eliza, 2026-09-27): whenever this bracket/crossbar motif
    is built anywhere on the site -- this shared component, the Product
@@ -991,7 +1000,7 @@ body.page-catalogue{
 }
 .about-rule::before, .about-rule::after,
 .page-rule::before, .page-rule::after{
-  content:''; position:absolute; height: calc(2 * var(--u)); background: var(--orange);
+  content:''; z-index:-1; position:absolute; height: calc(2 * var(--u)); background: var(--orange);
 }
 .about-rule::before, .page-rule::before{ left: calc(-20 * var(--u)); top:0;                     width: calc(163 * var(--u)); }
 .about-rule::after,  .page-rule::after{  left:0;                     top: calc(21 * var(--u)); width: calc(125 * var(--u)); }
@@ -1154,7 +1163,7 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
 .sf-field input, .sf-field textarea{
   display:block; width:100%; border-radius:0;
   background: rgba(255,255,255,.44);          /* 278:1049 */
-  border: 1px solid var(--cream);
+  border: 1px solid var(--orange);            /* Eliza 2026-10-03: cream was too faint */
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-input);
   letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
   height: calc(50 * var(--u)); padding: 0 calc(13 * var(--u));
@@ -1263,16 +1272,18 @@ body.inquire-modal-open{ overflow:hidden; }
 
 .inquire-modal-backdrop{ position:fixed; inset:0; background: rgba(28,17,35,.4); }
 .inquire-modal-panel{
-  position:relative; z-index:1; width:100%; max-width: calc(877 * var(--u));
-  background: var(--orange); color: var(--white);
-  padding: calc(40 * var(--u)) calc(48 * var(--u)) calc(48 * var(--u));
+  position:relative; z-index:1; width:100%; max-width: calc(1107 * var(--u));
+  /* Eliza 2026-10-03: white pop-up, orange outline (Figma "Inquire pop-up":
+     951 of a 1237 frame = ~1107u wide, fields 330u + 16u + 701u) */
+  background: var(--white); color: var(--ink); border: 1px solid var(--orange);
+  padding: calc(40 * var(--u)) calc(30 * var(--u)) calc(48 * var(--u));
 }
 .inquire-modal-stamp{ width: calc(64 * var(--u)); margin: 0 0 calc(24 * var(--u)); }
 .inquire-modal-stamp img{ width:100%; height:auto; display:block; }
 .inquire-modal-close{
   position:absolute; top: calc(28 * var(--u)); right: calc(28 * var(--u));
   width: calc(20 * var(--u)); height: calc(20 * var(--u)); padding:0; border:0;
-  background:none; color: var(--white); cursor:pointer;
+  background:none; color: var(--orange); cursor:pointer;
   display:flex; align-items:center; justify-content:center;
 }
 .inquire-modal-close svg{ width:100%; height:100%; display:block; }
@@ -1280,29 +1291,18 @@ body.inquire-modal-open{ overflow:hidden; }
 .inquire-modal-lede{
   margin: 0 0 calc(32 * var(--u)); max-width: calc(600 * var(--u));
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
-  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--white);
+  line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
 }
 .inquire-modal-lede a{ color:inherit; text-decoration:underline; text-underline-offset:.2em; }
 
 .inquire-modal .sf-form{
   position:static; display:grid;
-  grid-template-columns: calc(283 * var(--u)) 1fr; column-gap: calc(37 * var(--u));
+  grid-template-columns: calc(330 * var(--u)) minmax(0,1fr); column-gap: calc(16 * var(--u));
 }
-.inquire-modal .sf-col-b{ display:flex; flex-direction:column; }
-.inquire-modal .sf-col-b .sf-field{ flex:1; display:flex; flex-direction:column; }
-.inquire-modal .sf-col-b .sf-field textarea{ flex:1; }
-.inquire-modal .sf-field label{ color: var(--white); }
-.inquire-modal .sf-field input, .inquire-modal .sf-field textarea{
-  background: var(--white); border: 1px solid var(--white); color: var(--ink);
-}
-.inquire-modal .sf-field input::placeholder, .inquire-modal .sf-field textarea::placeholder{ color: var(--ink); }
-.inquire-modal .sf-field input:focus, .inquire-modal .sf-field textarea:focus{ border-color: var(--ink); }
-.inquire-modal .sf-field-error{ color: var(--white); }
-.inquire-modal .sf-note{ color: var(--white); }
-.inquire-modal .sf-unwired{ color: var(--ink); }
-.inquire-modal .sf-submit{ background: var(--white); color: var(--orange); border: 1px solid var(--orange); }
-.inquire-modal .sf-submit:hover{ background: var(--orange); color: var(--white); }
-.inquire-modal .sf-submit:hover img{ content: url("../images/logos/arrows/arrow-white.svg"); }
+/* the notes box is as tall as the first two left-hand fields, so the
+   showroom/designer field below it lands on YOUR COMPANY's row */
+.inquire-modal .sf-field textarea{ height: calc(171 * var(--u)); }
+.inquire-modal .sf-field label[for="inquire-designer"]{ white-space:nowrap; font-size: calc(14 * var(--u)); line-height: calc(27 * var(--u)); }
 
 /* ============================================================
    SHOWROOM (278:1574 desktop / 370:462 mobile)
@@ -1640,10 +1640,10 @@ body.page-custom .carousel{ background: var(--orange); }
    ============================================================ */
 .product-section{ position:relative; height: calc(1660 * var(--u)); max-width: calc(1440 * var(--u)); margin: 0 auto; }
 
-.product-accent{ position:absolute; background: var(--orange); pointer-events:none; }
+.product-accent{ position:absolute; background: var(--orange); pointer-events:none; z-index:-1; }
 .product-accent-h1{ left: calc(285 * var(--u)); top: calc(215 * var(--u)); width: calc(163 * var(--u)); height: calc(2 * var(--u)); }
-.product-accent-v { left: calc(307 * var(--u)); top: calc(215 * var(--u)); width: calc(2 * var(--u));   height: calc(608 * var(--u)); }
-.product-accent-h2{ left: calc(307 * var(--u)); top: calc(236 * var(--u)); width: calc(123 * var(--u)); height: calc(2 * var(--u)); }
+.product-accent-v { left: calc(305 * var(--u)); top: calc(215 * var(--u)); width: calc(2 * var(--u));   height: calc(608 * var(--u)); }
+.product-accent-h2{ left: calc(305 * var(--u)); top: calc(236 * var(--u)); width: calc(125 * var(--u)); height: calc(2 * var(--u)); }
 
 .product-title{
   position:absolute; left: calc(40 * var(--u)); top: calc(274 * var(--u)); margin:0;
@@ -2524,7 +2524,8 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .inquire-modal-lede{ max-width:none; font-size: calc(15 * var(--mu)); margin-bottom: calc(24 * var(--mu)); }
   .inquire-modal .sf-form{ display:block; }
   .inquire-modal .sf-col-b{ margin-top: calc(29 * var(--mu)); display:block; }
-  .inquire-modal .sf-col-b .sf-field textarea{ flex:none; }
+  .inquire-modal .sf-field textarea{ height: calc(288 * var(--mu)); }
+  .inquire-modal .sf-field label[for="inquire-designer"]{ white-space:normal; font-size: calc(16 * var(--mu)); line-height:1.6875; }
 
   .page-thanks-msg{
     position:static; width:auto; padding: 0 calc(16 * var(--mu));
