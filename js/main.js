@@ -512,6 +512,22 @@
         track.addEventListener('click', swallow, true);
       }
     }
+    // Horizontal mouse/trackpad scroll takes over a pre-footer carousel the same
+    // way it does the top one (that track scrolls natively; this one is
+    // overflow:hidden because the page scroll drives it, so it needs this).
+    // Only mostly-horizontal gestures are claimed -- vertical wheel still
+    // scrolls the page and still drives the carousel through the runway.
+    if (isHijacked) {
+      var wheelTimer = null;
+      track.addEventListener('wheel', function (e) {
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        paused = true;
+        setLeft(track.scrollLeft + e.deltaX);
+        clearTimeout(wheelTimer);
+        wheelTimer = setTimeout(function () { paused = false; }, 600);
+      }, { passive: false });
+    }
     track.addEventListener('pointerup', endDrag);
     track.addEventListener('pointercancel', endDrag);
     track.addEventListener('pointerleave', function (e) { if (dragging && e.buttons === 0) endDrag(e); });

@@ -1658,7 +1658,7 @@ body.page-custom .carousel{ background: var(--orange); }
 
 .product-accent{ position:absolute; background: var(--orange); pointer-events:none; z-index:-1; }
 .product-accent-h1{ left: calc(285 * var(--u)); top: calc(215 * var(--u)); width: calc(163 * var(--u)); height: calc(2 * var(--u)); }
-.product-accent-v { left: calc(305 * var(--u)); top: calc(215 * var(--u)); width: calc(2 * var(--u));   height: calc(608 * var(--u)); }
+.product-accent-v { left: calc(305 * var(--u)); top: calc(215 * var(--u)); width: calc(2 * var(--u));   height: calc(608 * var(--u) + var(--s1)); } /* ends on divider 1, whatever the window height */
 .product-accent-h2{ left: calc(305 * var(--u)); top: calc(236 * var(--u)); width: calc(125 * var(--u)); height: calc(2 * var(--u)); }
 
 .product-title{
@@ -1815,7 +1815,8 @@ body.page-custom .carousel{ background: var(--orange); }
   position:absolute; left:50%; width:100vw; margin-left:-50vw;
   height:1px; margin-top:0; margin-bottom:0; border:0; background: var(--orange);
 } /* Eliza: "product page line should be orange not grey" */
-.product-divider-1{ top: calc(823 * var(--u) + var(--s1)); }
+/* divider 1 matches the long F's 2u weight and sits above the photos (Eliza 2026-10-03); divider 2 stays a 1px hairline */
+.product-divider-1{ top: calc(822 * var(--u) + var(--s1)); height: calc(2 * var(--u)); z-index: 2; }
 .product-divider-2{ top: calc(1219 * var(--u) + var(--s)); }
 
 .product-desc{
@@ -1916,7 +1917,7 @@ body.page-custom .carousel{ background: var(--orange); }
 /* Eliza: "the text on SKUs is different from figma" -- Black Walnut's
    price-adjustment fine print (Price / Adjusted / Accordingly) runs
    smaller than the swatch name + price line, matching Figma. */
-.product-swatch-fine{ font-size: calc(10 * var(--u)); }
+.product-swatch-fine{ display:block; font-size: calc(10 * var(--u)); line-height: 1.4; } /* 14u between the fine-print lines, not the 18u strut of the 13u label above */
 
 /* ============================================================
    CATALOGUE (244:489 desktop / 342:587 mobile)
