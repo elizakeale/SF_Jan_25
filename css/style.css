@@ -1569,6 +1569,14 @@ body.page-custom{
 .custom-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .custom-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
 
+/* Custom: the floating stamp starts under the CUSTOM label (nav bar ends 197u) instead of
+   at the generic 597u, which sat low on tall windows. The second, static
+   stamp is hidden on desktop -- with one stamp now floating down the same
+   left edge, a fixed copy would collide with it as it passed. */
+@media (min-width:1153px){
+  body.page-custom .page-stamp{ top: calc(325 * var(--u)); }
+  body.page-custom .custom-stamp-2{ display:none; }
+}
 /* second stamp -- Custom is the one white page long enough to carry two */
 .custom-stamp-2{
   position:absolute; left: calc(22 * var(--u)); top: calc(1204 * var(--u));
