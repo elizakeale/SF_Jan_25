@@ -1361,9 +1361,9 @@ body.inquire-modal-open{ overflow:hidden; }
    ============================================================ */
 body.page-showroom{
   --rule-top: calc(215 * var(--u));
-  --rule-h: calc(1120 * var(--u));   /* 215 -> the white/carousel seam at 1335 (Figma) */
+  --rule-h: calc(948 * var(--u));   /* 215 -> the white/carousel seam at 1163 (Figma) */
 }
-.showroom-section{ position:relative; height: calc(1335 * var(--u)); } /* Figma: carousel starts 95u under the lowest content (photo bottom 1240) -- was 1719, ~384u of dead white */
+.showroom-section{ position:relative; height: calc(1163 * var(--u)); } /* Figma: carousel starts 95u under the lowest content (photo bottom 1240) -- was 1719, ~384u of dead white */
 
 .showroom-col{
   position:absolute; left: calc(324 * var(--u)); width: calc(442 * var(--u)); margin:0;
@@ -1378,14 +1378,14 @@ body.page-showroom{
    frame really does include it. */
 .showroom-blurb{ display:none; }
 .showroom-partner{ top: calc(317 * var(--u)); }
-.showroom-location{ top: calc(982 * var(--u)); }
+.showroom-location{ top: calc(799 * var(--u)); }
 
 /* 615:563 -- VISIT button, replaces the overlapping Furnish logo (Eliza, 2026-10-02) */
 .showroom-cta.showroom-visit{ top: calc(450 * var(--u)); }
 
 /* 298:185 -- a plain corner-rule accent; see the drift note above. */
 .showroom-accent{
-  position:absolute; left: calc(324 * var(--u)); top: calc(847 * var(--u));
+  position:absolute; left: calc(324 * var(--u)); top: calc(663 * var(--u));
   width: calc(97 * var(--u)); height: calc(97 * var(--u)); margin:0; pointer-events:none;
   /* Figma 2026-10-03: the solid orange logomark, not the faint cream corner */
   background: url("../images/logos/logomark/logomark-orange.svg") center / contain no-repeat;
@@ -1399,13 +1399,13 @@ body.page-showroom{
   width: calc(424 * var(--u)); aspect-ratio: 424 / 283; margin:0; background: var(--cream);
 }
 .showroom-interior{
-  position:absolute; left: calc(1137 * var(--u)); top: calc(943 * var(--u));
+  position:absolute; left: calc(1137 * var(--u)); top: calc(760 * var(--u));
   width: calc(247 * var(--u)); aspect-ratio: 247 / 297; margin:0; background: var(--cream);
 }
 .showroom-portrait img, .showroom-interior img{ width:100%; height:100%; object-fit:cover; display:block; }
 
 .showroom-cta{
-  position:absolute; left: calc(319 * var(--u)); top: calc(1127 * var(--u));
+  position:absolute; left: calc(319 * var(--u)); top: calc(944 * var(--u));
   width: calc(402 * var(--u)); min-height: calc(33 * var(--u));
   display:flex; align-items:center; justify-content:space-between;
   padding: 0 calc(12 * var(--u)) 0 calc(10 * var(--u));
@@ -2318,6 +2318,18 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
      page FRITZ and the logomark are still orange, on orange. */
   body.menu-open .wordmark-header{ --hdr-bg-a: 1 !important; }
   body.menu-open .wm-right span{ color: var(--white); }
+  /* Eliza 2026-10-03: the open menu is ALL orange -- header bar included, on
+     every page (the static-header pages have a flat white bar that the
+     --hdr-bg-a override above never touched). White wordmark/mark/X per Figma. */
+  body.menu-open .wordmark-header, body.menu-open .wordmark-header.is-static{ background: var(--orange) !important; }
+  body.menu-open .wordmark-header .wm-left span{ color: var(--cream) !important; }
+  body.menu-open .wordmark-header .wm-right span{ color: var(--white) !important; }
+  body.menu-open .wordmark-header .wm-mark-orange{ opacity:0 !important; }
+  body.menu-open .wordmark-header .wm-mark-white{ opacity:1 !important; }
+  body.menu-open .wordmark-header .nav-toggle{ color: var(--white) !important; outline:none; box-shadow:none; }
+  .mobile-menu .mm-newsletter label{ color: var(--white); }
+  .mobile-menu .mm-newsletter .accent{ background: var(--white); color: var(--orange); border-color: var(--white); }
+  .mobile-menu .mm-newsletter .accent img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 
   /* Every rule below is scoped under .mobile-menu on purpose.
 
@@ -2699,7 +2711,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .custom-feature-attr{ margin: calc(48 * var(--mu)) 0 0; font-size: calc(15 * var(--mu)); }
   .custom-feature-divider{
     display:block; height:1px; background: var(--orange); border:0;
-    margin: calc(32 * var(--mu)) var(--edge) 0;
+    margin: calc(32 * var(--mu)) 0 0;   /* bleeds edge to edge (Figma), not inset to the text margin */
   }
 
   body.page-custom .carousel{ margin-top: 0; }

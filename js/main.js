@@ -100,8 +100,8 @@
       pinnedTop = r.top + window.scrollY; // scroll-invariant: viewport Y at scrollY 0
       /* GLOBAL RULE (Eliza, 2026-10-03): the stamp starts ABOVE the fold.
          If its stylesheet position would put it low on a short window, pin
-         it so at least ~80% of it shows at load. */
-      pinnedTop = Math.min(pinnedTop, Math.max(260, window.innerHeight - r.height * 0.8));
+         it so it is 100% visible at load with a margin below it of ~10% of its height. */
+      pinnedTop = Math.min(pinnedTop, Math.max(200, window.innerHeight - r.height * 1.1));
       pinnedLeft = r.left;
     }
 
