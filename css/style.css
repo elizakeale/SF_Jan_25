@@ -2228,7 +2228,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .footer-top{ display:flex; flex-direction:column; gap:0; padding-bottom:0; }
   .footer-wm{ display:contents; }
   .footer-wm span{
-    font-size: calc(106 * var(--mu)); line-height:1.3;
+    font-size: calc(102 * var(--mu)); line-height:1.3;   /* 102 not Figma's 106: STUDIO at 106 is 380 wide, which bleeds past the 16px side margins (370 available) */
     /* 404:787 STUDIO is 380 wide and 404:788 FRITZ is 375, against desktop's
        358/354 at a 100 face -- both give 106 independently. 1.3 line-height
        reproduces Figma's own 138-tall box, so the gaps below are Figma's
@@ -2283,7 +2283,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .newsletter label{ font-size: calc(15 * var(--mu)); }
   .newsletter input{
     height: calc(50 * var(--mu));                                  /* 411:1089 Rectangle 7: 370x50 */
-    font-size: calc(18 * var(--mu));
+    font-size: calc(15 * var(--mu));
     padding: 0 calc(45 * var(--mu)) 0 calc(16 * var(--mu));         /* 411:1100 sits at x=32 in a box at x=16 */
   }
   .newsletter button{ right: calc(13.5 * var(--mu)); }
@@ -2292,6 +2292,10 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
     margin-top: calc(24 * var(--mu));                               /* input ends 1747 -> button 1771 */
     font-size: calc(15 * var(--mu)); padding: 0 calc(14 * var(--mu));
   }
+  /* One size for the email field and the button under it, in every context
+     (footer, hamburger menu). Specificity matches the desktop footer rule. */
+  .newsletter input, .site-footer .newsletter input, .mobile-menu .newsletter input,
+  .newsletter .accent, .site-footer .newsletter .accent, .mobile-menu .newsletter .accent{ font-size: calc(15 * var(--mu)); }
   .newsletter button img,
   .newsletter .accent img{ width: calc(10.5 * var(--mu)); height: calc(10.5 * var(--mu)); }  /* Group 30/31: 10.48x10 */
 
@@ -2662,7 +2666,8 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
     padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
   }
   .faq-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
-  body.page-faq .carousel{ margin-top: calc(30 * var(--mu)); }
+  .faq-section{ padding-bottom: calc(30 * var(--mu)); }   /* the gap lives inside the white section, not as an orange margin above the carousel */
+  body.page-faq .carousel{ margin-top:0; }
   /* ---------- Custom, mobile (404:689) ----------
      Real reading order, not a reflow of the desktop DOM -- see the note
      above the desktop block. Gaps around the two testimonial quotes are
@@ -2703,12 +2708,19 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
     position:static; padding:0 var(--edge); margin: calc(112 * var(--mu)) 0 0;
     font-size: calc(16 * var(--mu));
   }
+  /* Several of these carry inline left/top/width/font-size in desktop units
+     (style="left:calc(955*var(--u))..."), which beat a plain class rule --
+     that is what left the quotes ~2/3 width and the Interior Architects text
+     small. !important so every column is edge to edge inside the 16px margins. */
   .custom-feature-copy, .custom-feature-quote, .custom-feature-attr{
-    position:static; width:auto; padding:0 var(--edge);
+    position:static !important; left:auto !important; top:auto !important;
+    width:auto !important; padding:0 var(--edge); box-sizing:border-box;
   }
-  .custom-feature-copy{ margin: calc(40 * var(--mu)) 0 0; font-size: calc(15 * var(--mu)); }
-  .custom-feature-quote{ margin: calc(32 * var(--mu)) 0 0; font-size: calc(15 * var(--mu)); }
-  .custom-feature-attr{ margin: calc(48 * var(--mu)) 0 0; font-size: calc(15 * var(--mu)); }
+  .custom-feature-copy, .custom-feature-quote, .custom-feature-attr{ font-size: calc(15 * var(--mu)) !important; }
+  .custom-feature-copy{ margin: calc(40 * var(--mu)) 0 0; }
+  .custom-feature-quote{ margin: calc(77 * var(--mu)) 0 0; }   /* 411:1029 rule -> 411:1025 quote: 77 */
+  .custom-feature-attr{ margin: calc(58 * var(--mu)) 0 0; min-height: calc(55 * var(--mu)); }   /* 411:1025 box end -> 411:1027 attr: 58 */
+  .custom-feature-attr-last{ margin-bottom: calc(54 * var(--mu)); }  /* 411:1045 box end 4885 -> carousel 4939 */
   .custom-feature-divider{
     display:block; height:1px; background: var(--orange); border:0;
     margin: calc(32 * var(--mu)) 0 0;   /* bleeds edge to edge (Figma), not inset to the text margin */
@@ -2719,28 +2731,47 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   /* ---------- Product / Cove Table, mobile (342:858) ----------
      No accent bracket and no divider lines in Figma's mobile frame --
      both hidden. The gallery-nav ticks are desktop-only decoration too. */
-  .product-section{ height:auto; padding-top: calc(81 * var(--mu)); }
+  /* Figma 342:858: stamp (70x122) at x16,y68 and title right-aligned at
+     y99 sit in the 160mu band under the header; the four photos then
+     stack FULL-BLEED, object-fit:cover, with 1px orange lines at each
+     seam (hero 484, 268, 268, 672). The desktop gallery is an absolute
+     flex row with is-hero/max-width rules of higher specificity, so every
+     one of those is reset here explicitly. */
+  .product-section{ height:auto !important; padding-top:0; }
   .product-accent{ display:none; }
   .product-nav-arrows{ display:none; }
   .product-divider{ display:none; }
 
-  .product-top{
-    display:flex; align-items:flex-end; justify-content:space-between;
-    padding: calc(23 * var(--mu)) var(--edge) 0;
-  }
+  .product-top{ position:relative; display:block; height: calc(160 * var(--mu)); padding:0; }
   .product-stamp-soft{
-    position:static; width: calc(70 * var(--mu)); margin:0;
+    position:absolute; z-index:2; left: calc(16 * var(--mu)); top: calc(68 * var(--mu));
+    width: calc(70 * var(--mu)); margin:0;
   }
   .product-title{
-    position:static; left:auto; top:auto; margin:0;
-    font-size: calc(20 * var(--mu));
+    position:absolute; left:auto; right: calc(16 * var(--mu)); top: calc(99 * var(--mu)); margin:0;
+    font-size: calc(20 * var(--mu)); text-align:right; white-space:nowrap;
   }
 
-  .product-photo{ position:relative; width:auto; aspect-ratio:auto; }
-  .product-hero{      position:relative; left:auto; top:auto; height: calc(311 * var(--mu)); margin: calc(24 * var(--mu)) 0 0; }
-  .product-thumb-cove2{ position:relative; left:auto; top:auto; height: calc(172 * var(--mu)); margin:0; }
-  .product-thumb-cove3{ position:relative; left:auto; top:auto; height: calc(172 * var(--mu)); margin:0; }
-  .product-thumb-5{     position:relative; left:auto; top:auto; height: calc(431 * var(--mu)); margin:0; }
+  .product-gallery{
+    position:static; left:auto; right:auto; top:auto; height:auto !important;
+    display:block; gap:0; border-top:1px solid var(--orange);
+  }
+  .product-photo,
+  .product-hero.is-hero, .product-thumb-5.is-hero, .product-thumb-cove2.is-hero, .product-thumb-cove3.is-hero{
+    position:relative; left:auto; top:auto; width:100%; aspect-ratio:auto; margin:0 !important;
+    transition:none; overflow:hidden;
+  }
+  .product-photo + .product-photo{ border-top:1px solid var(--orange); }
+  .product-photo img, .product-photo .gallery-img,
+  .product-hero.is-hero .gallery-img, .product-thumb-cove3.is-hero .gallery-img,
+  .product-thumb-5.is-hero .gallery-img, .product-thumb-cove2.is-hero .gallery-img{
+    width:100%; height:100%; max-width:none !important; object-fit:cover; object-position:center;
+    transition:none;
+  }
+  .product-hero,        .product-hero.is-hero        { height: calc(484 * var(--mu)); }
+  .product-thumb-cove2, .product-thumb-cove2.is-hero { height: calc(268 * var(--mu)); }
+  .product-thumb-cove3, .product-thumb-cove3.is-hero { height: calc(268 * var(--mu)); }
+  .product-thumb-5,     .product-thumb-5.is-hero     { height: calc(672 * var(--mu)); }
 
   .product-desc{
     position:static; left:auto; top:auto; width:auto; padding:0 var(--edge);
@@ -2796,10 +2827,14 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .catalogue-grid{ position:static; height:auto; display:flex; flex-direction:column; margin-top: calc(32 * var(--mu)); }
   .catalogue-col{ position:static; display:contents; } /* desktop-only grouping */
   .catalogue-item{ display:block; }
-  .catalogue-item + .catalogue-item{ 
-    margin-top: calc(32 * var(--mu)); padding-top: calc(32 * var(--mu));
-    border-top: 1px solid rgba(28,17,35,.14);
-  }
+  /* No divider lines between items (they weren't in Figma). One uniform gap
+     between every item: caption of one to the top of the next photo. */
+  /* .catalogue-col is display:contents, but \`+\` still only sees siblings inside
+     one column, so the first item of columns 2 and 3 got no gap at all (Portage
+     Chair / Bluff Stool sat on the photo above). Every item gets it, except the
+     very first. */
+  .catalogue-item{ margin-top: calc(56 * var(--mu)); }
+  .catalogue-col:first-child .catalogue-item:first-child{ margin-top:0; }
   .catalogue-item-media{
     display:grid; grid-template-columns: calc(264 * var(--mu)) calc(138 * var(--mu));
     align-items:end; column-gap:0;
