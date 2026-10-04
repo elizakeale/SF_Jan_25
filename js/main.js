@@ -1105,8 +1105,11 @@
       setTimeout(function () { el.classList.add('is-removed'); }, reduce ? 0 : 500);
     }
 
+    // STAGING: /?intro=long (optionally &len=1.6) previews the long-to-short
+    // bars; it also ignores the once-per-session flag so it can be reloaded.
+    var qs = location.search, longVariant = /[?&]intro=long\b/.test(qs);
     var alreadySeen = false;
-    try { alreadySeen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (err) {}
+    if (!longVariant) { try { alreadySeen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (err) {} }
     if (alreadySeen) { el.classList.add('is-done', 'is-removed'); return; }
 
     document.body.classList.add('intro-active');
@@ -1123,6 +1126,16 @@
       return;
     }
 
+    if (longVariant) {
+      var lm = /[?&]len=([\d.]+)/.exec(qs), len = lm ? parseFloat(lm[1]) : 1.6;
+      if (!(len >= 1 && len <= 4)) len = 1.6;
+      fWrap.style.setProperty('--intro-len', len);
+      fWrap.classList.add('intro-long');
+      at(50,   function () { fWrap.classList.add('is-joining'); });
+      at(1950, function () { fWrap.classList.add('is-drawn'); });   // both bars shorten together, .9s
+      at(3400, finish);
+      return;
+    }
     at(0,    function () { fWrap.classList.add('is-joining'); });   // fly in + join, ~1.86s (vertical bar's 1.5s transition starts .36s in)
     // Eliza 2026-10-04: second effect (bars shrinking in) removed, and the hold on the end state cut from ~1.5s to ~.5s.
     at(2400, finish);                                               // brief hold, then fade out (.45s)
