@@ -286,7 +286,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
    moves with .hero-content. If it didn't, the links would slide sideways at
    the dock, which is the one thing this mechanism exists to avoid. */
 #heroNav.is-pinned{
-  position:fixed; left: calc(50% - 41.5 * var(--u)); right:var(--edge); margin-top:0; height:3.2em; z-index:55;
+  position:fixed; left: calc(50% - 70.5 * var(--u)); right:var(--edge); margin-top:0; height:3.2em; z-index:55;
   transition: none; /* Eliza: "it comes down and shoots all the way down and
     then comes back up... can we just have it just show up because it's just
     adding thrash." Animating `top` here is what produced that -- the nav is
@@ -366,7 +366,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      between them rather than 73. 19/721 = 2.635% of the block's width, and
      at 1fr 1fr that puts them at 679..1030 and 1049..1400 -- Figma to within
      2px. */
-  --para-gap: 2.635%;
+  --para-gap: 6.13%;   /* was 2.635% (19u): the two paragraphs read as one block. Left column + CUSTOM/CATALOGUE moved 29u left (see left: below) while column 2 stays put at x=1048 on the FRITZ right edge -> 46u gutter */
   position:absolute; z-index:2;
   /* The logomark's own left edge, not a percentage that merely equals it at
      1440. .wm-mark is centred and 83u wide, so its left edge is always
@@ -374,7 +374,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      --u is clamped, so past ~2000px the mark stops moving outward from the
      centre while a raw percentage keeps tracking the viewport, and CUSTOM
      drifts left of it. Same failure the footer's column 3 had, same fix. */
-  left: calc(50% - 41.5 * var(--u)); right: var(--edge);
+  left: calc(50% - 70.5 * var(--u)); right: var(--edge);
   /* Eliza 2026-10-03: the vertical line kept getting squished or cut off
      because the stack hung from the TOP (60.1%) and grew down with copy
      wrapping. Anchored from the bottom instead: Figma has the 88u line 22u
@@ -484,7 +484,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
      middle term is that bottom-edge limit (measured: the stack runs
      ~334u + 60.1% of the hero tall), so a short window falls back to 18u
      instead of pushing the line past the fold (the old "cut off" bug). */
-  margin: calc(49 * var(--u)) 0 0 calc(41 * var(--u));
+  margin: calc(49 * var(--u)) 0 0 calc(70 * var(--u));   /* stays centred on the page: block left moved 29u, so +29u here */
   width:1px; height: calc(88 * var(--u)); background: rgba(255,255,255,.7); /* width stays a real 1px -- hairlines don't scale */
   pointer-events:none; animation: scrollCuePulse 2.5s ease-out .6s infinite both;
   transform-origin: top center;
@@ -946,8 +946,8 @@ body.page-about, body.page-light{ background: var(--white); color: var(--ink); }
   /* --para-gap is normally inherited from .hero-content, which this page has
      no equivalent of. Without it the column-2 anchor is invalid and columns
      1 and 2 collapse onto each other. */
-  --para-gap: 2.635%;
-  position:absolute; left: calc(50% - 41.5 * var(--u)); right: var(--edge);
+  --para-gap: 6.13%;
+  position:absolute; left: calc(50% - 70.5 * var(--u)); right: var(--edge);
   top: calc(131 * var(--u)); height: calc(54 * var(--u)); margin:0;
 }
 .wordmark-header.is-static .hero-links a{ color: var(--ink); }
@@ -2991,11 +2991,11 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
    the OUTER tip retracting, not the whole line sliding. */
 .intro-f-top{
   transform-box: fill-box; transform-origin: 0% 50%;
-  transform: translateX(160vw) scaleX(1.35);
+  transform: translateX(160vw);
 }
 .intro-f-mid{
   transform-box: fill-box; transform-origin: 0% 50%;
-  transform: translateX(-160vw) scaleX(1.35);
+  transform: translateX(-160vw);
 }
 /* Eliza 2026-09-26: "still crossing over on the 2nd line/sticking out" --
    the real logomark's own mid bar (113-508) pokes 4.5u left of the
@@ -3005,20 +3005,13 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
    crossing it. */
 
 /* Phase 1 -- joins: arrive at position, still overshoot length. */
-.intro-f-wrap.is-joining .intro-f-top{ opacity:1; transform: translateX(0) scaleX(1.35); }
-.intro-f-wrap.is-joining .intro-f-mid{ opacity:1; transform: translateX(0) scaleX(1.35); transition-delay: .18s, .18s; }
+.intro-f-wrap.is-joining .intro-f-top{ opacity:1; transform: translateX(0); }
+.intro-f-wrap.is-joining .intro-f-mid{ opacity:1; transform: translateX(0); transition-delay: .18s, .18s; }
 
 /* Phase 2 -- shortens into place, outside in: scaleX relaxes to 1,
    anchored at the inner end, so only the outer tip moves. Top bar
    first, mid bar close behind (same stagger shape as the old draw). */
-.intro-f-wrap.is-drawn .intro-f-top{
-  transform: translateX(0) scaleX(1);
-  transition: opacity .9s ease, transform .9s cubic-bezier(.4,0,.2,1);
-}
-.intro-f-wrap.is-drawn .intro-f-mid{
-  transform: translateX(0) scaleX(1);
-  transition: opacity .9s ease, transform .9s cubic-bezier(.4,0,.2,1) .36s;
-}
+/* Eliza 2026-10-04: second effect (horizontal bars shrinking in) removed -- the bars now arrive at their final length. */
 
 /* Eliza: the vertical stroke read as "cut off weird into 2 pieces" when it
    was an SVG <line> plus a separate bleed div -- one HTML bar spans from
@@ -3267,3 +3260,41 @@ img{ height:auto; }
 
 /* Cropped photos always crop from the vertical centre */
 .catalogue-photo img, .custom-photo img{ object-position:center center; }
+
+
+/* ============================================================
+   NEWSLETTER FIELD (footer + hamburger), Eliza 2026-10-04: cream fill
+   with a white ring looked off against the orange. Now a solid white
+   field -- same fill as the DOWNLOAD CATALOGUE button under it -- and the
+   focus state is a white ring floating 2px outside it on the orange, so
+   focus is still clearly visible without a second tone inside the box.
+   ============================================================ */
+.newsletter input{ background: var(--white); border-color: var(--white); }
+.newsletter input:focus, .newsletter input:focus-visible{ border-color: var(--white); outline: 1px solid var(--white); outline-offset: 3px; }
+.newsletter input::placeholder{ color: var(--ink); opacity:.55; }
+
+/* form status line (newsletter + contact/trade/inquire) */
+.newsletter .nl-status{ margin:0; font-family: var(--font-body); font-weight:300; font-size: var(--btn-fs); letter-spacing:.05em; text-transform:uppercase; color: var(--white); }
+.newsletter .nl-status[hidden]{ display:none; }
+.newsletter form.is-sending button{ opacity:.5; pointer-events:none; }
+.sf-form.is-sending .sf-submit{ opacity:.5; pointer-events:none; }
+input.sf-hp, .newsletter input.sf-hp, .sf-form input.sf-hp{ position:absolute !important; left:-9999px !important; top:auto !important; width:1px !important; height:1px !important; min-height:0 !important; padding:0 !important; border:0 !important; opacity:0 !important; pointer-events:none !important; }
+.sf-status{ margin: calc(16 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200; letter-spacing:.05em; text-transform:uppercase; }
+@media (max-width:1152px){ .sf-status{ margin-top: calc(16 * var(--mu)); font-size: calc(14 * var(--mu)); } }
+
+/* ============================================================
+   404 (Figma "404 error", Eliza 2026-10-04). Same chrome as Thank You, but
+   the composition differs: label left, message + button start at x=529 in
+   the same row as the label, the soft stamp sits on the RIGHT edge, and the
+   white section is short (carousel starts at y=556). Desktop only; mobile
+   keeps the shared stacked Thank You layout.
+   ============================================================ */
+@media (min-width:1153px){
+  body.page-404{ --rule-h: calc(279 * var(--u)); }
+  body.page-404 .page-section{ height: calc(556 * var(--u)); }
+  body.page-404 .page-label{ top: calc(274 * var(--u)); }
+  body.page-404 .page-thanks-msg{ left: calc(529 * var(--u)); top: calc(274 * var(--u)); width: calc(500 * var(--u)); font-size: var(--fs-body); }
+  body.page-404 .page-thanks-back{ left: calc(529 * var(--u)); top: calc(362 * var(--u)); width: calc(324 * var(--u)); }
+  body.page-404 .page-stamp{ position:absolute !important; left:auto !important; right: var(--edge) !important; top: calc(284 * var(--u)) !important; width: calc(125 * var(--u)) !important; transform:none !important; }
+}
+.page-thanks-back, .page-thanks-back:hover{ text-decoration:none; }

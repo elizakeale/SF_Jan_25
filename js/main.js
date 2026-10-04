@@ -714,6 +714,56 @@
    after a first submit attempt (.is-validated), then live-updates per
    field as the visitor fixes things. */
 (function contactForms() {
+  /* ONE place to connect every form on the site: paste the Google Apps
+     Script web-app URL (ends in /exec) between the quotes. Newsletter
+     sign-ups, Contact, Trade and every product "Inquire" pop-up all post
+     there; the script writes the row to the Google Sheet and emails
+     contact@studiofritz.co. Setup steps: _apps-script/README.md */
+  var FORMS_ENDPOINT = '';
+  var CONTACT_EMAIL = 'contact@studiofritz.co';
+
+  function formType(form) {
+    if (form.hasAttribute('data-newsletter')) return 'newsletter';
+    if (document.body.classList.contains('page-trade')) return 'trade';
+    return 'inquiry';   // Contact page and the product-page Inquire pop-up
+  }
+
+  /* Posts as text/plain so the browser sends a "simple" request (no CORS
+     pre-flight, which Apps Script can't answer). The script replies with
+     JSON {ok:true}. Resolves on success, rejects otherwise. */
+  function postForm(endpoint, payload) {
+    return fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.json();
+    }).then(function (j) {
+      if (!j || !j.ok) throw new Error((j && j.error) || 'rejected');
+    });
+  }
+
+  function addHoneypot(form) {
+    // bots fill every field they see; people never see this one
+    if (form.querySelector('.sf-hp')) return;
+    var hp = document.createElement('input');
+    hp.type = 'text'; hp.name = 'website'; hp.className = 'sf-hp';
+    hp.tabIndex = -1; hp.setAttribute('autocomplete', 'off'); hp.setAttribute('aria-hidden', 'true');
+    form.appendChild(hp);
+  }
+
+  function collect(form) {
+    var data = {};
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (!el.name || el.name.charAt(0) === '_' || el.type === 'submit') return;
+      data[el.name] = (el.value || '').trim();
+    });
+    data.type = formType(form);
+    data.page = location.pathname;
+    return data;
+  }
+
   var forms = document.querySelectorAll('form[data-endpoint]');
   // NOTE: no early return here even when forms.length is 0 -- the
   // newsletter-form wiring further down (every page's footer, not just
@@ -754,9 +804,9 @@
   }
 
   Array.prototype.forEach.call(forms, function (form) {
-    var endpoint = (form.getAttribute('data-endpoint') || '').trim();
-    var wired = endpoint && endpoint !== 'TODO';
-    if (wired) form.setAttribute('action', endpoint);
+    var endpointAttr = (form.getAttribute('data-endpoint') || '').trim();
+    var wired = endpointAttr && endpointAttr !== 'TODO';
+    addHoneypot(form);
 
     var fields = form.querySelectorAll('input, textarea');
     Array.prototype.forEach.call(fields, function (field) {
@@ -782,20 +832,34 @@
         return;
       }
 
-      if (!wired) {
-        e.preventDefault();
-        var notice = form.querySelector('.sf-unwired');
-        if (!notice) {
-          var email = form.getAttribute('data-email') || 'contact@studiofritz.co';
-          notice = document.createElement('p');
-          notice.className = 'sf-unwired';
-          notice.setAttribute('role', 'status');
-          notice.innerHTML = 'This form is not connected yet \u2014 please email ' +
-            '<a href="mailto:' + email + '">' + email + '</a> in the meantime.';
-          form.appendChild(notice);
-        }
+      e.preventDefault();
+      var endpoint = (wired ? endpointAttr : FORMS_ENDPOINT);
+      var notice = form.querySelector('.sf-unwired');
+      if (notice) notice.remove();
+      if (!endpoint) {
+        notice = document.createElement('p');
+        notice.className = 'sf-unwired';
+        notice.setAttribute('role', 'status');
+        notice.innerHTML = 'This form is not connected yet \u2014 please email ' +
+          '<a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a> in the meantime.';
+        form.appendChild(notice);
         notice.scrollIntoView({ block: 'nearest' });
+        return;
       }
+      if (form.classList.contains('is-sending')) return;
+      form.classList.add('is-sending');
+      postForm(endpoint, collect(form)).then(function () {
+        window.location.href = '/thankyou';
+      }).catch(function () {
+        form.classList.remove('is-sending');
+        var err = document.createElement('p');
+        err.className = 'sf-unwired';
+        err.setAttribute('role', 'alert');
+        err.innerHTML = 'Sorry \u2014 that did not go through. Please email ' +
+          '<a href="mailto:' + CONTACT_EMAIL + '">' + CONTACT_EMAIL + '</a> directly.';
+        form.appendChild(err);
+        err.scrollIntoView({ block: 'nearest' });
+      });
     });
   });
 
@@ -823,8 +887,22 @@
         else showFieldError(field);
       });
     });
+    addHoneypot(form);
+    var wrap = form.closest('.newsletter') || form.parentElement;
+    function status(msg, isError) {
+      var el = wrap.querySelector('.nl-status');
+      if (!el) {
+        el = document.createElement('p');
+        el.className = 'nl-status';
+        el.setAttribute('role', 'status');
+        form.insertAdjacentElement('afterend', el);
+      }
+      el.hidden = !msg;
+      el.textContent = msg || '';
+      el.setAttribute('role', isError ? 'alert' : 'status');
+    }
     form.addEventListener('submit', function (e) {
-      e.preventDefault();
+      e.preventDefault();   // Enter in the field and the arrow button both land here
       form.classList.add('is-validated');
       var first = null;
       Array.prototype.forEach.call(fields, function (field) {
@@ -832,7 +910,18 @@
         showFieldError(field);
         if (!first) first = field;
       });
-      if (first) first.focus();
+      if (first) { status(''); first.focus(); return; }
+      if (!FORMS_ENDPOINT) { status('Sign-up is not connected yet.', true); return; }
+      if (form.classList.contains('is-sending')) return;
+      form.classList.add('is-sending');
+      postForm(FORMS_ENDPOINT, collect(form)).then(function () {
+        form.classList.remove('is-sending', 'is-validated');
+        Array.prototype.forEach.call(fields, function (f) { f.value = ''; });
+        status('Thank you \u2014 you are on the list.');
+      }).catch(function () {
+        form.classList.remove('is-sending');
+        status('That did not go through \u2014 please try again.', true);
+      });
     });
   });
 })();
@@ -995,9 +1084,9 @@
       return;
     }
 
-    at(0,    function () { fWrap.classList.add('is-joining'); });   // phase 1: fly in + join, ~1.86s (vertical bar's 1.5s transition starts .36s in)
-    at(1950, function () { fWrap.classList.add('is-drawn'); });     // phase 2: shorten outside-in, ~1.26s total (top .9s, mid .9s delayed .36s)
-    at(4710, finish);                                               // brief hold, then fade out (.45s)
+    at(0,    function () { fWrap.classList.add('is-joining'); });   // fly in + join, ~1.86s (vertical bar's 1.5s transition starts .36s in)
+    // Eliza 2026-10-04: second effect (bars shrinking in) removed, and the hold on the end state cut from ~1.5s to ~.5s.
+    at(2400, finish);                                               // brief hold, then fade out (.45s)
     // Eliza: "slow down the animation 200%" -- every wait above and every
     // CSS transition duration/delay in .intro-f-wrap's rules (style.css) is
     // the original value * 3.
