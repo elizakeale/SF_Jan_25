@@ -98,6 +98,10 @@
       stamp.style.left = '';
       var r = stamp.getBoundingClientRect();
       pinnedTop = r.top + window.scrollY; // scroll-invariant: viewport Y at scrollY 0
+      /* GLOBAL RULE (Eliza, 2026-10-03): the stamp starts ABOVE the fold.
+         If its stylesheet position would put it low on a short window, pin
+         it so at least ~80% of it shows at load. */
+      pinnedTop = Math.min(pinnedTop, Math.max(260, window.innerHeight - r.height * 0.8));
       pinnedLeft = r.left;
     }
 

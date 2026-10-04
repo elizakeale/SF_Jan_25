@@ -559,7 +559,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 }
 .carousel-track::-webkit-scrollbar{ display:none; }
 .carousel-track.dragging{ cursor:grabbing; scroll-snap-type:none; }
-.carousel .tile{ flex:0 0 auto; margin:0; }
+.carousel .tile{ flex:0 0 auto; margin:0 0 0 -1px; } /* GLOBAL: tiles overlap by 1px so a fractional layout width (narrow windows, sub-pixel drift) can never open a hairline of the orange carousel background between photos. Applied to every tile, first included, so the loop period stays exact. */
 .tile-link{ display:block; color:inherit; text-decoration:none; cursor:pointer; }
 /* The global :focus-visible ring (2px ink, offset 3) painted as stray black
    vertical lines at tile edges after a click/drag. Carousel tiles get an
@@ -1366,7 +1366,7 @@ body.page-showroom{
 .showroom-section{ position:relative; height: calc(1335 * var(--u)); } /* Figma: carousel starts 95u under the lowest content (photo bottom 1240) -- was 1719, ~384u of dead white */
 
 .showroom-col{
-  position:absolute; left: calc(319 * var(--u)); width: calc(442 * var(--u)); margin:0;
+  position:absolute; left: calc(324 * var(--u)); width: calc(442 * var(--u)); margin:0;
   font-family: var(--font-body); font-weight:200; font-size: var(--fs-body);
   line-height:1.7; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
   text-align:justify;
@@ -1385,12 +1385,11 @@ body.page-showroom{
 
 /* 298:185 -- a plain corner-rule accent; see the drift note above. */
 .showroom-accent{
-  position:absolute; left: calc(319 * var(--u)); top: calc(846 * var(--u));
-  width: calc(97 * var(--u)); height: calc(97 * var(--u)); pointer-events:none;
+  position:absolute; left: calc(324 * var(--u)); top: calc(847 * var(--u));
+  width: calc(97 * var(--u)); height: calc(97 * var(--u)); margin:0; pointer-events:none;
+  /* Figma 2026-10-03: the solid orange logomark, not the faint cream corner */
+  background: url("../images/logos/logomark/logomark-orange.svg") center / contain no-repeat;
 }
-.showroom-accent::before, .showroom-accent::after{ content:''; position:absolute; background: var(--cream); }
-.showroom-accent::before{ left:0; top:0; width:1px; height:100%; }
-.showroom-accent::after{ left:0; top: calc(32 * var(--u)); width:100%; height:1px; }
 
 /* 524:90 ("5 1") -- real box is 823,325, 424x283 (landscape); was built
    against a stale 824,279, 254x381 (portrait) box, which force-cropped
@@ -1695,8 +1694,12 @@ body.page-custom .carousel{ background: var(--orange); }
   position:absolute;
   left: calc(46 * var(--u));
   right: calc(170 * var(--u));
-  top: calc(232 * var(--u));
-  height: calc(591 * var(--u) + var(--s1));
+  /* top 278u = the lower horizontal F line (236+2) + the 40u keep-out. The
+     F rule is 40u on EVERY side, horizontal arms included, so no photo
+     can sit closer than that to any part of it (was 232u: the hero ran
+     straight into the arm). */
+  top: calc(278 * var(--u));
+  height: calc(545 * var(--u) + var(--s1));
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
@@ -1730,7 +1733,7 @@ body.page-custom .carousel{ background: var(--orange); }
    from the top; a 380u-tall box bottom-aligned to the 823u divider tops
    out at 443u, safely clear -- a full 591u box would top out at 232u,
    which does reach the title). */
-.product-hero.is-hero, .product-thumb-cove3.is-hero{ height: calc(591 * var(--u) + var(--s1)); }
+.product-hero.is-hero, .product-thumb-cove3.is-hero{ height: calc(545 * var(--u) + var(--s1)); }
 .product-thumb-5.is-hero, .product-thumb-cove2.is-hero{ height: calc(380 * var(--u)); }
 
 /* Safety max-width caps -- not a design size, just a guard so an
