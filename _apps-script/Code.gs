@@ -39,7 +39,7 @@ function doPost(e) {
 
     const lock = LockService.getScriptLock();
     lock.waitLock(20000);
-    try { saveRow_(TABS[d.type], data); } finally { lock.release(); }
+    try { saveRow_(TABS[d.type], data); } finally { lock.releaseLock(); }
 
     notify_(d.type, data);
     return json_({ ok: true });
