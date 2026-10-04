@@ -1602,3 +1602,63 @@
     });
   })();
 
+
+
+/* Footer wordmark (mobile): STUDIO and FRITZ are both fitted so their INK runs
+   exactly edge to edge inside the footer's side padding. Same font size for
+   both; STUDIO sets it, FRITZ (which is letter-spaced) absorbs the difference
+   in tracking. Measured with canvas so glyph side-bearings don't leave either
+   word short of the margin. */
+(function footerWordmarkFit() {
+  var wm = document.querySelector('.footer-wm');
+  if (!wm) return;
+  var studio = wm.querySelector('.fw-cream'), fritz = wm.querySelector('.fw-white');
+  var footer = document.querySelector('.site-footer');
+  if (!studio || !fritz || !footer) return;
+  var ctx = document.createElement('canvas').getContext('2d');
+  function reset() {
+    [studio, fritz].forEach(function (s) { s.style.fontSize = ''; s.style.letterSpacing = ''; s.style.marginLeft = ''; });
+  }
+  function ink(el, text, px, ls) {
+    var cs = getComputedStyle(el);
+    ctx.font = cs.fontWeight + ' ' + px + 'px ' + cs.fontFamily;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = (ls || 0) + 'px';
+    var m = ctx.measureText(text);
+    return { left: -m.actualBoundingBoxLeft, width: m.actualBoundingBoxRight + m.actualBoundingBoxLeft };
+  }
+  function fit() {
+    reset();
+    if (window.innerWidth > 1152) return;
+    var cs = getComputedStyle(footer);
+    var W = footer.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var base = parseFloat(getComputedStyle(studio).fontSize);
+    var t1 = studio.textContent.trim(), t2 = fritz.textContent.trim();
+    var a = ink(studio, t1, base, 0);
+    if (!a.width) return;
+    var fs = base * W / a.width;
+    studio.style.fontSize = fs + 'px'; fritz.style.fontSize = fs + 'px';
+    studio.style.marginLeft = (-ink(studio, t1, fs, 0).left) + 'px';
+    var b = ink(fritz, t2, fs, 0);
+    var ls = (W - b.width) / Math.max(1, t2.length - 1);
+    fritz.style.letterSpacing = ls + 'px';
+    fritz.style.marginLeft = (-b.left) + 'px';
+    /* Correction pass: canvas and DOM disagree slightly once letter-spacing is
+       applied, so read the real right edge of the last glyph back from the DOM
+       and nudge the tracking until it lands on the margin. */
+    var last = t2.charAt(t2.length - 1), fcs = getComputedStyle(fritz);
+    ctx.font = fcs.fontWeight + ' ' + fs + 'px ' + fcs.fontFamily;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    var lm = ctx.measureText(last), rb = lm.width - lm.actualBoundingBoxRight;
+    var target = footer.getBoundingClientRect().left + parseFloat(cs.paddingLeft) + W;
+    for (var i = 0; i < 2; i++) {
+      var rg = document.createRange(); rg.selectNodeContents(fritz);
+      var inkRight = rg.getBoundingClientRect().right - ls - rb;
+      ls += (target - inkRight) / Math.max(1, t2.length - 1);
+      fritz.style.letterSpacing = ls + 'px';
+    }
+  }
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+})();

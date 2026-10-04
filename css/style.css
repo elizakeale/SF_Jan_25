@@ -2328,6 +2328,11 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   body.menu-open .wordmark-header, body.menu-open .wordmark-header.is-static{ background: var(--orange) !important; }
   body.menu-open .wordmark-header .wm-left span{ color: var(--cream) !important; }
   body.menu-open .wordmark-header .wm-right span{ color: var(--white) !important; }
+  /* More air above the lockup in the open menu: Figma 242:177 puts the logomark
+     at y=12 (36x36), i.e. 8 lower than the closed bar's 4. The whole lockup
+     moves together so STUDIO / mark / FRITZ stay aligned. */
+  .wordmark-header, .wordmark-header.is-static{ transition: padding-top .2s ease; }
+  body.menu-open .wordmark-header, body.menu-open .wordmark-header.is-static{ padding-top: calc(12 * var(--mu)) !important; }
   body.menu-open .wordmark-header .wm-mark-orange{ opacity:0 !important; }
   body.menu-open .wordmark-header .wm-mark-white{ opacity:1 !important; }
   body.menu-open .wordmark-header .nav-toggle{ color: var(--white) !important; outline:none; box-shadow:none; }
@@ -2640,10 +2645,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   /* 411:978 -- unlike Contact/Trade, FAQ's mobile frame keeps the stamp,
      just relocated (right-aligned, no caption), same treatment as
      Showroom's mobile stamp. */
-  body.page-faq .page-stamp{
-    display:block; position:static; width: calc(185 * var(--mu));
-    margin: calc(40 * var(--mu)) 0 0 calc(210 * var(--mu));
-  }
+  body.page-faq .page-stamp{ display:none; }   /* removed on mobile (Eliza) */
 
   .faq-list{ padding: 0 var(--edge); margin: calc(40 * var(--mu)) 0 0; }
   .faq-item + .faq-item{ margin-top: calc(40 * var(--mu)); }
@@ -2754,14 +2756,14 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
 
   .product-gallery{
     position:static; left:auto; right:auto; top:auto; height:auto !important;
-    display:block; gap:0; border-top:1px solid var(--orange);
+    display:block; gap:0;
   }
   .product-photo,
   .product-hero.is-hero, .product-thumb-5.is-hero, .product-thumb-cove2.is-hero, .product-thumb-cove3.is-hero{
     position:relative; left:auto; top:auto; width:100%; aspect-ratio:auto; margin:0 !important;
     transition:none; overflow:hidden;
   }
-  .product-photo + .product-photo{ border-top:1px solid var(--orange); }
+  .product-gallery .product-photo:nth-child(n+5){ display:none; }   /* never more than 4 photos in a row before the product info */
   .product-photo img, .product-photo .gallery-img,
   .product-hero.is-hero .gallery-img, .product-thumb-cove3.is-hero .gallery-img,
   .product-thumb-5.is-hero .gallery-img, .product-thumb-cove2.is-hero .gallery-img{
@@ -2798,7 +2800,42 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .product-swatches{ position:static; left:auto; top:auto; padding: 0 var(--edge); margin: calc(32 * var(--mu)) 0 0; gap: calc(18 * var(--mu)); }
   .product-swatch p{ font-size: calc(12 * var(--mu)); margin-top: calc(6 * var(--mu)); }
 
-  body.page-product .carousel{ margin-top: calc(32 * var(--mu)); }
+  /* Body copy, in Figma's (342:858) order and spacing: desc -> orange rule ->
+     price -> the two buttons -> dimensions -> finish/configurations ->
+     swatches (right-aligned). The HTML order differs (dimensions sit above the
+     price), so the section is a flex column and \`order\` does the rearranging
+     on mobile only. Gaps are Figma's top-to-top distances minus line boxes. */
+  .product-section{ display:flex; flex-direction:column; padding-bottom: calc(100 * var(--mu)); }
+  .product-top{ order:0; } .product-gallery{ order:1; }
+  .product-desc{ order:2; } .product-divider-1{ order:3; } .product-price{ order:4; }
+  .product-cta-inquire{ order:5; } .product-cta-spec{ order:6; }
+  .product-dims{ order:7; } .product-config{ order:8; } .product-swatches{ order:9; }
+  .product-desc, .product-dims, .product-price, .product-config{ font-size: calc(16 * var(--mu)); line-height: calc(27 * var(--mu)); }
+  .product-desc{ margin: calc(114 * var(--mu)) 0 0; }
+  .product-desc p, .product-dims p, .product-config p, .product-config ul{ margin:0; }
+  .product-desc p + p{ margin-top: calc(27 * var(--mu)); }
+  .product-divider-1{
+    display:block; position:static; left:auto; top:auto; width:100%; height:0;
+    border:0; border-top:1px solid var(--orange); margin: calc(112 * var(--mu)) 0 0;
+  }
+  .product-price{ margin: calc(67 * var(--mu)) 0 0; }
+  .product-cta-inquire{ margin-top: calc(18 * var(--mu)); }
+  .product-cta-spec{ margin-top: calc(29 * var(--mu)); }
+  .product-dims{ margin: calc(100 * var(--mu)) 0 0; }
+  .product-dims p + p, .product-config p + p{ margin-top: calc(24 * var(--mu)); }
+  .product-config{ margin: calc(24 * var(--mu)) 0 0; }
+  .product-config ul{ padding-left: calc(24 * var(--mu)); }
+  .product-config li{ padding:0; }
+  .product-swatches{
+    justify-content:flex-end; align-items:flex-start; gap: calc(21 * var(--mu));
+    margin: calc(36 * var(--mu)) 0 0; padding: 0 var(--edge);
+  }
+  .product-swatch{ width: calc(73 * var(--mu)); display:flex; flex-direction:column; align-items:flex-end; }   /* labels wider than the chip grow leftwards, so every right edge lines up at the 16px margin */
+  .product-swatch p{ width:100%; }
+  .product-swatch-chip{ width: calc(73 * var(--mu)); height: calc(73 * var(--mu)); aspect-ratio:auto; }
+  .product-swatch p{ text-align:right; font-size: calc(15 * var(--mu)); line-height: calc(18 * var(--mu)); letter-spacing:.05em; }
+  .product-swatch-fine{ font-size: calc(10 * var(--mu)); display:block; width:max-content; margin-left:auto; }
+  body.page-product .carousel{ margin-top:0; }   /* the gap is the section's own white padding, never an orange strip */
 
   /* CATALOGUE mobile (342:587): a real two-column layout, not desktop
      turned into a single stack -- a wide "hero" photo (264mu) on the
