@@ -798,9 +798,24 @@
     return msg;
   }
 
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  // Browsers accept "a@b" as an email; we also want a real domain ending.
+  function syncEmailValidity(field) {
+    if (field.type !== 'email') return;
+    var v = field.value.trim();
+    field.setCustomValidity(v && !EMAIL_RE.test(v) ? 'bad email' : '');
+  }
+  // One wording for every form: empty required -> THIS FIELD IS REQUIRED,
+  // malformed email -> NOT SUCCESSFUL. CHECK EMAIL FORMAT. (CSS caps it.)
+  function errorText(field) {
+    if (field.validity.valueMissing) return 'This field is required.';
+    if (field.type === 'email') return 'Not successful. Check email format.';
+    return field.validationMessage;
+  }
+
   function showFieldError(field) {
     var msg = fieldErrorEl(field);
-    msg.textContent = field.validationMessage;
+    msg.textContent = errorText(field);
     msg.hidden = false;
     field.setAttribute('aria-invalid', 'true');
   }
@@ -820,6 +835,7 @@
     var fields = form.querySelectorAll('input, textarea');
     Array.prototype.forEach.call(fields, function (field) {
       field.addEventListener('input', function () {
+        syncEmailValidity(field);
         if (!form.classList.contains('is-validated')) return;
         if (field.validity.valid) clearFieldError(field);
         else showFieldError(field);
@@ -828,6 +844,7 @@
 
     form.addEventListener('submit', function (e) {
       form.classList.add('is-validated');
+      Array.prototype.forEach.call(fields, syncEmailValidity);
 
       if (!form.checkValidity()) {
         e.preventDefault();
