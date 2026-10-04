@@ -589,7 +589,7 @@
        pinned stretch was 600px, about one unhurried flick; at 1000 it
        lasts long enough to register as a held moment. */
     var GAIN = 1.1;         // px of carousel travel per px of scroll
-    var RUNWAY_MIN = 1000;  // px -- see sizeRunway()
+    var RUNWAY_MIN = 240;   // px -- see sizeRunway(). Was 1000 (plus the viewport remainder): the pinned stretch showed as a very wide empty orange band above the footer (Eliza 2026-10-04: 'does not even seem necessary'), so it is now just long enough to drive the carousel through a normal flick.
     /* Mobile runs the same mechanism on its own numbers. The band there is
        103 Figma px rather than 389, so one full set of four tiles is only
        ~500px wide instead of ~1600 -- desktop's travel would spin it more
@@ -657,7 +657,7 @@
       if (!dirty && vh === lastVH) return;
       dirty = false; lastVH = vh;
       var paneH = pane.offsetHeight;
-      wrap.style.height = (paneH + Math.max(vh - paneH, RUNWAY_MIN)) + 'px';
+      wrap.style.height = (paneH + RUNWAY_MIN) + 'px';
     }
     function remeasure() { dirty = true; sizeRunway(); }
     remeasure();
@@ -896,6 +896,16 @@
       toggle.classList.toggle('is-open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
       toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      // page behind the open menu does not scroll
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+      if (open) {
+        var first = menu.querySelector('a');
+        if (first) first.focus({ preventScroll: true });
+      }
+    }
+    // keep Tab inside the open menu (+ its close button)
+    function focusables() {
+      return [toggle].concat(Array.prototype.slice.call(menu.querySelectorAll('a[href], button, input')));
     }
 
     toggle.addEventListener('click', function () { setOpen(menu.hidden); });
@@ -903,7 +913,12 @@
       if (e.target.closest('a')) setOpen(false);
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !menu.hidden) { setOpen(false); toggle.focus(); }
+      if (e.key === 'Escape' && !menu.hidden) { setOpen(false); toggle.focus(); return; }
+      if (e.key === 'Tab' && !menu.hidden) {
+        var f = focusables(), i = f.indexOf(document.activeElement);
+        if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && (i === f.length - 1)) { e.preventDefault(); f[0].focus(); }
+      }
     });
     window.addEventListener('resize', function () {
       if (window.innerWidth > 1152 && !menu.hidden) setOpen(false);

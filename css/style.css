@@ -1200,7 +1200,7 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   }
 }
 @media (min-width:1153px){
-  body.page-contact label[for="designer"]{ white-space:nowrap; font-size: calc(14 * var(--u)); line-height: calc(27 * var(--u)); } /* 16u runs ~770 wide against a 705 column; 14u keeps it on one line so the input stays on ITEM(S) OF INTEREST's row */
+  body.page-contact label[for="designer"]{ white-space:nowrap; } /* copy shortened so it fits one line at the standard 16 label size */ /* 16u runs ~770 wide against a 705 column; 14u keeps it on one line so the input stays on ITEM(S) OF INTEREST's row */
 }
 
 /* Only after a submit attempt, so nothing is flagged on arrival. */
@@ -1319,7 +1319,7 @@ body.inquire-modal-open{ overflow:hidden; }
 /* the notes box is as tall as the first two left-hand fields, so the
    showroom/designer field below it lands on YOUR COMPANY's row */
 .inquire-modal .sf-field textarea{ height: calc(171 * var(--u)); }
-.inquire-modal .sf-field label[for="inquire-designer"]{ white-space:nowrap; font-size: calc(14 * var(--u)); line-height: calc(27 * var(--u)); }
+.inquire-modal .sf-field label[for="inquire-designer"]{ white-space:nowrap; }
 
 /* ============================================================
    SHOWROOM (278:1574 desktop / 370:462 mobile)
@@ -3220,8 +3220,46 @@ body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, s
 .catalogue-download, .catalogue-collaborate{ padding-right: calc(var(--arrow-inset) - 1px); } /* -1px: the 1px border */
 .newsletter button{ justify-content:center; }
 
-/* 10. Mobile: no hairline where a photo meets the carousel (sub-pixel seam showed the orange behind the tiles). */
+/* 10. All widths: no hairline where a section meets the carousel (sub-pixel seam showed the orange behind the tiles). */
+.scroll-hijack{ margin-top:-1px; background: transparent; }
+.scroll-hijack-sticky{ background: linear-gradient(transparent 1px, var(--orange) 1px); }
+
+/* ============================================================
+   GLOBAL RULES, batch 2 (Eliza 2026-10-04)
+   ============================================================ */
+
+/* Images carry width/height attributes so the browser reserves their space before they load.
+   height:auto keeps those attributes from ever stretching a photo; class rules still win. */
+img{ height:auto; }
+
+/* Product title never runs into the F-shaped accent: it drops to a second line (line height 1.1 x size). */
+.product-title{ line-height:1.1; }
+@media (min-width: 1153px){ .product-title{ max-width: calc(241 * var(--u)); } }   /* 305u accent line - 40u left - 24u clearance */
+
+/* Keyboard focus: one visible ring everywhere (ink on light, white on orange / dark photo). */
+:focus-visible{ outline: 2px solid var(--ink); outline-offset: 3px; }
+.site-footer :focus-visible, .mobile-menu :focus-visible, .carousel :focus-visible, .catalogue-band:focus-visible,
+.hero :focus-visible, #heroNav :focus-visible, body.menu-open .nav-toggle:focus-visible{ outline-color: var(--white) !important; outline-style:solid !important; outline-width:2px !important; }
+.newsletter input:focus-visible{ outline-offset:0; }
+
+/* 44px touch targets on mobile. Buttons and the email field grow together; small links get an invisible bigger hit area. */
 @media (max-width: 1152px){
-  .scroll-hijack{ margin-top:-1px; background: transparent; }
-  .scroll-hijack-sticky{ background: linear-gradient(transparent 1px, var(--orange) 1px); }
+  :root{ --field-h: max(44px, calc(33 * var(--mu))); }
+  .product-cta, .catalogue-download, .catalogue-collaborate, .about-cta, .showroom-cta, .faq-cta, .custom-cta, .sf-submit,
+  .btn-outline{ min-height: 44px; }
+  .catalogue-band, .footer-col a, .mobile-menu .mm-col a, .mobile-menu .mm-secondary a{ position:relative; }
+  .catalogue-band::after, .footer-col a::after, .mobile-menu .mm-col a::after, .mobile-menu .mm-secondary a::after{
+    content:''; position:absolute; left:0; right:0; top:-8px; bottom:-8px;
+  }
+}
+
+/* 12. No hairlines between touching photos. Neighbouring photos meet on fractional pixels, which lets the page colour
+      bleed through as a thin white line on some screens; the earlier photo tucks 1px under the later one. */
+.custom-photo-int6{ width: calc(743 * var(--u) + 1px); height: calc(928 * var(--u)); aspect-ratio:auto; }
+.custom-photo-westlake3{ width: calc(475 * var(--u) + 1px); height: calc(695 * var(--u)); aspect-ratio:auto; }
+@media (max-width: 1152px){
+  .custom-photo-int6, .custom-photo-westlake3{ width:auto; height:auto; }
+  .custom-photo-img0274, .custom-photo-westlake2{ margin-top:-1px !important; }
+  .product-gallery .product-photo + .product-photo{ margin-top:-1px !important; }
+  .catalogue-item-media .catalogue-photo-sm{ margin-left:-1px; }
 }
