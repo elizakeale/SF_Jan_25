@@ -999,6 +999,13 @@
 
   window.addEventListener('resize', function () { lastH = -1; publishHeight(); });
   publishHeight();
+
+  // Orange rule under the bar only while scrolled; gone again at the very top.
+  function syncScrolled() {
+    header.classList.toggle('is-scrolled', (window.pageYOffset || root.scrollTop || 0) > 1);
+  }
+  window.addEventListener('scroll', syncScrolled, { passive: true });
+  syncScrolled();
 })();
 
   /* ---------------- mobile menu (Figma 242:177) ----------------

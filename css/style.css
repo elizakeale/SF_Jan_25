@@ -3324,9 +3324,11 @@ input.sf-hp, .newsletter input.sf-hp, .sf-form input.sf-hp{ position:absolute !i
 .newsletter button:hover img{ transform: translate(1px,1px); }
 .newsletter button img{ transition: transform .15s ease; }
 
-/* 2px orange rule under the white bar on every non-homepage page (is-static
-   is only ever on those). A box-shadow, not a border, so the bar's height --
+/* 2px orange rule under the white bar on non-homepage pages (is-static is
+   only ever on those), shown only once the page has scrolled (js/main.js
+   staticHeader toggles .is-scrolled). A box-shadow, not a border, so the bar's height --
    and everything keyed to --hdr-h -- is unchanged. Dropped while the mobile
    menu is open, where the bar turns orange and merges with the panel. */
-.wordmark-header.is-static{ box-shadow: 0 2px 0 var(--orange); }
+.wordmark-header.is-static{ box-shadow: 0 0 0 var(--orange); transition: box-shadow .2s ease; }
+.wordmark-header.is-static.is-scrolled{ box-shadow: 0 2px 0 var(--orange); }
 body.menu-open .wordmark-header.is-static{ box-shadow:none; }
