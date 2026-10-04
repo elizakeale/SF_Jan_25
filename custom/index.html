@@ -26,6 +26,7 @@
 <link rel="apple-touch-icon" href="/images/logos/logomark/logomark-orange@2x.png">
 </head>
 <body class="page-light page-custom">
+<a class="skip-link" href="#top">Skip to content</a>
 
 <!-- Header, hamburger and footer are copied verbatim from index.html. This is
      a static site with no templating, so they are duplicated by necessity --
@@ -106,9 +107,6 @@
     <figure class="page-stamp"><img src="/images/logos/stamp/stamp-orange.svg" alt=""></figure>
     <figure class="custom-stamp-2"><img src="/images/logos/stamp/stamp-orange.svg" alt=""></figure>
 
-    <figure class="custom-photo custom-photo-hero">
-      <img src="/images/custom/dsc-1055.webp" alt="A Studio Fritz custom walnut table in progress">
-    </figure>
 
     <figure class="custom-photo custom-photo-int6">
       <img src="/images/showroom/int-6.webp" alt="Studio Fritz furniture installed at a client project">
@@ -152,6 +150,10 @@
       <p>The quality, craftsmanship, and story behind the custom furniture they created for our space elevated the entire design and gave it a sense of character that simply couldn&rsquo;t be achieved any other way.&rdquo;</p>
     </div>
     <p class="custom-feature-attr custom-feature-attr-last" style="left:calc(1048 * var(--u));top:calc(3783 * var(--u));width:calc(399 * var(--u));font-size:calc(15 * var(--u))">&ndash; Abigail Metcalfe, Client Interior Designer</p>
+    <!-- Hero photo sits LAST in the DOM: on mobile it closes the page above the carousel (Figma 404:689, DSC_1055 at 4939); desktop positions it absolutely so DOM order is irrelevant there. -->
+    <figure class="custom-photo custom-photo-hero">
+      <img src="/images/custom/dsc-1055.webp" alt="A Studio Fritz Cove Side Table beside a rocking chair in a client home">
+    </figure>
   </section>
 
   <!-- 265:791-798: same four-tile grid and caption drift as Showroom/FAQ --

@@ -784,7 +784,7 @@ body.page-product .catalogue-band{ display:none; }   /* mobile-only on product p
   outline:none; /* Eliza: "get rid of black outline when i click it" -- browser default focus ring read as a stray black box on the cream field; focus is still visible via the border below. */
   border: 1px solid transparent;
 }
-.newsletter input:focus{ border-color: var(--ink); }
+.newsletter input:focus, .newsletter input:focus-visible{ border-color: var(--white); outline: 1px solid var(--white); outline-offset: 0; }   /* white focus stroke, not black (footer + hamburger, all widths) */
 .newsletter input::placeholder{ color: var(--ink); opacity:.7; }
 .newsletter button{
   position:absolute; right: var(--sp-8); top:50%; transform:translateY(-50%);
@@ -1503,7 +1503,7 @@ body.page-faq .page-stamp{ left: calc(1218 * var(--u)); top: calc(266 * var(--u)
 
 /* the four-tile strip bleeds past the frame, same as Showroom's -- see
    that page's own comment for the caption-matching note. */
-body.page-faq .carousel{ background: var(--white); }
+/* (FAQ used to override the carousel to white. That made the caption strip under the photos a white band between the carousel and the orange footer. The carousel is orange on every page now, so nothing can sit between it and the footer.) */
 
 /* ============================================================
    CUSTOM (265:787 desktop / 404:689 mobile)
@@ -2070,7 +2070,7 @@ body.page-custom .carousel{ background: var(--orange); }
    carousel," with a Figma reference showing them present in --ink, so
    recolor instead of hiding. Mobile keeps its own no-per-tile-captions
    rule below (Figma's mobile frames genuinely omit them). */
-body.page-faq .carousel .tile figcaption{ color: var(--ink); }
+
 
 /* ============================================================
    MOBILE — built from Figma's 402-wide frames:
@@ -2098,7 +2098,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
        ceiling caps it around 500 so the phone composition doesn't inflate
        across the tablet range -- see the note at the end of this block. */
     --mu: clamp(0.78px, 0.2488vw, 1.25px);
-    --edge: calc(16 * var(--mu));
+    --edge: 16px;   /* fixed 16px side margin at every mobile width (was scaling to 20px on wider phones/tablets) */
     --section-gap: calc(32 * var(--mu));
   }
 
@@ -2199,7 +2199,8 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   /* ---------- carousels ---------- */
   .tile-media{ height: calc(119 * var(--mu)); min-height:0; max-height:none; }   /* 242:81 etc: 119 band */
   .scroll-hijack .tile-media{ height: calc(103 * var(--mu)); }                    /* 242:94 etc: 103 band */
-  .carousel .tile figcaption{ display:none; }   /* no per-tile captions in the mobile frames */
+  /* no visible per-tile captions in the mobile frames -- but still read by screen readers (display:none removed the only text some links had) */
+  .carousel .tile figcaption{ position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
 
   body.page-product .catalogue-band{ display:flex; }
   .catalogue-band{
@@ -2288,7 +2289,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
     font-size: calc(15 * var(--mu));
     padding: 0 calc(45 * var(--mu)) 0 calc(16 * var(--mu));         /* 411:1100 sits at x=32 in a box at x=16 */
   }
-  .newsletter button{ right: calc(13.5 * var(--mu)); }
+  .newsletter button{ right: calc(6 * var(--mu)); padding: calc(13 * var(--mu)); }   /* 17px arrow, 43px hit area */
   .newsletter .accent{
     min-height: calc(33 * var(--mu));                               /* 411:1090 Rectangle 8: 370x33 */
     margin-top: calc(24 * var(--mu));                               /* input ends 1747 -> button 1771 */
@@ -2394,7 +2395,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .mobile-menu .mm-secondary a{ font-size: calc(14 * var(--mu)); line-height:1.5; color: var(--cream); }
   .mobile-menu .mm-newsletter{
     position:absolute; left: var(--edge); top: calc(543 * var(--mu));
-    width: calc(370 * var(--mu)); margin-top:0;
+    right: var(--edge); width:auto; margin-top:0;   /* spans the full width between the 16px margins at any device width */
   }
   /* The download button is the SAME outline box as the footer's --
      inherits .newsletter .accent, white arrow included. */
@@ -2533,7 +2534,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
 
   .sf-form{
     position:static; display:block;
-    padding: 0 calc(16 * var(--mu));
+    padding: 0 var(--edge);
     margin: calc(40 * var(--mu)) 0 calc(46 * var(--mu));  /* submit ends 1092, carousel 1138 */
   }
   .sf-field{ margin-bottom: calc(29 * var(--mu)); }
@@ -2706,7 +2707,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .custom-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
 
   .custom-photo{ position:relative; width:auto; aspect-ratio:auto; }
-  .custom-photo-hero{      position:relative; left:auto; top:auto; height: calc(311 * var(--mu)); margin: calc(54 * var(--mu)) 0 0; }
+  .custom-photo-hero{      position:relative; left:auto; top:auto; height: calc(311 * var(--mu)); margin:0; }   /* last in the page, flush with the carousel */
   .custom-photo-int6{      position:relative; left:auto; top:auto; height: calc(502 * var(--mu)); margin: calc(77 * var(--mu)) 0 0; }
   .custom-photo-img0274{   position:relative; left:auto; top:auto; height: calc(535 * var(--mu)); margin:0; }
   .custom-photo-westlake3{ position:relative; left:auto; top:auto; height: calc(588 * var(--mu)); margin: calc(88 * var(--mu)) 0 0; }
@@ -2865,6 +2866,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   }
   .catalogue-intro, .catalogue-more{ margin-left:0; padding: 0 var(--edge); max-width:none; width:auto; }
   .catalogue-intro{ margin-top: calc(24 * var(--mu)); font-size: calc(15 * var(--mu)); }
+  .catalogue-intro p{ font-size: calc(15 * var(--mu)); }
   .catalogue-download, .catalogue-collaborate{
     width:auto; margin: calc(24 * var(--mu)) var(--edge) 0;
     min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
@@ -3130,3 +3132,7 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 /* No focus box around a clicked catalogue item / tile (keyboard focus keeps its ring). */
 .catalogue-item, .tile-link{ -webkit-tap-highlight-color: transparent; }
 .catalogue-item:focus:not(:focus-visible), .tile-link:focus:not(:focus-visible){ outline:none; }
+
+/* Skip link: first tab stop, visible only on keyboard focus. */
+.skip-link{ position:absolute; left:8px; top:-60px; z-index:100; background: var(--ink); color: var(--white); padding:10px 14px; font-family: var(--font-body); font-size:14px; letter-spacing:.05em; text-transform:uppercase; text-decoration:none; }
+.skip-link:focus{ top:8px; }
