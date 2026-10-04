@@ -1217,6 +1217,10 @@ main{ position:relative; }        /* .about-rule anchors to the page, not the vi
   line-height:1.4; letter-spacing:.05em; text-transform:uppercase; color: var(--ink);
 }
 .sf-field-error[hidden]{ display:none; }
+/* Out of flow: the line sits in the gap under its field (29u > 6u + one
+   12u line), so showing it never moves the fields below. */
+.sf-field{ position:relative; }
+.sf-field .sf-field-error{ position:absolute; left:0; right:0; top:100%; margin-top: calc(5 * var(--u)); }
 
 /* 297:90's note and the submit share one band: note left, button right. */
 .sf-actions{
@@ -2565,6 +2569,7 @@ body.page-custom .carousel{ background: var(--orange); }
   .sf-submit img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
   .sf-unwired{ font-size: calc(14 * var(--mu)); }
   .sf-field-error{ margin-top: calc(6 * var(--mu)); font-size: calc(12 * var(--mu)); }
+  .sf-field .sf-field-error{ margin-top: calc(4 * var(--mu)); }
 
 
   /* INQUIRE MODAL mobile: full-bleed panel, fields stacked like every

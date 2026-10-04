@@ -946,7 +946,7 @@
       postForm(FORMS_ENDPOINT, collect(form)).then(function () {
         form.classList.remove('is-sending');
         input.value = '';
-        status('Thank you \u2014 you are on the list.');
+        status('Success. You are on the list.');
       }).catch(function (err) {
         if (window.console) console.error('Newsletter sign-up failed:', err);
         form.classList.remove('is-sending');
