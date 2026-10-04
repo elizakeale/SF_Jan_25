@@ -719,7 +719,7 @@
      sign-ups, Contact, Trade and every product "Inquire" pop-up all post
      there; the script writes the row to the Google Sheet and emails
      contact@studiofritz.co. Setup steps: _apps-script/README.md */
-  var FORMS_ENDPOINT = '';
+  var FORMS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyKKNdLPGuMwZyESyf30B6nFa4abQiFG5GQBUCrHrcspzupnV4-I3K1eXNXb8fXjpoDIA/exec';
   var CONTACT_EMAIL = 'contact@studiofritz.co';
 
   function formType(form) {
