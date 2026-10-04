@@ -2582,7 +2582,7 @@ body.page-custom .carousel{ background: var(--orange); }
     width: calc(16 * var(--mu)); height: calc(16 * var(--mu));
   }
   .inquire-modal-lede{ max-width:none; font-size: calc(15 * var(--mu)); margin-bottom: calc(24 * var(--mu)); }
-  .inquire-modal .sf-form{ display:block; }
+  .inquire-modal .sf-form{ display:block; padding-left:0; padding-right:0; }   /* panel already supplies the 16px edge; .sf-form's own 16px doubled it to 32 */
   .inquire-modal .sf-col-b{ margin-top: calc(29 * var(--mu)); display:block; }
   .inquire-modal .sf-field textarea{ height: calc(288 * var(--mu)); }
   .inquire-modal .sf-field label[for="inquire-designer"]{ white-space:normal; font-size: calc(16 * var(--mu)); line-height:1.6875; }
