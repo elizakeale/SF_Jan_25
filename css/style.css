@@ -2273,7 +2273,7 @@ body.page-custom .carousel{ background: var(--orange); }
   .footer-col a{ font-size: calc(21 * var(--mu)); line-height:1.667; }
   /* 404:781 CUSTOM 89 wide vs desktop's 67 at 16px -> 21.3, and the other
      five links agree to within .3 of that. */
-  .footer-col.footer-col-wide a{ font-size: calc(14 * var(--mu)); line-height:1.5; color: var(--cream); }
+  .footer-col.footer-col-wide a{ font-size: calc(14 * var(--mu)); line-height:1.5; color: var(--white); }
   /* 404:777 FAQ is 189 vs desktop's 221 at 16 -> 13.7, and its three
      siblings all land on 13.7 too. Cream rather than white: in the mobile
      frames this column reads visibly softer than CUSTOM/CATALOGUE beside
@@ -2392,7 +2392,7 @@ body.page-custom .carousel{ background: var(--orange); }
     position:absolute; right: var(--edge); top: calc(387 * var(--mu));
     gap: calc(15 * var(--mu)); align-items:flex-end; text-align:right;
   }
-  .mobile-menu .mm-secondary a{ font-size: calc(14 * var(--mu)); line-height:1.5; color: var(--cream); }
+  .mobile-menu .mm-secondary a{ font-size: calc(14 * var(--mu)); line-height:1.5; color: var(--white); }
   .mobile-menu .mm-newsletter{
     position:absolute; left: var(--edge); top: calc(543 * var(--mu));
     right: var(--edge); width:auto; margin-top:0;   /* spans the full width between the 16px margins at any device width */
@@ -2483,7 +2483,7 @@ body.page-custom .carousel{ background: var(--orange); }
      bleed at Figma's height crops the same 6% off the right and keeps the
      vertical rhythm exact. */
   .about-stools{
-    width:auto; aspect-ratio:auto; height: calc(292 * var(--mu));
+    width:auto; aspect-ratio:auto; height:auto;
     margin-top: calc(92 * var(--mu));
   }
 
@@ -2495,6 +2495,7 @@ body.page-custom .carousel{ background: var(--orange); }
   /* relative, not static, so the rule above can anchor to it -- which means
      the desktop left/top would come back as an offset. Cancel them. */
   .about-hands{ position:relative; left:auto; top:auto; }
+  .about-stools img{ height:auto; object-fit:contain; }
 
   /* The one piece that stays positioned: 338:83's mark at x=210 with
      338:82's caption at x=16, side by side rather than stacked. */
@@ -2619,7 +2620,7 @@ body.page-custom .carousel{ background: var(--orange); }
   .showroom-location{ margin-top: calc(54 * var(--mu)); }
   .showroom-portrait{
     position:static; left:auto; top:auto;
-    width: calc(424 * var(--mu)); aspect-ratio: 424 / 283; margin: calc(75 * var(--mu)) 0 0;
+    width: max(100%, calc(424 * var(--mu))); aspect-ratio: 424 / 283; margin: calc(75 * var(--mu)) 0 0;
   }
   .showroom-interior{ display:none; }
   /* orange logomark (397:199, 97x97) replaces the old cream corner rule */
@@ -2707,11 +2708,12 @@ body.page-custom .carousel{ background: var(--orange); }
   .custom-cta img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
 
   .custom-photo{ position:relative; width:auto; aspect-ratio:auto; }
-  .custom-photo-hero{      position:relative; left:auto; top:auto; height: calc(311 * var(--mu)); margin:0; }   /* last in the page, flush with the carousel */
-  .custom-photo-int6{      position:relative; left:auto; top:auto; height: calc(502 * var(--mu)); margin: calc(77 * var(--mu)) 0 0; }
-  .custom-photo-img0274{   position:relative; left:auto; top:auto; height: calc(535 * var(--mu)); margin:0; }
-  .custom-photo-westlake3{ position:relative; left:auto; top:auto; height: calc(588 * var(--mu)); margin: calc(88 * var(--mu)) 0 0; }
-  .custom-photo-westlake2{ position:relative; left:auto; top:auto; height: calc(290 * var(--mu)); margin:0; }
+  .custom-photo img{ width:100%; height:auto; object-fit:contain; display:block; }   /* whole photo, full bleed, at any width */
+  .custom-photo-hero{      position:relative; left:auto; top:auto; height:auto; margin:0; }   /* last in the page, flush with the carousel */
+  .custom-photo-int6{      position:relative; left:auto; top:auto; height:auto; margin: calc(77 * var(--mu)) 0 0; }
+  .custom-photo-img0274{   position:relative; left:auto; top:auto; height:auto; margin:0; }
+  .custom-photo-westlake3{ position:relative; left:auto; top:auto; height:auto; margin: calc(88 * var(--mu)) 0 0; }
+  .custom-photo-westlake2{ position:relative; left:auto; top:auto; height:auto; margin:0; }
 
   .custom-caption{
     left: calc(16 * var(--mu)); bottom: calc(16 * var(--mu));
@@ -2779,13 +2781,12 @@ body.page-custom .carousel{ background: var(--orange); }
   .product-photo img, .product-photo .gallery-img,
   .product-hero.is-hero .gallery-img, .product-thumb-cove3.is-hero .gallery-img,
   .product-thumb-5.is-hero .gallery-img, .product-thumb-cove2.is-hero .gallery-img{
-    width:100%; height:100%; max-width:none !important; object-fit:cover; object-position:center;
-    transition:none;
+    width:100%; height:auto; max-width:none !important; object-fit:contain; object-position:center;
+    transition:none; /* whole photo always shows -- no fixed height, so widening never crops (Eliza 2026-10-04) */
   }
-  .product-hero,        .product-hero.is-hero        { height: calc(484 * var(--mu)); }
-  .product-thumb-cove2, .product-thumb-cove2.is-hero { height: calc(268 * var(--mu)); }
-  .product-thumb-cove3, .product-thumb-cove3.is-hero { height: calc(268 * var(--mu)); }
-  .product-thumb-5,     .product-thumb-5.is-hero     { height: calc(672 * var(--mu)); }
+  .product-hero, .product-hero.is-hero, .product-thumb-cove2, .product-thumb-cove2.is-hero,
+  .product-thumb-cove3, .product-thumb-cove3.is-hero, .product-thumb-5, .product-thumb-5.is-hero{ height:auto; }
+  .product-photo img, .product-photo .gallery-img{ display:block; }
 
   .product-desc{
     position:static; left:auto; top:auto; width:auto; padding:0 var(--edge);
@@ -2887,11 +2888,11 @@ body.page-custom .carousel{ background: var(--orange); }
   .catalogue-item{ margin-top: calc(56 * var(--mu)); }
   .catalogue-col:first-child .catalogue-item:first-child{ margin-top:0; }
   .catalogue-item-media{
-    display:grid; grid-template-columns: calc(264 * var(--mu)) calc(138 * var(--mu));
+    display:grid; grid-template-columns: minmax(0,264fr) minmax(0,138fr);   /* fills the full width at any device width */
     align-items:end; column-gap:0;
   }
   .catalogue-photo-sm{ display:block; margin:0; background: var(--cream); overflow:hidden; }
-  .catalogue-photo-sm img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .catalogue-photo-sm img{ width:100%; height:auto; object-fit:contain; display:block; }
   .catalogue-item h2{ margin-top: calc(12 * var(--mu)); padding: 0 var(--edge); font-size: calc(15 * var(--mu)); }
   .catalogue-arrow{ width: calc(13 * var(--mu)); height: calc(13 * var(--mu)); margin-left: calc(8 * var(--mu)); }
   .catalogue-more{ margin-top: calc(40 * var(--mu)); font-size: calc(15 * var(--mu)); }
@@ -3136,3 +3137,55 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 /* Skip link: first tab stop, visible only on keyboard focus. */
 .skip-link{ position:absolute; left:8px; top:-60px; z-index:100; background: var(--ink); color: var(--white); padding:10px 14px; font-family: var(--font-body); font-size:14px; letter-spacing:.05em; text-transform:uppercase; text-decoration:none; }
 .skip-link:focus{ top:8px; }
+
+/* ============================================================
+   GLOBAL RULES (Eliza 2026-10-04) -- kept last so they win over per-page rules.
+   ============================================================ */
+
+/* 1. One arrow size and one button font size, site-wide per breakpoint. */
+:root{ --arrow: calc(11 * var(--u)); --btn-fs: calc(14 * var(--u)); }
+@media (max-width: 1152px){ :root{ --arrow: calc(10 * var(--mu)); --btn-fs: calc(14 * var(--mu)); } }
+.btn-outline img, .newsletter button img, .newsletter .accent img,
+.site-footer .newsletter .accent img, .mobile-menu .newsletter .accent img,
+.about-cta img, .sf-submit img, .showroom-cta img, .faq-cta img, .custom-cta img,
+.product-cta img, .catalogue-download img, .catalogue-collaborate img, .catalogue-band img{
+  width: var(--arrow); height: var(--arrow);
+}
+.btn-outline, .newsletter .accent, .site-footer .newsletter .accent, .mobile-menu .newsletter .accent,
+.about-cta, .sf-submit, .showroom-cta, .faq-cta, .custom-cta, .product-cta,
+.catalogue-download, .catalogue-collaborate,
+.newsletter input, .site-footer .newsletter input, .mobile-menu .newsletter input{ font-size: var(--btn-fs); }
+
+/* 2. Footer / hamburger DOWNLOAD CATALOGUE: dark purple text + arrow on white. */
+.site-footer .newsletter .accent, .mobile-menu .newsletter .accent, .mobile-menu .mm-newsletter .accent{
+  background: var(--white); color: var(--ink); border-color: var(--white);
+}
+.site-footer .newsletter .accent img, .mobile-menu .newsletter .accent img, .mobile-menu .mm-newsletter .accent img{
+  content: url("../images/logos/arrows/arrow-purple.svg");
+}
+.site-footer .newsletter .accent:hover, .mobile-menu .newsletter .accent:hover, .mobile-menu .mm-newsletter .accent:hover{
+  background: var(--orange-light); border-color: var(--orange-light); color: var(--ink);
+}
+.site-footer .newsletter .accent:hover img, .mobile-menu .newsletter .accent:hover img, .mobile-menu .mm-newsletter .accent:hover img{
+  content: url("../images/logos/arrows/arrow-purple.svg");
+}
+
+/* 3. Footer + hamburger secondary links (FAQ, Guarantee, Press, IG...) are always white. */
+.footer-col.footer-col-wide a, .mobile-menu .mm-secondary a{ color: var(--white); }
+.footer-col.footer-col-wide a:hover, .mobile-menu .mm-secondary a:hover{ color: var(--orange-light); }
+
+/* 4. White copy on orange is Light (300); ink-on-white and white-on-dark-photo stay ExtraLight (200).
+      The big STUDIO / FRITZ wordmark is a display face and is excluded. */
+body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, span, p, div, figcaption, input, button, small):not(.footer-wm):not(.footer-wm *){
+  font-weight:300 !important;
+}
+.newsletter .accent, .newsletter input, .catalogue-band{ font-weight:300 !important; }
+
+/* 5. Floating stamps on mobile: stay put on scroll, start below the nav bar, tuck under footer/carousel. */
+@media (max-width: 1152px){
+  .stamp{ left:auto; right: calc(10 * var(--mu)); top: max(55%, calc(81 * var(--mu) + 16 * var(--mu))); }
+  body.page-product .product-stamp-soft{
+    position:fixed !important; left: var(--edge); right:auto; top: calc(81 * var(--mu) + 16 * var(--mu)); z-index:5;
+  }
+  body.page-product .carousel, body.page-product .site-footer{ position:relative; z-index:6; }
+}
