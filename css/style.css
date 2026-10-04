@@ -649,6 +649,7 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   letter-spacing:.05em; text-transform:uppercase; gap: var(--sp-8);
 }
 .catalogue-band img{ width:19px; height:20px; } /* Figma 175:1024 */
+body.page-product .catalogue-band{ display:none; }   /* mobile-only on product pages (Figma 342:1043) */
 .catalogue-band:hover{ color: var(--orange-light); }
 /* Eliza (2026-10-02): "any buttons with arrows should lighten both the
    word + button, not just the word -- make this a global rule." This
@@ -2200,6 +2201,7 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .scroll-hijack .tile-media{ height: calc(103 * var(--mu)); }                    /* 242:94 etc: 103 band */
   .carousel .tile figcaption{ display:none; }   /* no per-tile captions in the mobile frames */
 
+  body.page-product .catalogue-band{ display:flex; }
   .catalogue-band{
     /* 278:1232, tightened: band ends 200, CATALOGUE at 208, cove at 248 */
     padding: calc(8 * var(--mu)) calc(20 * var(--mu)) calc(5 * var(--mu));
@@ -2332,6 +2334,15 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
      at y=12 (36x36), i.e. 8 lower than the closed bar's 4. The whole lockup
      moves together so STUDIO / mark / FRITZ stay aligned. */
   .wordmark-header, .wordmark-header.is-static{ transition: padding-top .2s ease; }
+  .wm-mark{ transition: top .2s ease; }
+  body.menu-open .wordmark-header .wm-mark{ top: calc(29.65 * var(--mu)); }   /* moves with the lockup: stays centred on STUDIO / FRITZ */
+  /* Figma 242:182/225: the close X is 29x29, right edge at 384, top 76 -- much
+     bigger than the 19x11 hamburger and lower. */
+  body.menu-open .nav-toggle{ width: calc(29 * var(--mu)); height: calc(29 * var(--mu)); top: calc(76 * var(--mu)); right: calc(18 * var(--mu)); }
+  body.menu-open .nav-toggle span{ position:absolute; left: calc(-6 * var(--mu)); width: calc(41 * var(--mu)); top:50%; margin-top: -.5px; }
+  body.menu-open .nav-toggle.is-open span:nth-child(1){ transform: rotate(45deg); }
+  body.menu-open .nav-toggle.is-open span:nth-child(3){ transform: rotate(-45deg); }
+  .nav-toggle{ -webkit-tap-highlight-color: transparent; }
   body.menu-open .wordmark-header, body.menu-open .wordmark-header.is-static{ padding-top: calc(12 * var(--mu)) !important; }
   body.menu-open .wordmark-header .wm-mark-orange{ opacity:0 !important; }
   body.menu-open .wordmark-header .wm-mark-white{ opacity:1 !important; }
@@ -2835,7 +2846,8 @@ body.page-faq .carousel .tile figcaption{ color: var(--ink); }
   .product-swatch-chip{ width: calc(73 * var(--mu)); height: calc(73 * var(--mu)); aspect-ratio:auto; }
   .product-swatch p{ text-align:right; font-size: calc(15 * var(--mu)); line-height: calc(18 * var(--mu)); letter-spacing:.05em; }
   .product-swatch-fine{ font-size: calc(10 * var(--mu)); display:block; width:max-content; margin-left:auto; }
-  body.page-product .carousel{ margin-top:0; }   /* the gap is the section's own white padding, never an orange strip */
+  body.page-product .carousel{ margin-top:0; }
+  body.page-product .carousel{ background: transparent; }   /* no orange behind the tiles: a fractional-pixel top edge blended into it as a hairline above the strip */   /* the gap is the section's own white padding, never an orange strip */
 
   /* CATALOGUE mobile (342:587): a real two-column layout, not desktop
      turned into a single stack -- a wide "hero" photo (264mu) on the
@@ -3114,3 +3126,7 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 @media (prefers-reduced-motion: reduce){
   *{ transition-duration:.001ms !important; animation-duration:.001ms !important; }
 }
+
+/* No focus box around a clicked catalogue item / tile (keyboard focus keeps its ring). */
+.catalogue-item, .tile-link{ -webkit-tap-highlight-color: transparent; }
+.catalogue-item:focus:not(:focus-visible), .tile-link:focus:not(:focus-visible){ outline:none; }
