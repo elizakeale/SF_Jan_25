@@ -3148,9 +3148,11 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 .btn-outline img, .newsletter button img, .newsletter .accent img,
 .site-footer .newsletter .accent img, .mobile-menu .newsletter .accent img,
 .about-cta img, .sf-submit img, .showroom-cta img, .faq-cta img, .custom-cta img,
-.product-cta img, .catalogue-download img, .catalogue-collaborate img, .catalogue-band img{
+.product-cta img, .catalogue-download img, .catalogue-collaborate img{
   width: var(--arrow); height: var(--arrow);
 }
+/* CATALOGUE band is a big type link, so its arrow scales with the text (Figma 19x20 at 25px) instead of the button arrow size. */
+.catalogue-band img{ width:.76em; height:.8em; }
 .btn-outline, .newsletter .accent, .site-footer .newsletter .accent, .mobile-menu .newsletter .accent,
 .about-cta, .sf-submit, .showroom-cta, .faq-cta, .custom-cta, .product-cta,
 .catalogue-download, .catalogue-collaborate,
@@ -3170,16 +3172,23 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
   content: url("../images/logos/arrows/arrow-purple.svg");
 }
 
+/* Footer: main links stay 16 (desktop); FAQ / Guarantee / Press / IG and SIGN UP FOR NEWSLETTER are always the same 14. */
+.footer-col.footer-col-wide a, .newsletter label{ font-size: var(--btn-fs); }
+.mobile-menu .mm-secondary a, .mobile-menu .newsletter label, .mobile-menu .mm-newsletter label{ font-size: var(--btn-fs); }
+
 /* 3. Footer + hamburger secondary links (FAQ, Guarantee, Press, IG...) are always white. */
 .footer-col.footer-col-wide a, .mobile-menu .mm-secondary a{ color: var(--white); }
 .footer-col.footer-col-wide a:hover, .mobile-menu .mm-secondary a:hover{ color: var(--orange-light); }
 
 /* 4. White copy on orange is Light (300); ink-on-white and white-on-dark-photo stay ExtraLight (200).
       The big STUDIO / FRITZ wordmark is a display face and is excluded. */
-body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, span, p, div, figcaption, input, button, small):not(.footer-wm):not(.footer-wm *){
+body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, span, p, div, figcaption, input, button, small):not(.footer-wm):not(.footer-wm *):not(.accent):not(input){
   font-weight:300 !important;
 }
-.newsletter .accent, .newsletter input, .catalogue-band{ font-weight:300 !important; }
+.catalogue-band{ font-weight:300 !important; }
+/* ink on white / cream has no contrast issue, so the download button and email field stay ExtraLight; the white-on-orange INQUIRE button is Light. */
+.newsletter .accent, .newsletter input{ font-weight:200 !important; }
+.product-cta-inquire{ font-weight:300; }
 
 /* 5. Floating stamps on mobile: stay put on scroll, start below the nav bar, tuck under footer/carousel. */
 @media (max-width: 1152px){
@@ -3189,3 +3198,17 @@ body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, s
   }
   body.page-product .carousel, body.page-product .site-footer{ position:relative; z-index:6; }
 }
+
+/* 6. Email field is exactly as thick as the button under it (Eliza 2026-10-04). */
+:root{ --field-h: calc(33 * var(--u)); }
+@media (max-width: 1152px){ :root{ --field-h: calc(33 * var(--mu)); } }
+.newsletter input, .site-footer .newsletter input, .mobile-menu .newsletter input{ height: var(--field-h); box-sizing:border-box; }
+.newsletter .accent, .site-footer .newsletter .accent, .mobile-menu .newsletter .accent{ min-height: var(--field-h); height: var(--field-h); }
+.newsletter button{ padding:0; width: var(--field-h); height: var(--field-h); right:0; }
+
+/* 7. Product page: FINISH sits on the same top line as DIMENSIONS and STARTING PRICE. */
+.product-config p{ margin:0; }
+.product-config p + p{ margin-top:1.7em; }
+
+/* 8. No hairline between the carousel and the footer (the footer starts on a fractional pixel). */
+.scroll-hijack + .site-footer{ box-shadow: 0 -2px 0 var(--orange); }
