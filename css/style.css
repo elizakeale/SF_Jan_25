@@ -2205,7 +2205,7 @@ body.page-custom .carousel{ background: var(--orange); }
   body.page-product .catalogue-band{ display:flex; }
   .catalogue-band{
     /* 278:1232, tightened: band ends 200, CATALOGUE at 208, cove at 248 */
-    padding: calc(8 * var(--mu)) calc(20 * var(--mu)) calc(5 * var(--mu));
+    padding: calc(8 * var(--mu)) var(--edge) calc(5 * var(--mu));
     font-size: calc(16 * var(--mu)); gap: calc(8 * var(--mu));
     /* Figma has these at 21 (278:1320 is 115 wide, same as the footer's
        CATALOGUE), but on a 402 frame that makes them the largest type on
@@ -2219,7 +2219,7 @@ body.page-custom .carousel{ background: var(--orange); }
      wordmark (band ends 1152, text 1153, footer 1188). */
   /* 278:1232: ABOUT starts level with the band's own bottom edge, and the
      footer wordmark follows 12 later */
-  .band-about{ display:flex; padding: 0 var(--edge) calc(12 * var(--mu)); }
+  .band-about{ display:flex; padding: calc(8 * var(--mu)) var(--edge) calc(12 * var(--mu)); }
 
   /* ---------- footer ----------
      Mobile SPLITS the wordmark: STUDIO opens the footer (y=1188) and FRITZ
@@ -2596,7 +2596,7 @@ body.page-custom .carousel{ background: var(--orange); }
   }
 
   /* the band link matches the homepage's mobile one again */
-  .page-about .band-about{ padding: 0 var(--edge) calc(12 * var(--mu)); font-size: calc(16 * var(--mu)); }
+  .page-about .band-about{ padding: calc(8 * var(--mu)) var(--edge) calc(12 * var(--mu)); font-size: calc(16 * var(--mu)); }
   .page-about .band-about img{ width: calc(11 * var(--mu)); height: calc(11 * var(--mu)); }
   /* ---------- Showroom, mobile (370:462) ----------
      No rule and no second (interior/DSC_1318) photo in this frame --
@@ -3212,3 +3212,16 @@ body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, s
 
 /* 8. No hairline between the carousel and the footer (the footer starts on a fractional pixel). */
 .scroll-hijack + .site-footer{ box-shadow: 0 -2px 0 var(--orange); }
+
+/* 9. Stacked / arrow buttons: every arrow sits the same distance from the right edge as the email field's arrow. */
+:root{ --arrow-inset: calc((var(--field-h) - var(--arrow)) / 2); }
+.newsletter .accent, .site-footer .newsletter .accent, .mobile-menu .newsletter .accent,
+.btn-outline, .about-cta, .sf-submit, .showroom-cta, .faq-cta, .custom-cta, .product-cta,
+.catalogue-download, .catalogue-collaborate{ padding-right: calc(var(--arrow-inset) - 1px); } /* -1px: the 1px border */
+.newsletter button{ justify-content:center; }
+
+/* 10. Mobile: no hairline where a photo meets the carousel (sub-pixel seam showed the orange behind the tiles). */
+@media (max-width: 1152px){
+  .scroll-hijack{ margin-top:-1px; background: transparent; }
+  .scroll-hijack-sticky{ background: linear-gradient(transparent 1px, var(--orange) 1px); }
+}
