@@ -2571,12 +2571,12 @@ body.page-custom .carousel{ background: var(--orange); }
      other .sf-form on mobile (base .sf-form{display:block} rule already
      handles that -- this just neutralizes the desktop grid this modal
      adds above and rescales to --mu). */
-  .inquire-modal{ padding:0; align-items:stretch; }
+  .inquire-modal{ padding:0; display:block; }   /* block, not flex: the white panel grows with the form instead of stopping at the screen height */
   .inquire-modal-panel{
-    max-width:none; min-height:100%;
-    padding: calc(72 * var(--mu)) var(--edge) calc(48 * var(--mu));
+    max-width:none; min-height:100%; border:0; box-sizing:border-box;
+    padding: calc(72 * var(--mu)) var(--edge) calc(48 * var(--mu));   /* text sits exactly on the 16px margins */
   }
-  .inquire-modal-stamp{ width: calc(44 * var(--mu)); margin-bottom: calc(24 * var(--mu)); }
+  .inquire-modal-stamp{ width: calc(64 * var(--mu)); margin-bottom: calc(24 * var(--mu)); }
   .inquire-modal-close{
     top: calc(28 * var(--mu)); right: var(--edge);
     width: calc(16 * var(--mu)); height: calc(16 * var(--mu));
@@ -3221,8 +3221,9 @@ body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, s
 .newsletter button{ justify-content:center; }
 
 /* 10. All widths: no hairline where a section meets the carousel (sub-pixel seam showed the orange behind the tiles). */
-.scroll-hijack{ margin-top:-1px; background: transparent; }
-.scroll-hijack-sticky{ background: linear-gradient(transparent 1px, var(--orange) 1px); }
+.scroll-hijack{ margin-top:-1px; }
+.scroll-hijack, .scroll-hijack-sticky, .carousel, body.page-showroom .carousel, body.page-custom .carousel{ background: linear-gradient(transparent 1px, var(--orange) 1px); }
+/* (every layer is transparent for its first pixel, so no orange row can ever sit above the first tile; below that it is solid orange, including the empty runway above the footer) */
 
 /* ============================================================
    GLOBAL RULES, batch 2 (Eliza 2026-10-04)
@@ -3263,3 +3264,6 @@ img{ height:auto; }
   .product-gallery .product-photo + .product-photo{ margin-top:-1px !important; }
   .catalogue-item-media .catalogue-photo-sm{ margin-left:-1px; }
 }
+
+/* Cropped photos always crop from the vertical centre */
+.catalogue-photo img, .custom-photo img{ object-position:center center; }
