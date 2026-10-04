@@ -1,11 +1,16 @@
 /**
  * Studio Fritz website forms -> Google Sheet + email.
  * Bound to the sheet: open the sheet, Extensions > Apps Script, paste this in.
- * Handles: newsletter sign-ups, Contact + product "Inquire" pop-ups, Trade.
+ *
+ * Two tabs, kept apart on purpose:
+ *   "Mailing List" -- ONLY people who typed their email into a newsletter box.
+ *   "Clients"      -- Contact form, product Inquire pop-ups and Trade applications,
+ *                     with a Source column. Nobody here is on the mailing list
+ *                     unless they also used a newsletter box.
  */
 const NOTIFY_TO = 'contact@studiofritz.co';
-const TABS = { newsletter: 'Newsletter', inquiry: 'Inquiries', trade: 'Trade' };
-const COLUMN_ORDER = ['name', 'email', 'company', 'items', 'message', 'project', 'designer', 'page'];
+const TABS = { newsletter: 'Mailing List', inquiry: 'Clients', trade: 'Clients' };
+const COLUMN_ORDER = ['source', 'name', 'email', 'company', 'items', 'message', 'project', 'designer', 'page'];
 
 function doGet() {
   return json_({ ok: true, service: 'Studio Fritz forms' });
@@ -22,6 +27,8 @@ function doPost(e) {
       if (k !== 'website') data[k] = String(d[k]).slice(0, 5000);
     });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || '')) return json_({ ok: false, error: 'email' });
+    if (d.type === 'trade') data.source = 'Trade application';
+    else if (d.type === 'inquiry') data.source = (data.page || '').indexOf('/catalogue/') === 0 ? 'Product inquiry' : 'Contact form';
 
     const lock = LockService.getScriptLock();
     lock.waitLock(20000);
@@ -68,7 +75,7 @@ function notify_(type, d) {
   else if (type === 'inquiry') subject = 'Inquiry | Studio Fritz x ' + name + (company ? ', ' + company : '');
   else subject = 'Newsletter signup | ' + oneLine_(d.email);
 
-  const labels = { name: 'Name', email: 'Email', company: 'Company', items: 'Item(s) of interest', message: 'Message',
+  const labels = { source: 'Source', name: 'Name', email: 'Email', company: 'Company', items: 'Item(s) of interest', message: 'Message',
                    project: 'Project', designer: 'Showroom / designer', page: 'Submitted from' };
   const lines = Object.keys(d).filter(function (k) { return k !== 'type'; }).map(function (k) {
     return (labels[k] || k) + ': ' + d[k];

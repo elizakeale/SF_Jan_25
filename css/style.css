@@ -3298,3 +3298,17 @@ input.sf-hp, .newsletter input.sf-hp, .sf-form input.sf-hp{ position:absolute !i
   body.page-404 .page-stamp{ position:absolute !important; left:auto !important; right: var(--edge) !important; top: calc(284 * var(--u)) !important; width: calc(125 * var(--u)) !important; transform:none !important; }
 }
 .page-thanks-back, .page-thanks-back:hover{ text-decoration:none; }
+
+/* 404 mobile (Figma "404 MOBILE", Eliza 2026-10-04): label right-aligned on
+   the 16px edge, message and full-width button under it, then the soft
+   stamp on the left edge before the carousel. */
+@media (max-width:1152px){
+  body.page-404 .page-section{ display:flex; flex-direction:column; padding-bottom: calc(26 * var(--mu)); }
+  body.page-404 .page-label{ order:1; align-self:flex-end; }
+  body.page-404 .page-thanks-msg{ order:2; }
+  body.page-404 .page-thanks-back{ order:3; text-decoration:none; }
+  body.page-404 .page-stamp{
+    order:4; display:block !important; position:static !important; transform:none !important;
+    width: calc(68 * var(--mu)); margin: calc(-22 * var(--mu)) 0 0 var(--edge);
+  }
+}
