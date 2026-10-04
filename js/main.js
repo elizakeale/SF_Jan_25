@@ -822,7 +822,9 @@
 
   function clearFieldError(field) {
     var wrap = field.closest('.sf-field') || field.parentElement;
-    var msg = wrap.querySelector('.sf-field-error');
+    // Hidden inputs (_subject, _next, honeypot) sit directly in the <form>;
+    // querying the form would hide the FIRST visible field's error.
+    var msg = (wrap.tagName === 'FORM') ? null : wrap.querySelector('.sf-field-error');
     if (msg) { msg.hidden = true; msg.textContent = ''; }
     field.removeAttribute('aria-invalid');
   }
