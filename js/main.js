@@ -1319,13 +1319,13 @@
           // 1. photos just LEFT of the rule: cap their width so their right edge keeps clear.
           boxes.forEach(function (b) {
             var r = b.getBoundingClientRect(), img = b.querySelector('.gallery-img');
-            if (img && r.left < f.left && r.right > f.left - c + 1 && r.right <= f.right) img.style.maxWidth = Math.max(0, f.left - c - r.left) + 'px';
+            if (img && r.left < f.left - c + 1 && r.right > f.left - c + 1 && r.right <= f.right + c) img.style.maxWidth = Math.max(0, f.left - c - r.left) + 'px';
           });
           // 2. photos just RIGHT of the rule: lay the row out explicitly (left to right,
           // each box at its natural spot unless that spot is inside the keep-out zone).
           var gr = gallery.getBoundingClientRect();
           var nat = boxes.map(function (b) { return b.getBoundingClientRect().left; });
-          var need = nat.some(function (l) { return l >= f.left && l < f.right + c - 1; });
+          var need = nat.some(function (l) { return l >= f.left - c + 1 && l < f.right + c - 1; });
           if (need) {
             var gap = 24 * u, heroImg = gallery.querySelector('.product-hero .gallery-img');
             gallery.style.justifyContent = 'flex-start';
@@ -1333,7 +1333,7 @@
               var cursor = gr.left, over = 0;
               boxes.forEach(function (b, i) {
                 var w = b.getBoundingClientRect().width, left = nat[i];
-                if (left >= f.left && left < f.right + c - 1) left = f.right + c;
+                if (left >= f.left - c + 1 && left < f.right + c - 1) left = f.right + c;
                 var g = i > 0 ? gap : 0;        // the row's own flex gap sits between boxes
                 left = Math.max(left, cursor + g);
                 b.style.marginLeft = (left - cursor - g) + 'px';

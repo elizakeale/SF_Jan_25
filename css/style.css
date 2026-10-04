@@ -1361,9 +1361,9 @@ body.inquire-modal-open{ overflow:hidden; }
    ============================================================ */
 body.page-showroom{
   --rule-top: calc(215 * var(--u));
-  --rule-h: calc(1504 * var(--u));   /* 215 -> the white/carousel seam at 1719 */
+  --rule-h: calc(1120 * var(--u));   /* 215 -> the white/carousel seam at 1335 (Figma) */
 }
-.showroom-section{ position:relative; height: calc(1719 * var(--u)); }
+.showroom-section{ position:relative; height: calc(1335 * var(--u)); } /* Figma: carousel starts 95u under the lowest content (photo bottom 1240) -- was 1719, ~384u of dead white */
 
 .showroom-col{
   position:absolute; left: calc(319 * var(--u)); width: calc(442 * var(--u)); margin:0;
