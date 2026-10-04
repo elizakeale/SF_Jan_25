@@ -3323,3 +3323,13 @@ input.sf-hp, .newsletter input.sf-hp, .sf-form input.sf-hp{ position:absolute !i
 .newsletter button:hover img, .newsletter button img{ opacity:1; }
 .newsletter button:hover img{ transform: translate(1px,1px); }
 .newsletter button img{ transition: transform .15s ease; }
+
+/* Soft shadow under the white bar on every non-homepage page (is-static is
+   only ever on those). Dropped while the mobile menu is open, where the bar
+   turns orange and merges with the panel. */
+.wordmark-header.is-static{ box-shadow: 0 calc(4 * var(--u)) calc(18 * var(--u)) rgba(0,0,0,.10); }
+body.menu-open .wordmark-header.is-static{ box-shadow:none; }
+@media (max-width:1152px){
+  .wordmark-header.is-static{ box-shadow: 0 calc(2 * var(--mu)) calc(10 * var(--mu)) rgba(0,0,0,.10); }
+  body.menu-open .wordmark-header.is-static{ box-shadow:none; }
+}
