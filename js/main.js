@@ -732,16 +732,25 @@
      pre-flight, which Apps Script can't answer). The script replies with
      JSON {ok:true}. Resolves on success, rejects otherwise. */
   function postForm(endpoint, payload) {
-    return fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
-    }).then(function (r) {
-      if (!r.ok) throw new Error('http ' + r.status);
-      return r.json();
-    }).then(function (j) {
-      if (!j || !j.ok) throw new Error((j && j.error) || 'rejected');
-    });
+    // one id per submission: if the readable attempt is blocked by the browser
+    // (CORS / redirect) AFTER Google already received it, the opaque retry below
+    // carries the same id and the script ignores the duplicate
+    payload.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    var body = JSON.stringify(payload);
+    var headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+    return fetch(endpoint, { method: 'POST', headers: headers, body: body })
+      .then(function (r) {
+        if (!r.ok) throw new Error('http ' + r.status);
+        return r.json();
+      })
+      .then(function (j) {
+        if (!j || !j.ok) { var e = new Error((j && j.error) || 'rejected'); e.fromServer = true; throw e; }
+      })
+      .catch(function (err) {
+        if (err && err.fromServer) throw err;                 // the script answered and said no
+        if (window.console) console.warn('Form: readable post failed (' + err + '), retrying without reading the reply');
+        return fetch(endpoint, { method: 'POST', mode: 'no-cors', headers: headers, body: body });   // resolves once sent
+      });
   }
 
   function addHoneypot(form) {
@@ -889,38 +898,42 @@
     });
     addHoneypot(form);
     var wrap = form.closest('.newsletter') || form.parentElement;
+    var input = form.querySelector('input[type=email]');
+    // ONE message line under the bar, never stacked, never inside the form
+    // (anything inside the form moved the arrow). Native browser bubbles and the
+    // per-field error line are not used here.
     function status(msg, isError) {
       var el = wrap.querySelector('.nl-status');
       if (!el) {
         el = document.createElement('p');
         el.className = 'nl-status';
-        el.setAttribute('role', 'status');
         form.insertAdjacentElement('afterend', el);
       }
       el.hidden = !msg;
       el.textContent = msg || '';
       el.setAttribute('role', isError ? 'alert' : 'status');
+      if (input) { if (isError) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid'); }
     }
+    input.addEventListener('input', function () { status(''); });
     form.addEventListener('submit', function (e) {
       e.preventDefault();   // Enter in the field and the arrow button both land here
-      form.classList.add('is-validated');
-      var first = null;
-      Array.prototype.forEach.call(fields, function (field) {
-        if (field.validity.valid) { clearFieldError(field); return; }
-        showFieldError(field);
-        if (!first) first = field;
-      });
-      if (first) { status(''); first.focus(); return; }
-      if (!FORMS_ENDPOINT) { status('Sign-up is not connected yet.', true); return; }
       if (form.classList.contains('is-sending')) return;
+      if (!input.validity.valid || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(input.value.trim())) {
+        status('Not successful. Check email format.', true);
+        input.focus();
+        return;
+      }
+      if (!FORMS_ENDPOINT) { status('Not successful. Sign-up is not connected yet.', true); return; }
       form.classList.add('is-sending');
+      status('');
       postForm(FORMS_ENDPOINT, collect(form)).then(function () {
-        form.classList.remove('is-sending', 'is-validated');
-        Array.prototype.forEach.call(fields, function (f) { f.value = ''; });
-        status('Thank you \u2014 you are on the list.');
-      }).catch(function () {
         form.classList.remove('is-sending');
-        status('That did not go through \u2014 please try again.', true);
+        input.value = '';
+        status('Thank you \u2014 you are on the list.');
+      }).catch(function (err) {
+        if (window.console) console.error('Newsletter sign-up failed:', err);
+        form.classList.remove('is-sending');
+        status('Not successful. Please try again.', true);
       });
     });
   });

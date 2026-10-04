@@ -3276,7 +3276,7 @@ img{ height:auto; }
 /* form status line (newsletter + contact/trade/inquire) */
 .newsletter .nl-status{ margin:0; font-family: var(--font-body); font-weight:300; font-size: var(--btn-fs); letter-spacing:.05em; text-transform:uppercase; color: var(--white); }
 .newsletter .nl-status[hidden]{ display:none; }
-.newsletter form.is-sending button{ opacity:.5; pointer-events:none; }
+.newsletter form.is-sending button{ pointer-events:none; }
 .sf-form.is-sending .sf-submit{ opacity:.5; pointer-events:none; }
 input.sf-hp, .newsletter input.sf-hp, .sf-form input.sf-hp{ position:absolute !important; left:-9999px !important; top:auto !important; width:1px !important; height:1px !important; min-height:0 !important; padding:0 !important; border:0 !important; opacity:0 !important; pointer-events:none !important; }
 .sf-status{ margin: calc(16 * var(--u)) 0 0; font-family: var(--font-body); font-weight:200; letter-spacing:.05em; text-transform:uppercase; }
@@ -3312,3 +3312,9 @@ input.sf-hp, .newsletter input.sf-hp, .sf-form input.sf-hp{ position:absolute !i
     width: calc(68 * var(--mu)); margin: calc(-22 * var(--mu)) 0 0 var(--edge);
   }
 }
+
+/* Newsletter arrow: pinned to the field itself (not 50% of whatever the form grows to), always the dark purple, never faded. */
+.newsletter button{ top:0; transform:none; }
+.newsletter button:hover img, .newsletter button img{ opacity:1; }
+.newsletter button:hover img{ transform: translate(1px,1px); }
+.newsletter button img{ transition: transform .15s ease; }

@@ -22,9 +22,16 @@ function doPost(e) {
     if (d.website) return json_({ ok: true });              // honeypot: bots filled the hidden field; pretend success, store nothing
     if (!TABS[d.type]) return json_({ ok: false, error: 'unknown form' });
 
+    // the page may retry a post it could not read the reply to; same id = same submission
+    const cache = CacheService.getScriptCache();
+    if (d.id) {
+      if (cache.get('sf-' + d.id)) return json_({ ok: true });
+      cache.put('sf-' + d.id, '1', 600);
+    }
+
     const data = {};
     Object.keys(d).forEach(function (k) {
-      if (k !== 'website') data[k] = String(d[k]).slice(0, 5000);
+      if (k !== 'website' && k !== 'id') data[k] = String(d[k]).slice(0, 5000);
     });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || '')) return json_({ ok: false, error: 'email' });
     if (d.type === 'trade') data.source = 'Trade application';
