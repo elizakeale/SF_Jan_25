@@ -3172,10 +3172,10 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
   content: url("../images/logos/arrows/arrow-purple.svg");
 }
 .site-footer .newsletter .accent:hover, .mobile-menu .newsletter .accent:hover, .mobile-menu .mm-newsletter .accent:hover{
-  background: var(--orange-light); border-color: var(--orange-light); color: var(--ink);
+  background: var(--orange); border-color: var(--white); color: var(--white);   /* inverted: orange fill, white outline + text */
 }
 .site-footer .newsletter .accent:hover img, .mobile-menu .newsletter .accent:hover img, .mobile-menu .mm-newsletter .accent:hover img{
-  content: url("../images/logos/arrows/arrow-purple.svg");
+  content: url("../images/logos/arrows/arrow-white.svg");
 }
 
 /* Footer: main links stay 16 (desktop); FAQ / Guarantee / Press / IG and SIGN UP FOR NEWSLETTER are always the same 14. */
