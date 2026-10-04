@@ -3026,14 +3026,14 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
    first, mid bar close behind (same stagger shape as the old draw). */
 /* Eliza 2026-10-04: second effect (horizontal bars shrinking in) removed -- the bars now arrive at their final length. */
 
-/* STAGING variant (home page with ?intro=long, optional &len=1.6): the bars
+/* STAGING variant (home page with ?intro=long, optional &len=5): the bars
    arrive at overshoot length, then BOTH shorten together to final width --
    one shrink, no stagger. Default intro is unchanged. js/main.js adds
    .intro-long and fires .is-drawn at 1.95s. */
-.intro-f-wrap.intro-long .intro-f-top{ transform: translateX(160vw) scaleX(var(--intro-len, 1.6)); }
-.intro-f-wrap.intro-long .intro-f-mid{ transform: translateX(-160vw) scaleX(var(--intro-len, 1.6)); }
+.intro-f-wrap.intro-long .intro-f-top{ transform: translateX(160vw) scaleX(var(--intro-len, 5)); }
+.intro-f-wrap.intro-long .intro-f-mid{ transform: translateX(-160vw) scaleX(var(--intro-len, 5)); }
 .intro-f-wrap.intro-long.is-joining .intro-f-top,
-.intro-f-wrap.intro-long.is-joining .intro-f-mid{ transform: translateX(0) scaleX(var(--intro-len, 1.6)); }
+.intro-f-wrap.intro-long.is-joining .intro-f-mid{ transform: translateX(0) scaleX(var(--intro-len, 5)); }
 .intro-f-wrap.intro-long.is-drawn .intro-f-top,
 .intro-f-wrap.intro-long.is-drawn .intro-f-mid{
   transform: translateX(0) scaleX(1);

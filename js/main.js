@@ -1127,11 +1127,17 @@
     }
 
     if (longVariant) {
-      var lm = /[?&]len=([\d.]+)/.exec(qs), len = lm ? parseFloat(lm[1]) : 1.6;
-      if (!(len >= 1 && len <= 4)) len = 1.6;
+      var lm = /[?&]len=([\d.]+)/.exec(qs), len = lm ? parseFloat(lm[1]) : 5;
+      if (!(len >= 1 && len <= 8)) len = 5;
+      // Snap to the long start state with transitions off, so the bars never
+      // visibly GROW from 1x to Nx while flying in (that read as a second shrink).
+      var ls = document.createElement('style');
+      ls.textContent = '.intro-f-wrap.intro-long line{transition:none !important}';
+      document.head.appendChild(ls);
       fWrap.style.setProperty('--intro-len', len);
       fWrap.classList.add('intro-long');
-      at(50,   function () { fWrap.classList.add('is-joining'); });
+      void fWrap.offsetWidth;
+      at(50,   function () { ls.remove(); fWrap.classList.add('is-joining'); });
       at(1950, function () { fWrap.classList.add('is-drawn'); });   // both bars shorten together, .9s
       at(3400, finish);
       return;
