@@ -1128,7 +1128,7 @@
 
     if (longVariant) {
       var lm = /[?&]len=([\d.]+)/.exec(qs), len = lm ? parseFloat(lm[1]) : 5;
-      if (!(len >= 1 && len <= 8)) len = 5;
+      if (!(len >= 1 && len <= 20)) len = 5;
       // Snap to the long start state with transitions off, so the bars never
       // visibly GROW from 1x to Nx while flying in (that read as a second shrink).
       var ls = document.createElement('style');
