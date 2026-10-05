@@ -605,6 +605,14 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
   width:0; min-width:100%; overflow:hidden; text-overflow:ellipsis;
 }
 
+/* Carousel captions react like every other clickable text on the orange: light
+   orange (--orange-light) on hover. The caption itself ignores the pointer, so
+   the whole tile (photo + caption) is the hover target. */
+.carousel .tile figcaption{ transition: color .18s ease; }
+@media (hover:hover){
+  .carousel .tile-link:hover figcaption{ color: var(--orange-light); }
+}
+
 /* pre-footer carousel: scroll-hijacked (vertical scroll -> horizontal, 1:1) */
 .scroll-hijack{ position:relative; background: var(--orange); }
 /* Height is set by js/main.js: pane height + a runway sized to
