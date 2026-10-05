@@ -1138,8 +1138,7 @@
       fWrap.classList.add('intro-long');
       void fWrap.offsetWidth;
       at(50,   function () { ls.remove(); fWrap.classList.add('is-joining'); });
-      at(1950, function () { fWrap.classList.add('is-drawn'); });   // both bars shorten together, .9s
-      at(3400, finish);
+      at(2500, finish);   // slide + shorten finish together (~1.7s), brief hold, fade
       return;
     }
     at(0,    function () { fWrap.classList.add('is-joining'); });   // fly in + join, ~1.86s (vertical bar's 1.5s transition starts .36s in)
