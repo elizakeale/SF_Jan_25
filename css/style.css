@@ -3036,6 +3036,19 @@ body.intro-active{ overflow:hidden; position:fixed; inset:0; width:100%; }
 .intro-f-wrap.intro-long.is-joining .intro-f-top,
 .intro-f-wrap.intro-long.is-joining .intro-f-mid{ transform: translateX(0) scaleX(1); }
 
+/* Mobile: the bars have far less distance to cover than the vertical bar, so
+   on the shared 1.5s clock they landed first. Stretch them to land WITH the
+   vertical bar (which finishes at .36s + 1.5s = 1.86s): top 0 + 1.86s, mid
+   .18s + 1.68s. Same easing, so the shorten-while-sliding stays one motion. */
+@media (max-width: 1152px){
+  .intro-f-wrap.intro-long.is-joining .intro-f-top{
+    transition: opacity .9s ease, transform 1.86s cubic-bezier(.16,.84,.44,1);
+  }
+  .intro-f-wrap.intro-long.is-joining .intro-f-mid{
+    transition: opacity .9s ease .18s, transform 1.68s cubic-bezier(.16,.84,.44,1) .18s;
+  }
+}
+
 /* Eliza: the vertical stroke read as "cut off weird into 2 pieces" when it
    was an SVG <line> plus a separate bleed div -- one HTML bar spans from
    the stroke's start (y=58 of the 612-tall box, as a %) down through the

@@ -1127,8 +1127,10 @@
     }
 
     if (longVariant) {
-      var lm = /[?&]len=([\d.]+)/.exec(qs), len = lm ? parseFloat(lm[1]) : 5;
-      if (!(len >= 1 && len <= 20)) len = 5;
+      // Default overshoot: 20x on desktop, 5x on mobile (&len= overrides either).
+      var defLen = window.innerWidth > 1152 ? 20 : 5;
+      var lm = /[?&]len=([\d.]+)/.exec(qs), len = lm ? parseFloat(lm[1]) : defLen;
+      if (!(len >= 1 && len <= 40)) len = defLen;
       // Snap to the long start state with transitions off, so the bars never
       // visibly GROW from 1x to Nx while flying in (that read as a second shrink).
       var ls = document.createElement('style');
