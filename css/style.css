@@ -3394,18 +3394,16 @@ body.menu-open .wordmark-header.is-static{ box-shadow:none; }
 body:not(.page-product) .site-footer{ position:relative; z-index:1; }
 
 
-/* Product gallery (Eliza, 2026-10-05): the hero is always the anchor, 40u
-   right of the long F's vertical rule (the same keep-out the clearance
-   script enforces), and every other photo sits to its right in DOM order.
-   Two-photo pages therefore read hero + one thumbnail, both right of the F.
+/* Product gallery (Eliza, 2026-10-05): with exactly two photos the hero anchors
+   40u right of the long F's vertical rule (the same keep-out the clearance
+   script enforces) and the other photo follows to its right. Sets of three or
+   four keep the original spread, where thumbnails may sit left of the F.
    Desktop only -- mobile keeps its stacked column. */
 @media (min-width:1153px){
-  .product-gallery{
+  .product-gallery:has(> .product-photo:nth-child(2):last-child){
     left: calc((305 + 2 + 40) * var(--u));   /* rule left 305u + 2u wide + 40u clear */
     justify-content:flex-start;
   }
-  .product-hero{ order:1; }
-  .product-thumb-cove2{ order:2; }
-  .product-thumb-cove3{ order:3; }
-  .product-thumb-5{ order:4; }
+  .product-gallery:has(> .product-photo:nth-child(2):last-child) .product-hero{ order:1; }
+  .product-gallery:has(> .product-photo:nth-child(2):last-child) .product-thumb-cove2{ order:2; }
 }

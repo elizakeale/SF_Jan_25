@@ -1596,7 +1596,8 @@
       if (!desktop()) return; // mobile: leave every box at its own fixed size
 
       // Left-to-right visual order (matches `order` in style.css): hero anchors next to the F, the rest follow to its right.
-      var boxes = [hero, cove2, cove3, thumb5].filter(Boolean);
+      var pair = gallery.querySelectorAll('.product-photo').length === 2; // two photos: hero anchors by the F, the other follows
+      var boxes = (pair ? [hero, cove2] : [thumb5, cove2, hero, cove3]).filter(Boolean);
       var N = boxes.length;
       var HERO_INDEX = boxes.indexOf(hero); // .product-hero's position in `boxes` -- always the enlarged box now
       if (N < 2) {
