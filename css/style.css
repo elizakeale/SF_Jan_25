@@ -3381,3 +3381,14 @@ body.menu-open .wordmark-header.is-static{ box-shadow:none; }
 @media (min-width:1153px){
   .footer-wm .fw-white{ margin-right: -.175em; }
 }
+
+/* Nav links on the orange docked bar: white on orange is Light (300), same rule
+   as the footer / hamburger / captions (Eliza 2026-10-05). The hero nav over the
+   photo and ink-on-white nav stay ExtraLight. */
+#heroNav.is-collapsed-nav a{ font-weight:300; }
+
+/* Pre-footer carousel hold: js/main.js slides the footer up beneath the pinned
+   carousel (translateY) so the hold no longer shows a band of empty orange.
+   The pane must paint above the footer it slides under. */
+.scroll-hijack-sticky{ z-index:2; }
+body:not(.page-product) .site-footer{ position:relative; z-index:1; }

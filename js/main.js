@@ -667,7 +667,20 @@
       var runway = Math.max(RUNWAY_MIN, Math.ceil(loop / GAIN));
       wrap.style.height = (paneH + runway) + 'px';
     }
-    function remeasure() { dirty = true; sizeRunway(); }
+    /* Eliza 2026-10-05: during the hold the strip under the carousel was empty
+       orange. The footer's layout box stays where it is (so page length and the
+       release point are unchanged), but it is drawn translated UP by the
+       unspent runway: right under the pane while the pane is pinned, easing
+       to its true place (translate 0) exactly as the pane releases. */
+    var footerEl = document.querySelector('.site-footer');
+    function shiftFooter() {
+      if (!footerEl) return;
+      if (mobile()) { if (footerEl.style.transform) footerEl.style.transform = ''; return; }
+      var len = Math.max(0, wrap.offsetHeight - pane.offsetHeight);
+      var p = progress();
+      footerEl.style.transform = 'translateY(' + (-(len - p)) + 'px)';
+    }
+    function remeasure() { dirty = true; sizeRunway(); shiftFooter(); }
     remeasure();
     window.addEventListener('resize', remeasure);
     window.addEventListener('load', remeasure);
@@ -689,6 +702,7 @@
 
     window.addEventListener('scroll', function () {
       sizeRunway();
+      shiftFooter();
       lastY = window.scrollY;
       var p = progress(), dp = p - lastP;
       lastP = p;
