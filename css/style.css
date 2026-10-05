@@ -3392,3 +3392,20 @@ body.menu-open .wordmark-header.is-static{ box-shadow:none; }
    The pane must paint above the footer it slides under. */
 .scroll-hijack-sticky{ z-index:2; }
 body:not(.page-product) .site-footer{ position:relative; z-index:1; }
+
+
+/* Product gallery (Eliza, 2026-10-05): the hero is always the anchor, 40u
+   right of the long F's vertical rule (the same keep-out the clearance
+   script enforces), and every other photo sits to its right in DOM order.
+   Two-photo pages therefore read hero + one thumbnail, both right of the F.
+   Desktop only -- mobile keeps its stacked column. */
+@media (min-width:1153px){
+  .product-gallery{
+    left: calc((305 + 2 + 40) * var(--u));   /* rule left 305u + 2u wide + 40u clear */
+    justify-content:flex-start;
+  }
+  .product-hero{ order:1; }
+  .product-thumb-cove2{ order:2; }
+  .product-thumb-cove3{ order:3; }
+  .product-thumb-5{ order:4; }
+}

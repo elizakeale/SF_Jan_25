@@ -1499,7 +1499,7 @@
       if (busy) return; busy = true;
       var boxes = Array.prototype.slice.call(gallery.querySelectorAll('.product-photo'));
       gallery.style.justifyContent = '';
-      boxes.forEach(function (b) { b.style.marginLeft = ''; var i = b.querySelector('.gallery-img'); if (i) { i.style.transition = 'none'; i.style.maxWidth = ''; } });
+      boxes.forEach(function (b) { b.style.marginLeft = ''; b.style.height = ''; b.style.transition = ''; var i = b.querySelector('.gallery-img'); if (i) { i.style.transition = 'none'; i.style.maxWidth = ''; } });
       if (window.innerWidth > 1152 && boxes.length) {
         var f = rule.getBoundingClientRect(), u = f.width / 2, c = CLEAR * u;
         if (u) {
@@ -1531,6 +1531,28 @@
               over = cursor - gr.right;
               if (over <= 0.5 || !heroImg) break;
               heroImg.style.maxWidth = Math.max(0, heroImg.getBoundingClientRect().width - over) + 'px';
+            }
+          }
+          // 3. The row must end inside the page margin (40u from the window edge).
+          // Hero anchors against the F now, so a wide set (e.g. four landscape
+          // photos) is fitted from the right: thumbnails first, down to 70% of
+          // their compact height, then the hero gives up the remainder.
+          var lim = window.innerWidth - 40 * u;
+          var last = boxes[boxes.length - 1];
+          var over3 = last ? last.getBoundingClientRect().right - lim : 0;
+          if (over3 > 0.5) {
+            var heroBox = gallery.querySelector('.product-hero');
+            var thumbs = boxes.filter(function (b) { return b !== heroBox; });
+            var tw = thumbs.reduce(function (a, b) { return a + b.getBoundingClientRect().width; }, 0);
+            if (thumbs.length && tw > 0) {
+              var scale = Math.max(0.7, 1 - over3 / tw);
+              thumbs.forEach(function (b) { b.style.transition = 'none'; b.style.height = (152 * u * scale) + 'px'; });
+              over3 = last.getBoundingClientRect().right - lim;
+            }
+            var hi = gallery.querySelector('.product-hero .gallery-img');
+            for (var r3 = 0; r3 < 3 && over3 > 0.5 && hi; r3++) {
+              hi.style.maxWidth = Math.max(0, hi.getBoundingClientRect().width - over3) + 'px';
+              over3 = last.getBoundingClientRect().right - lim;
             }
           }
         }
@@ -1573,8 +1595,8 @@
       if (!hero) return;
       if (!desktop()) return; // mobile: leave every box at its own fixed size
 
-      // Left-to-right visual order (matches `order` in style.css).
-      var boxes = [thumb5, cove2, hero, cove3].filter(Boolean);
+      // Left-to-right visual order (matches `order` in style.css): hero anchors next to the F, the rest follow to its right.
+      var boxes = [hero, cove2, cove3, thumb5].filter(Boolean);
       var N = boxes.length;
       var HERO_INDEX = boxes.indexOf(hero); // .product-hero's position in `boxes` -- always the enlarged box now
       if (N < 2) {
