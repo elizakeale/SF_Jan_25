@@ -649,11 +649,13 @@ img, video{ max-width:100%; height:auto; display:block; } /* height:auto is
 .catalogue-band{
   display:flex; align-items:center; justify-content:flex-end;
   background: transparent; color: var(--white); text-decoration:none;
-  padding: 28px 21px 0; /* Figma 175:1023/175:1024: the CATALOGUE line sits 28
+  padding: 28px var(--edge) 0; /* Figma 175:1023/175:1024: the CATALOGUE line sits 28
     below the caption row (which ends y=1289) and its box ends at y=1361 --
     exactly where the cove image starts, so zero bottom padding, confirmed.
-    Arrow sits 21 from the frame's right edge, not the 40 page margin. */
-  font-family: var(--font-body); font-weight:200; font-size: 25px;
+    Eliza 2026-10-05: the arrow was 21 from the frame edge, i.e. ~19px past the nav
+    and footer right axis (SHOWROOM / TRADE / newsletter); it now ends on --edge. */
+  font-family: var(--font-body); font-weight:200;
+  font-size: var(--fs-body); /* Eliza 2026-10-05: secondary element -- same size as the carousel captions (was 25px); arrow is em-based so it follows */
   letter-spacing:.05em; text-transform:uppercase; gap: var(--sp-8);
 }
 .catalogue-band img{ width:19px; height:20px; } /* Figma 175:1024 */
@@ -3371,3 +3373,11 @@ input.sf-hp, .newsletter input.sf-hp, .sf-form input.sf-hp{ position:absolute !i
 .wordmark-header.is-static{ box-shadow: 0 0 0 var(--orange); transition: box-shadow .2s ease; }
 .wordmark-header.is-static.is-scrolled{ box-shadow: 0 2px 0 var(--orange); }
 body.menu-open .wordmark-header.is-static{ box-shadow:none; }
+
+/* Footer FRITZ: its .175em tracking leaves a trailing gap inside the box, so the
+   Z stopped ~20px short of the right axis the nav and newsletter end on.
+   Pull the box out by exactly that gap so the glyph itself lands on the axis.
+   (<=1152 is fitted by footerWordmarkFit in js/main.js.) */
+@media (min-width:1153px){
+  .footer-wm .fw-white{ margin-right: -.175em; }
+}

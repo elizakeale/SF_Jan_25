@@ -576,7 +576,7 @@
   var wrap = document.querySelector('.scroll-hijack');
   var pane = wrap && wrap.querySelector('.scroll-hijack-sticky');
   if (wrap && pane && hijacked.length) {
-    var target = hijacked[0];
+    var target = hijacked.filter(function (h) { return wrap.contains(h.el); })[0] || hijacked[0];
     /* Two numbers, one complaint each (2026-09-18, round 3).
        "a bit slower... feels too jerky" -> GAIN. At 2.5 a single 100px
        scroll event moved the carousel 250px in one frame, and amplifying
@@ -614,7 +614,7 @@
     function mobile() { return window.innerWidth <= 1152; }
     var lastY = window.scrollY;
     var idleTimer = null;
-    var lastTop = -1, lastVH = -1, dirty = true;
+    var lastTop = -1, lastVH = -1, lastLoop = -1, dirty = true;
 
     // The sticky offset resolves from --hdr-h, which the header publishes
     // only once it docks -- so this is read live rather than cached at
@@ -654,10 +654,18 @@
          as the pane jiggling/freezing. Using the bare viewport minus pane
          makes it a function of window size only. */
       var vh = window.innerHeight;
-      if (!dirty && vh === lastVH) return;
-      dirty = false; lastVH = vh;
+      /* Eliza 2026-10-05: "force me to scroll the entire carousel 1x before
+         releasing me to the footer", on every page. One full loop of the
+         tiles is loopWidth() px of travel, and travel is GAIN x scroll, so the
+         runway that spends exactly one loop is loopWidth()/GAIN. RUNWAY_MIN
+         stays as the floor. Depends on window width only through the tile
+         sizes (which scale with vw), never on the sticky offset. */
+      var loop = Math.round(target.loopWidth());
+      if (!dirty && vh === lastVH && loop === lastLoop) return;
+      dirty = false; lastVH = vh; lastLoop = loop;
       var paneH = pane.offsetHeight;
-      wrap.style.height = (paneH + RUNWAY_MIN) + 'px';
+      var runway = Math.max(RUNWAY_MIN, Math.ceil(loop / GAIN));
+      wrap.style.height = (paneH + runway) + 'px';
     }
     function remeasure() { dirty = true; sizeRunway(); }
     remeasure();
