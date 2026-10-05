@@ -1127,11 +1127,13 @@
       setTimeout(function () { el.classList.add('is-removed'); }, reduce ? 0 : 500);
     }
 
-    // STAGING: /?intro=long (optionally &len=1.6) previews the long-to-short
-    // bars; it also ignores the once-per-session flag so it can be reloaded.
-    var qs = location.search, longVariant = /[?&]intro=long\b/.test(qs);
+    // The long-to-short bars are the default intro (20x on desktop, 5x on
+    // mobile). /?intro=long (optionally &len=N) also ignores the once-per-session
+    // flag so it can be reloaded for testing; /?intro=classic shows the old
+    // 1x fly-in.
+    var qs = location.search, longVariant = !/[?&]intro=classic\b/.test(qs);
     var alreadySeen = false;
-    if (!longVariant) { try { alreadySeen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (err) {} }
+    if (!/[?&]intro=long\b/.test(qs)) { try { alreadySeen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch (err) {} }
     if (alreadySeen) { el.classList.add('is-done', 'is-removed'); return; }
 
     document.body.classList.add('intro-active');
