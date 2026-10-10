@@ -3428,3 +3428,38 @@ body:not(.page-product) .site-footer{ position:relative; z-index:1; }
   .product-gallery:has(> .product-photo:nth-child(2):last-child) .product-hero{ order:1; }
   .product-gallery:has(> .product-photo:nth-child(2):last-child) .product-thumb-cove2{ order:2; }
 }
+
+
+/* Custom features (Eliza, 2026-10-10): each project feature is one band, and its copy, quote,
+   attribution (and, last, the closing Get in Touch) are centred vertically in the white space
+   between the photos above and below -- whatever the line counts, the gap above equals the gap
+   below. The band runs from the bottom of the photo row above to the top of the next one (World:
+   1856-2628u; Interior Architects: 3323u to the end of the section, 3978u). Columns keep Figma's
+   x positions. On mobile the wrapper is display:contents, so the stacked layout is unchanged. */
+.custom-feature{ display:contents; }
+@media (min-width:1153px){
+  .custom-feature{
+    position:absolute; left:0; width:100%;
+    display:grid; align-content:center; align-items:start;
+  }
+  .custom-feature--world{
+    top: calc(1856 * var(--u)); height: calc(772 * var(--u));
+    grid-template-columns: calc(328 * var(--u)) calc(442 * var(--u)) calc(185 * var(--u)) calc(442 * var(--u));
+  }
+  .custom-feature--ia{
+    top: calc(3323 * var(--u)); height: calc(655 * var(--u));
+    grid-template-columns: calc(328 * var(--u)) calc(442 * var(--u)) calc(206 * var(--u)) calc(439 * var(--u));
+  }
+  .custom-feature-label{ position:static; grid-column:1; grid-row:1; padding-left: calc(22 * var(--u)); }
+  .custom-feature-copy{ position:static; grid-column:2; grid-row:1; width:auto; }
+  .custom-feature-quote{ position:static; grid-column:4; grid-row:1; width:auto; }
+  .custom-feature-attr{ position:static; grid-column:4; grid-row:2; width:auto; margin-top: calc(40 * var(--u)); }
+  .custom-feature--world .custom-feature-attr{ margin-left: calc(38 * var(--u)); }
+  .custom-feature--ia .custom-feature-attr{ margin-left: calc(72 * var(--u)); }
+  .custom-feature-sm{ font-size: calc(15 * var(--u)); }
+  .custom-feature-copy p + p, .custom-feature-quote p + p{ margin-top: 1.4em; }   /* was 1.7em */
+  .custom-cta-end{
+    display:flex; position:static; grid-column:4; grid-row:3; width:auto;
+    margin-top: calc(48 * var(--u));
+  }
+}
