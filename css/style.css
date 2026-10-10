@@ -2577,6 +2577,9 @@ body.page-custom .carousel{ background: var(--orange); }
     font-size: calc(16 * var(--mu));
   }
   .sf-field textarea{ height: calc(288 * var(--mu)); padding: calc(13 * var(--mu)); }
+  /* Eliza (2026-10-10): the 2px field outline felt heavy on mobile -- 1px on Contact and Trade, matching the buttons' own 1px border. */
+  body.page-contact .sf-field input, body.page-contact .sf-field textarea,
+  body.page-trade .sf-field input, body.page-trade .sf-field textarea{ border-width:1px; }
   /* Figma stacks the note above a full-width button, rather than setting
      them side by side as the desktop band does. */
   .sf-actions{
