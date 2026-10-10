@@ -30,6 +30,18 @@
       var releaseY = target.offsetTop + target.offsetHeight - window.innerHeight;
       var restTop = releaseY + pinnedTop - GAP;
       var shouldRest = window.scrollY >= releaseY - GAP;
+      /* Eliza 2026-10-10: on mobile the stamp must keep floating until the FOOTER reaches it. Its
+         wrapper has no runway there, so the rule above parked it as soon as the carousel's bottom
+         met the screen bottom and it scrolled away over the band ("disappears right at this point").
+         Rest it just above the footer instead. */
+      if (window.innerWidth <= 1152) {
+        var foot = document.querySelector('.site-footer');
+        if (foot) {
+          var footY = foot.getBoundingClientRect().top + window.scrollY;
+          restTop = footY - stampH - GAP;
+          shouldRest = window.scrollY + pinnedTop >= restTop;
+        }
+      }
       if (shouldRest && !resting) {
         resting = true;
         stamp.style.position = 'absolute';
@@ -88,9 +100,12 @@
     var pinnedLeft = null;
 
     function desktop() { return window.innerWidth > 1152; }
+    /* Eliza 2026-10-10: Showroom's stamp floats on mobile too (content scrolls behind it, it
+       releases above the bottom carousel). Its mobile CSS right-aligns it, so only top is driven. */
+    function mob() { return !desktop() && document.body.classList.contains('page-showroom'); }
 
     function measure() {
-      if (!desktop()) return;
+      if (!desktop() && !mob()) return;
       // Clear any inline override first so this reads the stylesheet's own
       // absolute position, not a stale fixed/absolute value from before.
       stamp.style.position = '';
@@ -102,11 +117,12 @@
          If its stylesheet position would put it low on a short window, pin
          it so it is 100% visible at load with a margin below it of ~10% of its height. */
       pinnedTop = Math.min(pinnedTop, Math.max(200, window.innerHeight - r.height * 1.1));
+      if (mob()) pinnedTop = Math.max(120, window.innerHeight - r.height * 1.1);   // mobile: starts fully above the fold, lower right
       pinnedLeft = r.left;
     }
 
     function render() {
-      if (!desktop()) {
+      if (!desktop() && !mob()) {
         stamp.style.position = ''; stamp.style.top = ''; stamp.style.left = '';
         return;
       }
@@ -134,7 +150,7 @@
       } else {
         stamp.style.position = 'fixed';
         stamp.style.top = pinnedTop + 'px';
-        stamp.style.left = pinnedLeft + 'px';
+        if (desktop()) stamp.style.left = pinnedLeft + 'px';
       }
     }
 

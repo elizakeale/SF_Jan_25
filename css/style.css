@@ -2671,8 +2671,8 @@ body.page-custom .carousel{ background: var(--orange); }
   /* 397:213 -- stamp right-aligned, top 53 above the photo's bottom edge;
      zero layout height so the logomark and it share the same band. */
   body.page-showroom .page-stamp{
-    display:block; position:static; width: calc(185 * var(--mu)); height:0; z-index:2;
-    margin: calc(-53 * var(--mu)) calc(6 * var(--mu)) 0 auto;   /* right-aligned at any width (was a fixed 210mu left offset, which left it mid-page on wider phones/tablets) */
+    display:block; position:absolute; left:auto; right: calc(6 * var(--mu)); top:auto; width: calc(185 * var(--mu)); height:auto; z-index:5;   /* floats: js/main.js pageStampFloat pins it (fixed) and releases it above the bottom carousel */
+    margin: 0;   /* right-aligned at any width (was a fixed 210mu left offset, which left it mid-page on wider phones/tablets) */
   }
   .showroom-partner{ order:1; } .showroom-visit{ order:2; } .showroom-portrait{ order:3; }
   body.page-showroom .page-stamp{ order:4; } .showroom-accent{ order:5; }
@@ -3490,3 +3490,20 @@ body:not(.page-product) .site-footer{ position:relative; z-index:1; }
   body.page-custom .custom-feature-quote{ margin-top: var(--feat-gap); }
   body.page-custom .custom-feature-attr{ padding-bottom: var(--feat-gap); }
 }
+
+/* GLOBAL RULE, mobile (Eliza 2026-10-10): the last block of copy / buttons above the bottom carousel is
+   vertically centred in its white band -- the gap below it (to the carousel) equals the gap above it
+   (to the orange rule, where the page has one). One value for every page. Pages that end on a photo
+   (Home, About, Custom) run flush into the carousel and are not affected. */
+@media (max-width:1152px){
+  body{ --end-gap: calc(64 * var(--mu)); }
+  body.page-catalogue .catalogue-section,
+  body.page-contact .page-section, body.page-trade .page-section,
+  body.page-showroom .showroom-section, body.page-faq .faq-section,
+  body.page-product .product-section{ padding-bottom: var(--end-gap); }
+  body.page-catalogue .carousel, body.page-contact .carousel, body.page-trade .carousel,
+  body.page-showroom .carousel, body.page-faq .carousel, body.page-product .carousel{ margin-top:0; }
+  body.page-catalogue .catalogue-more{ padding-top: var(--end-gap); }
+}
+
+@media (max-width:1152px){ body.page-contact .sf-form, body.page-trade .sf-form{ margin-bottom:0; } }   /* the end-gap rule above supplies the space */
