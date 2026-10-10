@@ -1578,6 +1578,7 @@ body.page-custom{
 .custom-cta:hover{ background: var(--white); color: var(--orange); }
 .custom-cta:hover img{ content: url("../images/logos/arrows/arrow-orange.svg"); }
 .custom-cta img{ width: calc(11 * var(--u)); height: calc(11 * var(--u)); }
+.custom-cta-end{ display:none; }   /* mobile-only closing button */
 
 /* Custom: the floating stamp starts under the CUSTOM label (nav bar ends 197u) instead of
    at the generic 597u, which sat low on tall windows. The second, static
@@ -2050,10 +2051,13 @@ body.page-custom .carousel{ background: var(--orange); }
 }
 .catalogue-col:nth-child(1) .catalogue-item h2{ padding: 0 var(--edge); }
 .catalogue-item:hover h2{ color: var(--orange); }
-.catalogue-item:hover .catalogue-arrow{ content: url("../images/logos/arrows/arrow-orange.svg"); } /* Eliza (14th pass): "arrows should also turn orange on hover, not just the product name" */
+.catalogue-item:hover .catalogue-arrow{ content: url("../images/logos/arrows/arrow-orange-thin.svg"); } /* Eliza (14th pass): "arrows should also turn orange on hover, not just the product name" */
+/* Eliza (2026-10-10): arrow stroke thinner to match the ExtraLight type, and its height equal to the
+   caps (about .7em of the caption), sitting on the baseline -- same rule at every width, since it is
+   sized in em from the caption itself. The thin-stroke SVGs keep the stroke at about the type's stem. */
 .catalogue-arrow{
-  width: calc(13 * var(--u)); height: calc(13 * var(--u)); margin-left: calc(8 * var(--u));
-  display:inline-block; vertical-align:middle;
+  width: .7em; height: .7em; margin-left: .4em;
+  display:inline-block; vertical-align:baseline;
 }
 
 .catalogue-more{
@@ -2757,9 +2761,22 @@ body.page-custom .carousel{ background: var(--orange); }
   }
   .custom-feature-copy, .custom-feature-quote, .custom-feature-attr{ font-size: calc(15 * var(--mu)) !important; }
   .custom-feature-copy{ margin: calc(40 * var(--mu)) 0 0; }
-  .custom-feature-quote{ margin: calc(77 * var(--mu)) 0 0; }   /* 411:1029 rule -> 411:1025 quote: 77 */
-  .custom-feature-attr{ margin: calc(58 * var(--mu)) 0 0; min-height: calc(55 * var(--mu)); }   /* 411:1025 box end -> 411:1027 attr: 58 */
-  .custom-feature-attr-last{ margin-bottom: calc(54 * var(--mu)); }  /* 411:1045 box end 4885 -> carousel 4939 */
+  /* Eliza (2026-10-10): slightly tighter, and the quote + attribution always centred in the white
+     band: the gap from the orange rule down to the quote equals the gap from the attribution down to
+     whatever follows (the next photo / the closing button), whatever the line count, so no fixed
+     min-height on the attribution. */
+  .custom-feature-quote{ margin: calc(60 * var(--mu)) 0 0; }
+  .custom-feature-attr{ margin: calc(44 * var(--mu)) 0 0; }
+  .custom-feature-attr{ padding-bottom: calc(60 * var(--mu)); }   /* = rule-to-quote gap */
+  .custom-feature-attr-last{ margin-bottom: 0; }
+  .custom-photo-westlake3{ margin-top: 0; }                        /* the attribution's own bottom padding is the gap */
+  .custom-feature-copy p + p, .custom-feature-quote p + p{ margin-top: 1.4em; }   /* was 1.7em: slightly tighter paragraph gaps */
+  .custom-cta-end{
+    display:flex; position:static; width:auto; margin: 0 var(--edge) calc(54 * var(--mu));
+    min-height: calc(33 * var(--mu)); font-size: calc(14 * var(--mu));
+    padding: 0 calc(13 * var(--mu)) 0 calc(9 * var(--mu));
+  }
+  .custom-cta-end img{ width: calc(10 * var(--mu)); height: calc(10 * var(--mu)); }
   .custom-feature-divider{
     display:block; height:1px; background: var(--orange); border:0;
     margin: calc(32 * var(--mu)) 0 0;   /* bleeds edge to edge (Figma), not inset to the text margin */
@@ -2917,8 +2934,12 @@ body.page-custom .carousel{ background: var(--orange); }
   .catalogue-photo-sm{ display:block; margin:0; background: var(--cream); overflow:hidden; }
   .catalogue-photo-sm img{ width:100%; height:auto; object-fit:contain; display:block; }
   .catalogue-item h2{ margin-top: calc(12 * var(--mu)); padding: 0 var(--edge); font-size: calc(15 * var(--mu)); }
-  .catalogue-arrow{ width: calc(13 * var(--mu)); height: calc(13 * var(--mu)); margin-left: calc(8 * var(--mu)); }
-  .catalogue-more{ margin-top: calc(40 * var(--mu)); font-size: calc(15 * var(--mu)); }
+  /* arrow size comes from the em rule above (matches the caps of the caption) */
+  /* Orange hairline above "Looking for something more specific?" (Figma mobile), full width. */
+  .catalogue-more{
+    margin-top: calc(80 * var(--mu)); padding-top: calc(80 * var(--mu));
+    border-top: 1px solid var(--orange); font-size: calc(15 * var(--mu));
+  }
 }
 
 
