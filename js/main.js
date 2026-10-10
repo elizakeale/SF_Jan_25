@@ -211,7 +211,7 @@
     var NAV_GAP_U = 33; // wordmark bottom -> nav top inside the bar, in FIGMA px. Figma 460:1999: nav y=131, padTop 8, wordmark line ~90
     var UNDOCK_MARGIN = 2; // float-safety only; the dock is zero-pixel, so it needs no real hysteresis
     var MOBILE_BG_FADE = 0.12; // fraction of viewport height; ~100px at 843
-    var lastMobileA = -1, lastMobileH = -1;
+    var lastMobileA = -1, lastMobileH = -1, lastHdrH = -1;
     var BG_FADE = 0.18; // fraction of dockDepth over which the orange ramps in.
       // Eliza: "should we do a fade in for the orange nav -- it does feel
       // drastic." It's a fade, but NOT a CSS transition: opacity is a
@@ -352,6 +352,14 @@
       }
       header.style.setProperty('--hdr-bg-a', bgA);
       header.classList.toggle('is-collapsed', pinned || bgA > 0);
+      /* 2026-10-10: dock() runs BEFORE is-collapsed is applied, so it measured the
+         bar without its docked padding (115px vs the real ~209) and the pinned
+         carousel stuck under the bottom ~95px of the bar -- the top of the tiles
+         was hidden. Re-measure now the class is on, and only publish on change. */
+      if (pinned) {
+        var hb = Math.ceil(header.getBoundingClientRect().bottom);
+        if (hb !== lastHdrH) { lastHdrH = hb; document.documentElement.style.setProperty('--hdr-h', hb + 'px'); }
+      } else { lastHdrH = -1; }
 
       // --- rows: a monotonic function of scroll depth, so scrolling back up
       // replays the same states in reverse and nothing can oscillate.
@@ -672,13 +680,28 @@
        release point are unchanged), but it is drawn translated UP by the
        unspent runway: right under the pane while the pane is pinned, easing
        to its true place (translate 0) exactly as the pane releases. */
+    /* 2026-10-10: the footer used to be nudged by JS on every scroll event,
+       which runs a frame behind the browser's own (compositor) scrolling --
+       it read as the footer jumping up and down. It is now pure CSS:
+       position:sticky, pulled up under the pane by a negative margin, with a
+       spacer after it giving it room to travel (see style.css). JS only
+       publishes two numbers on resize. */
     var footerEl = document.querySelector('.site-footer');
+    var spacerEl = null;
     function shiftFooter() {
       if (!footerEl) return;
-      if (mobile()) { if (footerEl.style.transform) footerEl.style.transform = ''; return; }
+      var root = document.documentElement;
+      if (mobile()) {
+        if (spacerEl && spacerEl.parentNode) spacerEl.parentNode.removeChild(spacerEl);
+        root.style.removeProperty('--sh-len'); root.style.removeProperty('--sh-pane');
+        footerEl.style.transform = '';
+        return;
+      }
+      if (!spacerEl) { spacerEl = document.createElement('div'); spacerEl.setAttribute('aria-hidden', 'true'); spacerEl.className = 'sh-spacer'; }
+      if (spacerEl.previousSibling !== footerEl) footerEl.parentNode.insertBefore(spacerEl, footerEl.nextSibling);
       var len = Math.max(0, wrap.offsetHeight - pane.offsetHeight);
-      var p = progress();
-      footerEl.style.transform = 'translateY(' + (-(len - p)) + 'px)';
+      root.style.setProperty('--sh-len', len + 'px');
+      root.style.setProperty('--sh-pane', pane.offsetHeight + 'px');
     }
     function remeasure() { dirty = true; sizeRunway(); shiftFooter(); }
     remeasure();

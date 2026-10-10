@@ -3466,3 +3466,16 @@ body:not(.page-product) .site-footer{ position:relative; z-index:1; }
     margin-top: calc(48 * var(--u));
   }
 }
+
+/* Pre-footer hold, desktop (2026-10-10): the footer is pulled up directly under the
+   pinned carousel with a negative margin and made sticky at the same moment the pane
+   pins, so the compositor moves both together (no per-scroll JS = no jitter).
+   .sh-spacer (added by js/main.js) is the room it needs to travel; it equals the runway. */
+@media (min-width:1153px){
+  body:has(.scroll-hijack) .site-footer{
+    position:sticky; z-index:1;
+    top: calc(var(--hdr-h, 0px) - 1px + var(--sh-pane, 0px));
+    margin-top: calc(-1 * var(--sh-len, 0px));
+  }
+  .sh-spacer{ height: var(--sh-len, 0px); background: var(--orange); pointer-events:none; }
+}
