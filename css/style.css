@@ -2672,7 +2672,7 @@ body.page-custom .carousel{ background: var(--orange); }
      zero layout height so the logomark and it share the same band. */
   body.page-showroom .page-stamp{
     display:block; position:static; width: calc(185 * var(--mu)); height:0; z-index:2;
-    margin: calc(-53 * var(--mu)) 0 0 calc(210 * var(--mu));
+    margin: calc(-53 * var(--mu)) calc(6 * var(--mu)) 0 auto;   /* right-aligned at any width (was a fixed 210mu left offset, which left it mid-page on wider phones/tablets) */
   }
   .showroom-partner{ order:1; } .showroom-visit{ order:2; } .showroom-portrait{ order:3; }
   body.page-showroom .page-stamp{ order:4; } .showroom-accent{ order:5; }
