@@ -3479,3 +3479,14 @@ body:not(.page-product) .site-footer{ position:relative; z-index:1; }
   }
   .sh-spacer{ height: var(--sh-len, 0px); background: var(--orange); pointer-events:none; }
 }
+
+/* Custom, mobile (Eliza 2026-10-10): every white band is symmetrical. The Project Feature block (label +
+   copy) sits centred between the photo above and the orange rule; the quote + attribution sit centred
+   between the rule and whatever follows. One gap value for all four edges. */
+@media (max-width:1152px){
+  body.page-custom{ --feat-gap: calc(64 * var(--mu)); }
+  body.page-custom .custom-feature-label{ margin-top: var(--feat-gap); }
+  body.page-custom .custom-feature-divider{ margin-top: var(--feat-gap); }
+  body.page-custom .custom-feature-quote{ margin-top: var(--feat-gap); }
+  body.page-custom .custom-feature-attr{ padding-bottom: var(--feat-gap); }
+}
