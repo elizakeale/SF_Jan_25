@@ -3507,3 +3507,12 @@ body:not(.page-product) .site-footer{ position:relative; z-index:1; }
 }
 
 @media (max-width:1152px){ body.page-contact .sf-form, body.page-trade .sf-form{ margin-bottom:0; } }   /* the end-gap rule above supplies the space */
+
+/* White on orange is ExtraLight (200) on mobile again (Eliza 2026-10-11); desktop keeps Light (300). */
+@media (max-width:1152px){
+  body :is(.site-footer, .mobile-menu, .carousel, .catalogue-band) :is(a, label, span, p, div, figcaption, input, button, small):not(.footer-wm):not(.footer-wm *):not(.accent):not(input){
+    font-weight:200 !important;
+  }
+  .catalogue-band{ font-weight:200 !important; }
+  .product-cta-inquire, .newsletter .nl-status, #heroNav.is-collapsed-nav a{ font-weight:200; }
+}
